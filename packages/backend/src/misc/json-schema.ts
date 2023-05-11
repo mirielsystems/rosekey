@@ -37,6 +37,7 @@ import { packedEmojiDetailedSchema, packedEmojiSimpleSchema } from '@/models/jso
 import { packedFlashSchema } from '@/models/json-schema/flash.js';
 import { packedAnnouncementSchema } from '@/models/json-schema/announcement.js';
 import { packedSigninSchema } from '@/models/json-schema/signin.js';
+import { packedUserGroupSchema } from '@/models/schema/user-group.js';
 import {
 	packedRoleLiteSchema,
 	packedRoleSchema,
@@ -69,6 +70,7 @@ export const refs = {
 	UserList: packedUserListSchema,
 	Ad: packedAdSchema,
 	Announcement: packedAnnouncementSchema,
+	UserGroup: packedUserGroupSchema,
 	App: packedAppSchema,
 	Note: packedNoteSchema,
 	NoteReaction: packedNoteReactionSchema,

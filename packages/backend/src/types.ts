@@ -35,6 +35,7 @@ export const notificationTypes = [
 	'achievementEarned',
 	'app',
 	'test',
+	'groupInvited',
 ] as const;
 
 export const groupedNotificationTypes = [

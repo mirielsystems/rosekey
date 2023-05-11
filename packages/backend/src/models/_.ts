@@ -50,6 +50,9 @@ import { MiSignin } from '@/models/Signin.js';
 import { MiSwSubscription } from '@/models/SwSubscription.js';
 import { MiUsedUsername } from '@/models/UsedUsername.js';
 import { MiUser } from '@/models/User.js';
+import { UserGroup } from '@/models/UserGroup.js';
+import { UserGroupInvitation } from '@/models/UserGroupInvitation.js';
+import { UserGroupJoining } from '@/models/UserGroupJoining.js';
 import { MiUserIp } from '@/models/UserIp.js';
 import { MiUserKeypair } from '@/models/UserKeypair.js';
 import { MiUserList } from '@/models/UserList.js';
@@ -122,6 +125,9 @@ export {
 	MiSwSubscription,
 	MiUsedUsername,
 	MiUser,
+	UserGroup,
+	UserGroupInvitation,
+	UserGroupJoining,
 	MiUserIp,
 	MiUserKeypair,
 	MiUserList,
@@ -192,6 +198,9 @@ export type SigninsRepository = Repository<MiSignin>;
 export type SwSubscriptionsRepository = Repository<MiSwSubscription>;
 export type UsedUsernamesRepository = Repository<MiUsedUsername>;
 export type UsersRepository = Repository<MiUser>;
+export type UserGroupsRepository = Repository<UserGroup>;
+export type UserGroupInvitationsRepository = Repository<UserGroupInvitation>;
+export type UserGroupJoiningsRepository = Repository<UserGroupJoining>;
 export type UserIpsRepository = Repository<MiUserIp>;
 export type UserKeypairsRepository = Repository<MiUserKeypair>;
 export type UserListsRepository = Repository<MiUserList>;

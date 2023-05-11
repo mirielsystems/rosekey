@@ -37,6 +37,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<i v-else-if="notification.type === 'quote'" class="ph-quotes ph-bold ph-lg"></i>
 			<i v-else-if="notification.type === 'pollEnded'" class="ph-chart-bar-horizontal ph-bold ph-lg"></i>
 			<i v-else-if="notification.type === 'achievementEarned'" class="ph-trophy ph-bold ph-lg"></i>
+			<i v-else-if="notification.type === 'groupInvited'" class="ti ti-certificate-2"></i>
 			<template v-else-if="notification.type === 'roleAssigned'">
 				<img v-if="notification.role.iconUrl" style="height: 1.3em; vertical-align: -22%;" :src="notification.role.iconUrl" alt=""/>
 				<i v-else class="ph-seal-check ph-bold ph-lg"></i>
@@ -116,6 +117,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<Mfm :text="notification.body" :nowrap="false"/>
 			</span>
 
+			<template v-else-if="notification.type === 'groupInvited'">
+				<span :class="$style.text" style="opacity: 0.6;">{{ i18n.ts.groupInvited }}: <b>{{ notification.invitation.group.name }}</b></span>
+				<div v-if="full && !groupInviteDone">
+					<button class="_textButton" @click="acceptGroupInvitation()">{{ i18n.ts.accept }}</button> | <button class="_textButton" @click="rejectGroupInvitation()">{{ i18n.ts.reject }}</button>
+				</div>
+			</template>
+
 			<div v-if="notification.type === 'reaction:grouped'">
 				<div v-for="reaction of notification.reactions" :key="reaction.user.id + reaction.reaction" :class="$style.reactionsItem">
 					<MkAvatar :class="$style.reactionsItemAvatar" :user="reaction.user" link preview/>
@@ -170,6 +178,7 @@ const props = withDefaults(defineProps<{
 });
 
 const followRequestDone = ref(false);
+const groupInviteDone = ref(false);
 
 const acceptFollowRequest = () => {
 	if (props.notification.user == null) return;
@@ -182,6 +191,25 @@ const rejectFollowRequest = () => {
 	followRequestDone.value = true;
 	misskeyApi('following/requests/reject', { userId: props.notification.user.id });
 };
+
+const acceptGroupInvitation = () => {
+	groupInviteDone.value = true;
+	misskeyApi('users/groups/invitations/accept', { invitationId: props.notification.invitation.id });
+};
+
+const rejectGroupInvitation = () => {
+	groupInviteDone.value = true;
+	misskeyApi('users/groups/invitations/reject', { invitationId: props.notification.invitation.id });
+};
+
+useTooltip(reactionRef, (showing) => {
+	os.popup(XReactionTooltip, {
+		showing,
+		reaction: props.notification.reaction ? props.notification.reaction.replace(/^:(\w+):$/, ':$1@.:') : props.notification.reaction,
+		emojis: props.notification.note.emojis,
+		targetElement: reactionRef.value.$el,
+	}, {}, 'closed');
+});
 </script>
 
 <style lang="scss" module>
@@ -254,7 +282,7 @@ const rejectFollowRequest = () => {
 	}
 }
 
-.t_follow, .t_followRequestAccepted, .t_receiveFollowRequest {
+.t_follow, .t_followRequestAccepted, .t_receiveFollowRequest, .t_groupInvited {
 	padding: 3px;
 	background: #36aed2;
 	pointer-events: none;

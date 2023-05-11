@@ -7,6 +7,7 @@ import { MiUser } from './User.js';
 import { MiNote } from './Note.js';
 import { MiAccessToken } from './AccessToken.js';
 import { MiRole } from './Role.js';
+import { UserGroupInvitation } from './UserGroupInvitation.js';
 
 export type MiNotification = {
 	type: 'note';
@@ -67,6 +68,12 @@ export type MiNotification = {
 	id: string;
 	createdAt: string;
 	notifierId: MiUser['id'];
+} | {
+	type: 'groupInvited';
+	id: string;
+	createdAt: string;
+	notifierId: MiUser['id'];
+	userGroupInvitationId: MiUserGroupInvitation['id'];
 } | {
 	type: 'roleAssigned';
 	id: string;

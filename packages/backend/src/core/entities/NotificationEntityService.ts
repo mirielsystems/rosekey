@@ -20,6 +20,7 @@ import { RoleEntityService } from './RoleEntityService.js';
 import type { OnModuleInit } from '@nestjs/common';
 import type { UserEntityService } from './UserEntityService.js';
 import type { NoteEntityService } from './NoteEntityService.js';
+import type { UserGroupInvitationEntityService } from './UserGroupInvitationEntityService.js';
 
 const NOTE_REQUIRED_NOTIFICATION_TYPES = new Set(['note', 'mention', 'reply', 'renote', 'renote:grouped', 'quote', 'reaction', 'reaction:grouped', 'pollEnded', 'edited'] as (typeof groupedNotificationTypes[number])[]);
 
@@ -28,6 +29,8 @@ export class NotificationEntityService implements OnModuleInit {
 	private userEntityService: UserEntityService;
 	private noteEntityService: NoteEntityService;
 	private roleEntityService: RoleEntityService;
+	private userGroupInvitationEntityService: UserGroupInvitationEntityService;
+	private customEmojiService: CustomEmojiService;
 
 	constructor(
 		private moduleRef: ModuleRef,
@@ -45,6 +48,8 @@ export class NotificationEntityService implements OnModuleInit {
 
 		//private userEntityService: UserEntityService,
 		//private noteEntityService: NoteEntityService,
+		//private userGroupInvitationEntityService: UserGroupInvitationEntityService,
+		//private customEmojiService: CustomEmojiService,
 	) {
 	}
 
@@ -52,6 +57,8 @@ export class NotificationEntityService implements OnModuleInit {
 		this.userEntityService = this.moduleRef.get('UserEntityService');
 		this.noteEntityService = this.moduleRef.get('NoteEntityService');
 		this.roleEntityService = this.moduleRef.get('RoleEntityService');
+		this.userGroupInvitationEntityService = this.moduleRef.get('UserGroupInvitationEntityService');
+		this.customEmojiService = this.moduleRef.get('CustomEmojiService');
 	}
 
 	/**
@@ -159,6 +166,9 @@ export class NotificationEntityService implements OnModuleInit {
 			} : {}),
 			...(notification.type === 'roleAssigned' ? {
 				role: role,
+			} : {}),
+			...(notification.type === 'groupInvited' ? {
+				invitation: this.userGroupInvitationEntityService.pack(notification.userGroupInvitationId!),
 			} : {}),
 			...(notification.type === 'achievementEarned' ? {
 				achievement: notification.achievement,

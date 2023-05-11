@@ -17,6 +17,7 @@ import { ChannelFollowingService } from '@/core/ChannelFollowingService.js';
 import type { ChannelsService } from './ChannelsService.js';
 import type { EventEmitter } from 'events';
 import type Channel from './channel.js';
+import type { UserGroup } from '@/models/UserGroup.js';
 
 /**
  * Main stream connection

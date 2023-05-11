@@ -17,10 +17,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<option value="users">{{ i18n.ts._antennaSources.users }}</option>
 				<!--<option value="list">{{ i18n.ts._antennaSources.userList }}</option>-->
 				<option value="users_blacklist">{{ i18n.ts._antennaSources.userBlacklist }}</option>
+				<!--<option value="group">{{ i18n.ts._antennaSources.userGroup }}</option>-->
 			</MkSelect>
 			<MkSelect v-if="src === 'list'" v-model="userListId">
 				<template #label>{{ i18n.ts.userList }}</template>
 				<option v-for="list in userLists" :key="list.id" :value="list.id">{{ list.name }}</option>
+			</MkSelect>
+			<MkSelect v-else-if="src === 'group'" v-model="userGroupId">
+				<template #label>{{ i18n.ts.group }}</template>
+				<option v-for="group in userGroups" :key="group.id" :value="group.id">{{ group.name }}</option>
 			</MkSelect>
 			<MkTextarea v-else-if="src === 'users' || src === 'users_blacklist'" v-model="users">
 				<template #label>{{ i18n.ts.users }}</template>
@@ -73,6 +78,7 @@ const emit = defineEmits<{
 const name = ref<string>(props.antenna.name);
 const src = ref<Misskey.entities.AntennasCreateRequest['src']>(props.antenna.src);
 const userListId = ref<string | null>(props.antenna.userListId);
+const userGroupId = ref<string | null>(props.antenna.userGroupId);
 const users = ref<string>(props.antenna.users.join('\n'));
 const keywords = ref<string>(props.antenna.keywords.map(x => x.join(' ')).join('\n'));
 const excludeKeywords = ref<string>(props.antenna.excludeKeywords.map(x => x.join(' ')).join('\n'));
@@ -82,10 +88,18 @@ const withReplies = ref<boolean>(props.antenna.withReplies);
 const withFile = ref<boolean>(props.antenna.withFile);
 const notify = ref<boolean>(props.antenna.notify);
 const userLists = ref<Misskey.entities.UserList[] | null>(null);
+const userGroups = ref<Misskey.entities.UserGroup[] | null>(null);
 
 watch(() => src.value, async () => {
 	if (src.value === 'list' && userLists.value === null) {
 		userLists.value = await misskeyApi('users/lists/list');
+	}
+
+	if (src.value === 'group' && userGroups.value === null) {
+		const groups1 = await misskeyApi('users/groups/owned');
+		const groups2 = await misskeyApi('users/groups/joined');
+
+		userGroups.value = [...groups1, ...groups2];
 	}
 });
 
@@ -94,6 +108,7 @@ async function saveAntenna() {
 		name: name.value,
 		src: src.value,
 		userListId: userListId.value,
+		userGroupId: userGroupId.value,
 		withReplies: withReplies.value,
 		withFile: withFile.value,
 		notify: notify.value,

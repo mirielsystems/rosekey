@@ -79,6 +79,9 @@ import { MiUserMemo } from '@/models/UserMemo.js';
 import { NoteEdit } from '@/models/NoteEdit.js';
 import { MiBubbleGameRecord } from '@/models/BubbleGameRecord.js';
 import { MiReversiGame } from '@/models/ReversiGame.js';
+import { UserGroup } from '@/models/UserGroup.js';
+import { UserGroupInvitation } from '@/models/UserGroupInvitation.js';
+import { UserGroupJoining } from '@/models/UserGroupJoining.js';
 
 import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
@@ -196,6 +199,9 @@ export const entities = [
 	NoteEdit,
 	MiBubbleGameRecord,
 	MiReversiGame,
+	UserGroup,
+	UserGroupJoining,
+	UserGroupInvitation,
 	...charts,
 ];
 

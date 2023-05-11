@@ -218,6 +218,23 @@ async function composeNotification(data: PushNotificationDataMap[keyof PushNotif
 						data,
 					}];
 
+				case 'groupInvited':
+					return [t('_notification.youWereInvitedToGroup', { userName: getUserName(data.body.user) }), {
+						body: data.body.invitation.group.name,
+						badge: iconUrl('users'),
+						data,
+						actions: [
+							{
+								action: 'accept',
+								title: t('accept'),
+							},
+							{
+								action: 'reject',
+								title: t('reject'),
+							},
+						],
+					}];
+
 				case 'app':
 					return [data.body.header ?? data.body.body, {
 						body: data.body.header ? data.body.body : '',

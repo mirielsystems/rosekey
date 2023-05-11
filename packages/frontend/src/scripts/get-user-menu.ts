@@ -22,6 +22,28 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 
 	const cleanups = [] as (() => void)[];
 
+	async function inviteGroup() {
+		const groups = await os.api('users/groups/owned');
+		if (groups.length === 0) {
+			os.alert({
+				type: 'error',
+				text: i18n.ts.youHaveNoGroups,
+			});
+			return;
+		}
+		const { canceled, result: groupId } = await os.select({
+			title: i18n.ts.group,
+			items: groups.map(group => ({
+				value: group.id, text: group.name,
+			})),
+		});
+		if (canceled) return;
+		os.apiWithDialog('users/groups/invite', {
+			groupId: groupId,
+			userId: user.id,
+		});
+	}
+
 	async function toggleMute() {
 		if (user.isMuted) {
 			os.apiWithDialog('mute/delete', {
@@ -191,7 +213,16 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 			const canonical = user.host === null ? `@${user.username}` : `@${user.username}@${user.host}`;
 			os.post({ specified: user, initialText: `${canonical} ` });
 		},
-	}, { type: 'divider' }, {
+	}, meId !== user.id ? {
+		type: 'link',
+		icon: 'ti ti-messages',
+		text: i18n.ts.startMessaging,
+		to: `/my/messaging/@${user.host === null ? user.username : user.username + '@' + user.host}`,
+	} : undefined, meId !== user.id && user.host === null ? {
+		icon: 'ti ti-users',
+		text: i18n.ts.inviteToGroup,
+		action: inviteGroup,
+	} : undefined,[{
 		icon: 'ph-pencil-simple ph-bold ph-lg',
 		text: i18n.ts.editMemo,
 		action: () => {
@@ -258,7 +289,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 			}));
 		},
 	}] as any;
-
+	
 	if ($i && meId !== user.id) {
 		if (iAmModerator) {
 			menu = menu.concat([{
