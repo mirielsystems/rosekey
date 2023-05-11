@@ -28,6 +28,7 @@ import { IdService } from './IdService.js';
 import { ImageProcessingService } from './ImageProcessingService.js';
 import { InstanceActorService } from './InstanceActorService.js';
 import { InternalStorageService } from './InternalStorageService.js';
+import { MessagingService } from './MessagingService.js';
 import { MetaService } from './MetaService.js';
 import { MfmService } from './MfmService.js';
 import { ModerationLogService } from './ModerationLogService.js';
@@ -100,6 +101,7 @@ import { GalleryPostEntityService } from './entities/GalleryPostEntityService.js
 import { HashtagEntityService } from './entities/HashtagEntityService.js';
 import { InstanceEntityService } from './entities/InstanceEntityService.js';
 import { InviteCodeEntityService } from './entities/InviteCodeEntityService.js';
+import { MessagingMessageEntityService } from './entities/MessagingMessageEntityService.js';
 import { ModerationLogEntityService } from './entities/ModerationLogEntityService.js';
 import { MutingEntityService } from './entities/MutingEntityService.js';
 import { RenoteMutingEntityService } from './entities/RenoteMutingEntityService.js';
@@ -168,6 +170,7 @@ const $IdService: Provider = { provide: 'IdService', useExisting: IdService };
 const $ImageProcessingService: Provider = { provide: 'ImageProcessingService', useExisting: ImageProcessingService };
 const $InstanceActorService: Provider = { provide: 'InstanceActorService', useExisting: InstanceActorService };
 const $InternalStorageService: Provider = { provide: 'InternalStorageService', useExisting: InternalStorageService };
+const $MessagingService: Provider = { provide: 'MessagingService', useExisting: MessagingService };
 const $MetaService: Provider = { provide: 'MetaService', useExisting: MetaService };
 const $MfmService: Provider = { provide: 'MfmService', useExisting: MfmService };
 const $ModerationLogService: Provider = { provide: 'ModerationLogService', useExisting: ModerationLogService };
@@ -241,6 +244,7 @@ const $GalleryPostEntityService: Provider = { provide: 'GalleryPostEntityService
 const $HashtagEntityService: Provider = { provide: 'HashtagEntityService', useExisting: HashtagEntityService };
 const $InstanceEntityService: Provider = { provide: 'InstanceEntityService', useExisting: InstanceEntityService };
 const $InviteCodeEntityService: Provider = { provide: 'InviteCodeEntityService', useExisting: InviteCodeEntityService };
+const $MessagingMessageEntityService: Provider = { provide: 'MessagingMessageEntityService', useExisting: MessagingMessageEntityService };
 const $ModerationLogEntityService: Provider = { provide: 'ModerationLogEntityService', useExisting: ModerationLogEntityService };
 const $MutingEntityService: Provider = { provide: 'MutingEntityService', useExisting: MutingEntityService };
 const $RenoteMutingEntityService: Provider = { provide: 'RenoteMutingEntityService', useExisting: RenoteMutingEntityService };
@@ -310,6 +314,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		ImageProcessingService,
 		InstanceActorService,
 		InternalStorageService,
+		MessagingService,
 		MetaService,
 		MfmService,
 		ModerationLogService,
@@ -383,6 +388,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		HashtagEntityService,
 		InstanceEntityService,
 		InviteCodeEntityService,
+		MessagingMessageEntityService,
 		ModerationLogEntityService,
 		MutingEntityService,
 		RenoteMutingEntityService,
@@ -448,6 +454,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		$ImageProcessingService,
 		$InstanceActorService,
 		$InternalStorageService,
+		$MessagingService,
 		$MetaService,
 		$MfmService,
 		$ModerationLogService,
@@ -521,6 +528,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		$HashtagEntityService,
 		$InstanceEntityService,
 		$InviteCodeEntityService,
+		$MessagingMessageEntityService,
 		$ModerationLogEntityService,
 		$MutingEntityService,
 		$RenoteMutingEntityService,
@@ -587,6 +595,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		ImageProcessingService,
 		InstanceActorService,
 		InternalStorageService,
+		MessagingService,
 		MetaService,
 		MfmService,
 		ModerationLogService,
@@ -659,6 +668,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		HashtagEntityService,
 		InstanceEntityService,
 		InviteCodeEntityService,
+		MessagingMessageEntityService,
 		ModerationLogEntityService,
 		MutingEntityService,
 		RenoteMutingEntityService,
@@ -724,6 +734,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		$ImageProcessingService,
 		$InstanceActorService,
 		$InternalStorageService,
+		$MessagingService,
 		$MetaService,
 		$MfmService,
 		$ModerationLogService,
@@ -796,6 +807,7 @@ const $ApQuestionService: Provider = { provide: 'ApQuestionService', useExisting
 		$HashtagEntityService,
 		$InstanceEntityService,
 		$InviteCodeEntityService,
+		$MessagingMessageEntityService,
 		$ModerationLogEntityService,
 		$MutingEntityService,
 		$RenoteMutingEntityService,

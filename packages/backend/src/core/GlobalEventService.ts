@@ -28,6 +28,7 @@ import { bindThis } from '@/decorators.js';
 import { Serialized } from '@/types.js';
 import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
+import type { MessagingMessage } from '@/models/MessagingMessage.js';
 
 //#region Stream type-body definitions
 export interface BroadcastTypes {
@@ -152,6 +153,28 @@ export interface UserListEventTypes {
 
 export interface AntennaEventTypes {
 	note: MiNote;
+}
+
+export interface MessagingEventTypes {
+	read: MessagingMessage['id'][];
+	typing: MiUser['id'];
+	message: Packed<'MessagingMessage'>;
+	deleted: MessagingMessage['id'];
+}
+
+export interface GroupMessagingEventTypes {
+	read: {
+		ids: MessagingMessage['id'][];
+		userId: MiUser['id'];
+	};
+	typing: MiUser['id'];
+	message: Packed<'MessagingMessage'>;
+	deleted: MessagingMessage['id'];
+}
+
+export interface MessagingIndexEventTypes {
+	read: MessagingMessage['id'][];
+	message: Packed<'MessagingMessage'>;
 }
 
 export interface RoleTimelineEventTypes {
@@ -298,6 +321,18 @@ export type GlobalEvents = {
 		name: `reversiGameStream:${MiReversiGame['id']}`;
 		payload: EventUnionFromDictionary<SerializedAll<ReversiGameEventTypes>>;
 	};
+	messaging: {
+		name: `messagingStream:${MiUser['id']}-${MiUser['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<MessagingEventTypes>>;
+	};
+	groupMessaging: {
+		name: `messagingStream:${UserGroup['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<GroupMessagingEventTypes>>;
+	};
+	messagingIndex: {
+		name: `messagingIndexStream:${MiUser['id']}`;
+		payload: EventUnionFromDictionary<SerializedAll<MessagingIndexEventTypes>>;
+	};
 };
 
 // API event definitions
@@ -376,6 +411,21 @@ export class GlobalEventService {
 	@bindThis
 	public publishRoleTimelineStream<K extends keyof RoleTimelineEventTypes>(roleId: MiRole['id'], type: K, value?: RoleTimelineEventTypes[K]): void {
 		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishMessagingStream<K extends keyof MessagingEventTypes>(userId: MiUser['id'], otherpartyId: MiUser['id'], type: K, value?: MessagingEventTypes[K]): void {
+		this.publish(`messagingStream:${userId}-${otherpartyId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishGroupMessagingStream<K extends keyof GroupMessagingEventTypes>(groupId: UserGroup['id'], type: K, value?: GroupMessagingEventTypes[K]): void {
+		this.publish(`messagingStream:${groupId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishMessagingIndexStream<K extends keyof MessagingIndexEventTypes>(userId: MiUser['id'], type: K, value?: MessagingIndexEventTypes[K]): void {
+		this.publish(`messagingIndexStream:${userId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
 	@bindThis

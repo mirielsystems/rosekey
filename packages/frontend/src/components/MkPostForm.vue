@@ -202,7 +202,6 @@ const recentHashtags = ref(JSON.parse(miLocalStorage.getItem('hashtags') ?? '[]'
 const imeText = ref('');
 const showingOptions = ref(false);
 const textAreaReadOnly = ref(false);
-
 const draftKey = computed((): string => {
 	let key = props.channel ? `channel:${props.channel.id}` : '';
 

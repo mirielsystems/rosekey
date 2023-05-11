@@ -19,6 +19,7 @@ import type { MiEmoji } from '@/models/Emoji.js';
 import type { MiPoll } from '@/models/Poll.js';
 import type { MiPollVote } from '@/models/PollVote.js';
 import { UserKeypairService } from '@/core/UserKeypairService.js';
+import type { MessagingMessage } from '@/models/MessagingMessage.js';
 import { MfmService } from '@/core/MfmService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
@@ -31,7 +32,7 @@ import { IdService } from '@/core/IdService.js';
 import { MetaService } from '../MetaService.js';
 import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
-import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
+import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate, IRead } from './type.js';
 
 @Injectable()
 export class ApRendererService {
@@ -331,7 +332,7 @@ export class ApRendererService {
 	}
 
 	@bindThis
-	public async renderNote(note: MiNote, dive = true): Promise<IPost> {
+	public async renderNote(note: MiNote, dive = true, isTalk = false): Promise<IPost> {
 		const getPromisedFiles = async (ids: string[]): Promise<MiDriveFile[]> => {
 			if (ids.length === 0) return [];
 			const items = await this.driveFilesRepository.findBy({ id: In(ids) });
@@ -440,7 +441,11 @@ export class ApRendererService {
 				},
 			})),
 		} as const : {};
-
+	
+		const asTalk = isTalk ? {
+			_misskey_talk: true,
+		} as const : {};
+	
 		return {
 			id: `${this.config.url}/notes/${note.id}`,
 			type: 'Note',
@@ -465,6 +470,7 @@ export class ApRendererService {
 			sensitive: note.cw != null || files.some(file => file.isSensitive),
 			tag,
 			...asPoll,
+			...asTalk,
 		};
 	}
 
@@ -566,6 +572,15 @@ export class ApRendererService {
 					totalItems: poll.votes[i],
 				},
 			})),
+		};
+	}
+
+	@bindThis
+	public renderRead(user: { id: MiUser['id'] }, message: MessagingMessage): IRead {
+		return {
+			type: 'Read',
+			actor: `${this.config.url}/users/${user.id}`,
+			object: message.uri!,
 		};
 	}
 
@@ -814,6 +829,7 @@ export class ApRendererService {
 					'_misskey_reaction': 'misskey:_misskey_reaction',
 					'_misskey_votes': 'misskey:_misskey_votes',
 					'_misskey_summary': 'misskey:_misskey_summary',
+					'_misskey_talk': 'misskey:_misskey_talk',
 					'isCat': 'misskey:isCat',
 					// Firefish
 					firefish: 'https://joinfirefish.org/ns#',

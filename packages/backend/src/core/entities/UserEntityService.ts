@@ -16,7 +16,7 @@ import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
 import { birthdaySchema, listenbrainzSchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
 import { MiNotification } from '@/models/Notification.js';
-import type { UserGroupJoiningsRepository, UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, AnnouncementReadsRepository, AnnouncementsRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
+import type { UserGroupJoiningsRepository, UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, AnnouncementReadsRepository, AnnouncementsRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository, MessagingMessagesRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
 import { ApPersonService } from '@/core/activitypub/models/ApPersonService.js';
@@ -103,6 +103,9 @@ export class UserEntityService implements OnModuleInit {
 
 		@Inject(DI.announcementReadsRepository)
 		private announcementReadsRepository: AnnouncementReadsRepository,
+
+		@Inject(DI.messagingMessagesRepository)
+		private messagingMessagesRepository: MessagingMessagesRepository,
 
 		@Inject(DI.userGroupJoiningsRepository)
 		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
@@ -213,6 +216,36 @@ export class UserEntityService implements OnModuleInit {
 			isMuted,
 			isRenoteMuted,
 		};
+	}
+
+	@bindThis
+	public async getHasUnreadMessagingMessage(userId: MiUser['id']): Promise<boolean> {
+		const mute = await this.mutingsRepository.findBy({
+			muterId: userId,
+		});
+
+		const joinings = await this.userGroupJoiningsRepository.findBy({ userId: userId });
+
+		const groupQs = Promise.all(joinings.map(j => this.messagingMessagesRepository.createQueryBuilder('message')
+			.where('message.groupId = :groupId', { groupId: j.userGroupId })
+			.andWhere('message.userId != :userId', { userId: userId })
+			.andWhere('NOT (:userId = ANY(message.reads))', { userId: userId })
+			.andWhere('message.id > :joinedAt', { joinedAt: this.idService.parse(j.id) }) // 自分が加入する前の会話については、未読扱いしない
+			.getOne().then(x => x != null)));
+
+		const [withUser, withGroups] = await Promise.all([
+			this.messagingMessagesRepository.count({
+				where: {
+					recipientId: userId,
+					isRead: false,
+					...(mute.length > 0 ? { userId: Not(In(mute.map(x => x.muteeId))) } : {}),
+				},
+				take: 1,
+			}).then((count: number) => count > 0),
+			groupQs,
+		]);
+
+		return withUser || withGroups.some(x => x);
 	}
 
 	@bindThis
@@ -506,6 +539,7 @@ export class UserEntityService implements OnModuleInit {
 				unreadAnnouncements,
 				hasUnreadAntenna: this.getHasUnreadAntenna(user.id),
 				hasUnreadChannel: false, // 後方互換性のため
+				hasUnreadMessagingMessage: this.getHasUnreadMessagingMessage(user.id),
 				hasUnreadNotification: notificationsInfo?.hasUnread, // 後方互換性のため
 				hasPendingReceivedFollowRequest: this.getHasPendingReceivedFollowRequest(user.id),
 				unreadNotificationsCount: notificationsInfo?.unreadCount,

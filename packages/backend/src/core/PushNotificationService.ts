@@ -18,11 +18,16 @@ import { RedisKVCache } from '@/misc/cache.js';
 // Defined also packages/sw/types.ts#L13
 type PushNotificationsTypes = {
 	'notification': Packed<'Notification'>;
+	'unreadMessagingMessage': Packed<'MessagingMessage'>;
 	'unreadAntennaNote': {
 		antenna: { id: string, name: string };
 		note: Packed<'Note'>;
 	};
 	'readAllNotifications': undefined;
+	'readAllMessagingMessages': undefined;
+	'readAllMessagingMessagesOfARoom': { userId: string } | { groupId: string };
+	'readAntenna': { antennaId: string };
+	'readAllAntennas': undefined;
 };
 
 // Reduce length because push message servers have character limits
@@ -44,6 +49,7 @@ function truncateBody<T extends keyof PushNotificationsTypes>(type: T, body: Pus
 			},
 		} : {}),
 	};
+
 }
 
 @Injectable()
@@ -87,6 +93,10 @@ export class PushNotificationService implements OnApplicationShutdown {
 		for (const subscription of subscriptions) {
 			if ([
 				'readAllNotifications',
+				'readAllMessagingMessages',
+				'readAllMessagingMessagesOfARoom',
+				'readAntenna',
+				'readAllAntennas',
 			].includes(type) && !subscription.sendReadMessage) continue;
 
 			const pushSubscription = {

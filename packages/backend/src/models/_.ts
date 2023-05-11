@@ -74,6 +74,7 @@ import { MiUserListFavorite } from '@/models/UserListFavorite.js';
 import { NoteEdit } from '@/models/NoteEdit.js';
 import { MiBubbleGameRecord } from '@/models/BubbleGameRecord.js';
 import { MiReversiGame } from '@/models/ReversiGame.js';
+import { MessagingMessage } from '@/models/MessagingMessage.js';
 
 import type { Repository } from 'typeorm';
 
@@ -149,6 +150,7 @@ export {
 	NoteEdit,
 	MiBubbleGameRecord,
 	MiReversiGame,
+	MessagingMessage,
 };
 
 export type AbuseUserReportsRepository = Repository<MiAbuseUserReport>;
@@ -222,3 +224,4 @@ export type UserMemoRepository = Repository<MiUserMemo>;
 export type NoteEditRepository = Repository<NoteEdit>;
 export type BubbleGameRecordsRepository = Repository<MiBubbleGameRecord>;
 export type ReversiGamesRepository = Repository<MiReversiGame>;
+export type MessagingMessagesRepository = Repository<MessagingMessage>;

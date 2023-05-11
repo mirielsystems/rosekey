@@ -2188,6 +2188,15 @@ export type paths = {
      */
     post: operations['i/pin'];
   };
+  '/i/read-all-messaging-messages': {
+    /**
+     * i/read-all-messaging-messages
+     * @description No description provided.
+     *
+     * **Credential required**: *Yes* / **Permission**: *write:account*
+     */
+    post: operations['i/read-all-messaging-messages'];
+  };
   '/i/read-all-unread-notes': {
     /**
      * i/read-all-unread-notes
@@ -4002,6 +4011,19 @@ export type components = {
       userIds?: string[];
       isPublic: boolean;
     };
+    UserGroup: {
+      /**
+       * Format: id
+       * @example xxxxxxxxxx
+       */
+      id: string;
+      /** Format: date-time */
+      createdAt: string;
+      name: string;
+      /** Format: id */
+      ownerId: string;
+      userIds?: string[];
+    };
     Ad: {
       /**
        * Format: id
@@ -4049,6 +4071,30 @@ export type components = {
       permission: string[];
       secret?: string;
       isAuthorized?: boolean;
+    };
+    MessagingMessage: {
+      /**
+       * Format: id
+       * @example xxxxxxxxxx
+       */
+      id: string;
+      /** Format: date-time */
+      createdAt: string;
+      /** Format: id */
+      userId: string;
+      user?: components['schemas']['UserLite'];
+      text: string | null;
+      /** Format: id */
+      fileId?: string | null;
+      file?: components['schemas']['DriveFile'] | null;
+      /** Format: id */
+      recipientId: string | null;
+      recipient?: components['schemas']['UserLite'] | null;
+      /** Format: id */
+      groupId: string | null;
+      group?: components['schemas']['UserGroup'] | null;
+      isRead?: boolean;
+      reads?: string[];
     };
     Note: {
       /**
@@ -18461,6 +18507,50 @@ export type operations = {
     };
   };
   /**
+   * i/read-all-messaging-messages
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *write:account*
+   */
+  'i/read-all-messaging-messages': {
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
    * i/read-all-unread-notes
    * @description No description provided.
    *
@@ -20106,6 +20196,301 @@ export type operations = {
             remaining: number | null;
           };
         };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+   /**
+   * messaging/history
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *read:messaging*
+   */
+   messaging___history: {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** @default 10 */
+          limit?: number;
+          /** @default false */
+          group?: boolean;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['MessagingMessage'][];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * messaging/messages
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *read:messaging*
+   */
+  'messaging/messages': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          userId?: string;
+          /** Format: misskey:id */
+          groupId?: string;
+          /** @default 10 */
+          limit?: number;
+          /** Format: misskey:id */
+          sinceId?: string;
+          /** Format: misskey:id */
+          untilId?: string;
+          /** @default true */
+          markAsRead?: boolean;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['MessagingMessage'][];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * messaging/messages/create
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *write:messaging*
+   */
+  'messaging/messages/create': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          userId?: string;
+          /** Format: misskey:id */
+          groupId?: string;
+          text?: string | null;
+          /** Format: misskey:id */
+          fileId?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['MessagingMessage'];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description To many requests */
+      429: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * messaging/messages/delete
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *write:messaging*
+   */
+  'messaging/messages/delete': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          messageId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description To many requests */
+      429: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * messaging/messages/read
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *write:messaging*
+   */
+  messaging___messages___read: {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          messageId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
       };
       /** @description Client error */
       400: {

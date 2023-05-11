@@ -121,6 +121,7 @@ export interface IPost extends IObject {
 	quoteUrl?: string;
 	quoteUri?: string;
 	updated?: string;
+	_misskey_talk?: boolean;
 }
 
 export interface IQuestion extends IObject {

@@ -232,6 +232,7 @@ import * as ep___i_notificationsGrouped from './endpoints/i/notifications-groupe
 import * as ep___i_pageLikes from './endpoints/i/page-likes.js';
 import * as ep___i_pages from './endpoints/i/pages.js';
 import * as ep___i_pin from './endpoints/i/pin.js';
+import * as ep___i_readAllMessagingMessages from './endpoints/i/read-all-messaging-messages.js';
 import * as ep___i_readAllUnreadNotes from './endpoints/i/read-all-unread-notes.js';
 import * as ep___i_readAnnouncement from './endpoints/i/read-announcement.js';
 import * as ep___i_regenerateToken from './endpoints/i/regenerate-token.js';
@@ -260,6 +261,11 @@ import * as ep___invite_create from './endpoints/invite/create.js';
 import * as ep___invite_delete from './endpoints/invite/delete.js';
 import * as ep___invite_list from './endpoints/invite/list.js';
 import * as ep___invite_limit from './endpoints/invite/limit.js';
+import * as ep___messaging_history from './endpoints/messaging/history.js';
+import * as ep___messaging_messages from './endpoints/messaging/messages.js';
+import * as ep___messaging_messages_create from './endpoints/messaging/messages/create.js';
+import * as ep___messaging_messages_delete from './endpoints/messaging/messages/delete.js';
+import * as ep___messaging_messages_read from './endpoints/messaging/messages/read.js';
 import * as ep___meta from './endpoints/meta.js';
 import * as ep___emojis from './endpoints/emojis.js';
 import * as ep___emoji from './endpoints/emoji.js';
@@ -630,6 +636,7 @@ const $i_notificationsGrouped: Provider = { provide: 'ep:i/notifications-grouped
 const $i_pageLikes: Provider = { provide: 'ep:i/page-likes', useClass: ep___i_pageLikes.default };
 const $i_pages: Provider = { provide: 'ep:i/pages', useClass: ep___i_pages.default };
 const $i_pin: Provider = { provide: 'ep:i/pin', useClass: ep___i_pin.default };
+const $i_readAllMessagingMessages: Provider = { provide: 'ep:i/read-all-messaging-messages', useClass: ep___i_readAllMessagingMessages.default };
 const $i_readAllUnreadNotes: Provider = { provide: 'ep:i/read-all-unread-notes', useClass: ep___i_readAllUnreadNotes.default };
 const $i_readAnnouncement: Provider = { provide: 'ep:i/read-announcement', useClass: ep___i_readAnnouncement.default };
 const $i_regenerateToken: Provider = { provide: 'ep:i/regenerate-token', useClass: ep___i_regenerateToken.default };
@@ -658,6 +665,11 @@ const $invite_create: Provider = { provide: 'ep:invite/create', useClass: ep___i
 const $invite_delete: Provider = { provide: 'ep:invite/delete', useClass: ep___invite_delete.default };
 const $invite_list: Provider = { provide: 'ep:invite/list', useClass: ep___invite_list.default };
 const $invite_limit: Provider = { provide: 'ep:invite/limit', useClass: ep___invite_limit.default };
+const $messaging_history: Provider = { provide: 'ep:messaging/history', useClass: ep___messaging_history.default };
+const $messaging_messages: Provider = { provide: 'ep:messaging/messages', useClass: ep___messaging_messages.default };
+const $messaging_messages_create: Provider = { provide: 'ep:messaging/messages/create', useClass: ep___messaging_messages_create.default };
+const $messaging_messages_delete: Provider = { provide: 'ep:messaging/messages/delete', useClass: ep___messaging_messages_delete.default };
+const $messaging_messages_read: Provider = { provide: 'ep:messaging/messages/read', useClass: ep___messaging_messages_read.default };
 const $meta: Provider = { provide: 'ep:meta', useClass: ep___meta.default };
 const $emojis: Provider = { provide: 'ep:emojis', useClass: ep___emojis.default };
 const $emoji: Provider = { provide: 'ep:emoji', useClass: ep___emoji.default };
@@ -1032,6 +1044,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$i_pageLikes,
 		$i_pages,
 		$i_pin,
+		$i_readAllMessagingMessages,
 		$i_readAllUnreadNotes,
 		$i_readAnnouncement,
 		$i_regenerateToken,
@@ -1060,6 +1073,11 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$invite_delete,
 		$invite_list,
 		$invite_limit,
+		$messaging_history,
+		$messaging_messages,
+		$messaging_messages_create,
+		$messaging_messages_delete,
+		$messaging_messages_read,
 		$meta,
 		$emojis,
 		$emoji,
@@ -1428,6 +1446,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$i_pageLikes,
 		$i_pages,
 		$i_pin,
+		$i_readAllMessagingMessages,
 		$i_readAllUnreadNotes,
 		$i_readAnnouncement,
 		$i_regenerateToken,
@@ -1456,6 +1475,11 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$invite_delete,
 		$invite_list,
 		$invite_limit,
+		$messaging_history,
+		$messaging_messages,
+		$messaging_messages_create,
+		$messaging_messages_delete,
+		$messaging_messages_read,
 		$meta,
 		$emojis,
 		$emoji,

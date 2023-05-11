@@ -74,6 +74,7 @@ globalThis.addEventListener('push', ev => {
 		switch (data.type) {
 			// case 'driveFileCreated':
 			case 'notification':
+			case 'unreadMessagingMessage':
 			case 'unreadAntennaNote':
 				// 1日以上経過している場合は無視
 				if ((new Date()).getTime() - data.dateTime > 1000 * 60 * 60 * 24) break;
@@ -139,9 +140,6 @@ globalThis.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEv
 					case 'showFollowRequests':
 						client = await swos.openClient('push', '/my/follow-requests', loginId);
 						break;
-					case 'edited':
-						if ('note' in data.body) client = await swos.openPost({ reply: data.body.note }, loginId);
-						break;
 					default:
 						switch (data.body.type) {
 							case 'receiveFollowRequest':
@@ -162,6 +160,9 @@ globalThis.addEventListener('notificationclick', (ev: ServiceWorkerGlobalScopeEv
 								break;
 						}
 				}
+				break;
+			case 'unreadMessagingMessage':
+				client = await swos.openChat(data.body, loginId);
 				break;
 			case 'unreadAntennaNote':
 				client = await swos.openAntenna(data.body.antenna.id, loginId);

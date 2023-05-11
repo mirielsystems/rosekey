@@ -82,6 +82,7 @@ import { MiReversiGame } from '@/models/ReversiGame.js';
 import { UserGroup } from '@/models/UserGroup.js';
 import { UserGroupInvitation } from '@/models/UserGroupInvitation.js';
 import { UserGroupJoining } from '@/models/UserGroupJoining.js';
+import { MessagingMessage } from '@/models/MessagingMessage.js';
 
 import { Config } from '@/config.js';
 import MisskeyLogger from '@/logger.js';
@@ -202,6 +203,7 @@ export const entities = [
 	UserGroup,
 	UserGroupJoining,
 	UserGroupInvitation,
+	MessagingMessage,
 	...charts,
 ];
 
