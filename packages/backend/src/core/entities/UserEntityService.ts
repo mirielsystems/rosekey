@@ -15,7 +15,7 @@ import type { Promiseable } from '@/misc/prelude/await-all.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import { USER_ACTIVE_THRESHOLD, USER_ONLINE_THRESHOLD } from '@/const.js';
 import type { MiLocalUser, MiPartialLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
-import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema } from '@/models/User.js';
+import { birthdaySchema, descriptionSchema, localUsernameSchema, locationSchema, nameSchema, passwordSchema, listenbrainzSchema } from '@/models/User.js';
 import type { UsersRepository, UserSecurityKeysRepository, FollowingsRepository, FollowRequestsRepository, BlockingsRepository, MutingsRepository, DriveFilesRepository, NoteUnreadsRepository, UserNotePiningsRepository, UserProfilesRepository, AnnouncementReadsRepository, AnnouncementsRepository, MessagingMessagesRepository, UserGroupJoiningsRepository, MiUserProfile, RenoteMutingsRepository, UserMemoRepository } from '@/models/_.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
@@ -137,6 +137,7 @@ export class UserEntityService implements OnModuleInit {
 	public validateDescription = ajv.compile(descriptionSchema);
 	public validateLocation = ajv.compile(locationSchema);
 	public validateBirthday = ajv.compile(birthdaySchema);
+	public validateListenBrainz = ajv.compile(listenbrainzSchema);
 	//#endregion
 
 	public isLocalUser = isLocalUser;
@@ -435,6 +436,7 @@ export class UserEntityService implements OnModuleInit {
 				description: profile!.description,
 				location: profile!.location,
 				birthday: profile!.birthday,
+				listenbrainz: profile!.listenbrainz,
 				lang: profile!.lang,
 				fields: profile!.fields,
 				verifiedLinks: profile!.verifiedLinks,
