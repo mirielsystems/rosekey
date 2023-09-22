@@ -228,7 +228,7 @@ function calcAge(birthdate: string): number {
 const XFiles = defineAsyncComponent(() => import('./index.files.vue'));
 const XActivity = defineAsyncComponent(() => import('./index.activity.vue'));
 const XTimeline = defineAsyncComponent(() => import('./index.timeline.vue'));
-const XListenBrainz = defineAsyncComponent(() => import("./index.listenbrainz.vue"));;
+const XListenBrainz = defineAsyncComponent(() => import("./index.listenbrainz.vue"));
 
 const props = withDefaults(defineProps<{
 	user: Misskey.entities.UserDetailed;
@@ -271,7 +271,7 @@ if (props.user.listenbrainz) {
 		if (data.payload.listens && data.payload.listens.length !== 0) {
 			listenbrainzdata = true;
 		}
-	} catch(err) {
+	} catch (err) {
 		listenbrainzdata = false;
 	}
 }
