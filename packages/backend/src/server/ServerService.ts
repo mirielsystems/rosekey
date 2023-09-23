@@ -31,6 +31,7 @@ import { WellKnownServerService } from './WellKnownServerService.js';
 import { FileServerService } from './FileServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
 import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
+import { MastodonApiServerService } from './api/mastodon/MastodonApiServerService.js';
 import { OAuth2ProviderService } from './oauth/OAuth2ProviderService.js';
 import { StripeWebhookServerService } from "@/server/StripeWebhookServerService.js";
 
@@ -58,6 +59,7 @@ export class ServerService implements OnApplicationShutdown {
 		private userEntityService: UserEntityService,
 		private apiServerService: ApiServerService,
 		private openApiServerService: OpenApiServerService,
+		private mastodonApiServerService: MastodonApiServerService,
 		private streamingApiServerService: StreamingApiServerService,
 		private activityPubServerService: ActivityPubServerService,
 		private wellKnownServerService: WellKnownServerService,
@@ -105,6 +107,7 @@ export class ServerService implements OnApplicationShutdown {
 
 		fastify.register(this.apiServerService.createServer, { prefix: '/api' });
 		fastify.register(this.openApiServerService.createServer);
+		fastify.register(this.mastodonApiServerService.createServer, { prefix: '/api' });
 		fastify.register(this.fileServerService.createServer);
 		fastify.register(this.activityPubServerService.createServer);
 		fastify.register(this.nodeinfoServerService.createServer);
