@@ -62,6 +62,7 @@ tsdoc-metadata.json
 
 # Sharkey
 /packages/megalodon/lib
+/packages/megalodon-bk
 
 # blender backups
 *.blend1
