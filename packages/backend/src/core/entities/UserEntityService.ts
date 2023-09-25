@@ -511,11 +511,12 @@ export class UserEntityService implements OnModuleInit {
 				opacity: ud.opacity || undefined,
 				url: decorations.find(d => d.id === ud.id)!.url,
 			}))) : [],
-			isBot: user.isBot,
-			isCat: user.isCat,
+			isBot: user.isBot ?? false,
+			isCat: user.isCat ?? false,
 			isIndexable: user.isIndexable,
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
+			createdAt: this.idService.parse(user.id).date.toISOString(),
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
@@ -541,7 +542,6 @@ export class UserEntityService implements OnModuleInit {
 					? Promise.all(user.alsoKnownAs.map(uri => this.apPersonService.fetchPerson(uri).then(user => user?.id).catch(() => null)))
 						.then(xs => xs.length === 0 ? null : xs.filter(isNotNull))
 					: null,
-				createdAt: this.idService.parse(user.id).date.toISOString(),
 				updatedAt: user.updatedAt ? user.updatedAt.toISOString() : null,
 				lastFetchedAt: user.lastFetchedAt ? user.lastFetchedAt.toISOString() : null,
 				bannerUrl: user.bannerUrl,
