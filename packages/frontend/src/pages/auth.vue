@@ -77,9 +77,9 @@ function accepted() {
 			state.value = "fetch-session-error";
 			throw new Error("Callback URI doesn't match registered app");
 		}
-		const callbackUrl = new URL(redirectUri);
-		callbackUrl.searchParams.append('code', session.value.token);
-		if (getUrlParams().state) callbackUrl.searchParams.append('state', getUrlParams().state);
+		const callbackUrl = session.value.app.callbackUrl.includes('elk.zone') ? new URL(session.value.app.callbackUrl) : new URL(redirectUri);
+		callbackUrl.searchParams.append("code", session.value.token);
+		if (getUrlParams().state) callbackUrl.searchParams.append("state", getUrlParams().state);
 		location.href = callbackUrl.toString();
 	} else if (session.value && session.value.app.callbackUrl) {
 		const url = new URL(session.value.app.callbackUrl);
