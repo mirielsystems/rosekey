@@ -517,7 +517,6 @@ export class UserEntityService implements OnModuleInit {
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
 			createdAt: this.idService.parse(user.id).date.toISOString(),
-			description: profile!.description,
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
