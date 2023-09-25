@@ -473,7 +473,7 @@ export class UserEntityService implements OnModuleInit {
 			}
 		}
 
-		const mastoapi = opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id });
+		const mastoapi = !opts.detail ? opts.userProfile ?? await this.userProfilesRepository.findOneByOrFail({ userId: user.id }) : null;
 
 		const followingCount = profile == null ? null :
 			(profile.followingVisibility === 'public') || isMe ? user.followingCount :
@@ -519,7 +519,7 @@ export class UserEntityService implements OnModuleInit {
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
 			createdAt: this.idService.parse(user.id).date.toISOString(),
-			description: mastoapi!.description,
+			description: mastoapi ? mastoapi.description : profile ? profile.description : '',
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
