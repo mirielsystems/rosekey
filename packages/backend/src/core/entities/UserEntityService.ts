@@ -517,6 +517,7 @@ export class UserEntityService implements OnModuleInit {
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
 			createdAt: this.idService.parse(user.id).date.toISOString(),
+			description: profile!.description,
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
 				softwareName: instance.softwareName,
@@ -525,6 +526,9 @@ export class UserEntityService implements OnModuleInit {
 				faviconUrl: instance.faviconUrl,
 				themeColor: instance.themeColor,
 			} : undefined) : undefined,
+			followersCount: followersCount ?? '?',
+			followingCount: followingCount ?? '?',
+			notesCount: user.notesCount,
 			emojis: this.customEmojiService.populateEmojis(user.emojis, user.host),
 			onlineStatus: this.getOnlineStatus(user),
 			// パフォーマンス上の理由でローカルユーザーのみ
@@ -557,9 +561,6 @@ export class UserEntityService implements OnModuleInit {
 				lang: profile!.lang,
 				fields: profile!.fields,
 				verifiedLinks: profile!.verifiedLinks,
-				followersCount: followersCount ?? '?',
-				followingCount: followingCount ?? '?',
-				notesCount: user.notesCount,
 				pinnedNoteIds: pins.map(pin => pin.noteId),
 				pinnedNotes: this.noteEntityService.packMany(pins.map(pin => pin.note!), me, {
 					detail: true,
