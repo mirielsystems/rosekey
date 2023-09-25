@@ -342,7 +342,9 @@ export class NoteEntityService implements OnModuleInit {
 			updatedAtHistory: note.updatedAtHistory ? note.updatedAtHistory.map(x => x.toISOString()) : undefined,
 			noteEditHistory: note.noteEditHistory.length ? note.noteEditHistory : undefined,
 			userId: note.userId,
-			user: this.userEntityService.pack(note.user ?? note.userId, me),
+			user: this.userEntityService.pack(note.user ?? note.userId, me, {
+				detail: true,
+			}),
 			text: text,
 			cw: note.cw,
 			visibility: note.visibility,
