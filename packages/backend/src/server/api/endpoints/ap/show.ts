@@ -28,7 +28,7 @@ export const meta = {
 	kind: 'read:account',
 
 	limit: {
-		duration: ms('1hour'),
+		duration: ms('1minute'),
 		max: 30,
 	},
 
