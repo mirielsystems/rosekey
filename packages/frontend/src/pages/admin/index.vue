@@ -73,6 +73,16 @@ os.api('admin/abuse-user-reports', {
 	if (reports.length > 0) thereIsUnresolvedAbuseReport = true;
 });
 
+fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases', {
+	method: 'GET',
+}).then(res => res.json())
+	.then(async res => {
+		const meta = await os.api('admin/meta');
+		if (meta.enableReceivePrerelease) releasesCherryPick = res;
+		else releasesCherryPick = res.filter(x => x.prerelease === false);
+		if ((version < releasesCherryPick[0].tag_name) && (meta.skipCherryPickVersion < releasesCherryPick[0].tag_name)) updateAvailable = true;
+	});
+
 const NARROW_THRESHOLD = 600;
 const ro = new ResizeObserver((entries, observer) => {
 	if (entries.length === 0) return;
@@ -237,16 +247,6 @@ onMounted(() => {
 	if (currentPage?.route.name == null && !narrow) {
 		router.push('/admin/overview');
 	}
-
-	fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases', {
-		method: 'GET',
-	}).then(res => res.json())
-		.then(async res => {
-			const meta = await os.api('admin/meta');
-			if (meta.enableReceivePrerelease) releasesCherryPick = res;
-			else releasesCherryPick = res.filter(x => x.prerelease === false);
-			if ((version < releasesCherryPick[0].tag_name) && (meta.skipCherryPickVersion < releasesCherryPick[0].tag_name)) updateAvailable = true;
-		});
 });
 
 onActivated(() => {

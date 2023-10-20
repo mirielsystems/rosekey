@@ -70,7 +70,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted, ref, watch } from 'vue';
+import { computed, defineAsyncComponent, ref, watch } from 'vue';
 import { openInstanceMenu } from '@/ui/_common_/common.js';
 import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
@@ -93,6 +93,25 @@ const otherMenuItemIndicated = computed(() => {
 });
 let controlPanelIndicated = $ref(false);
 let releasesCherryPick = $ref(null);
+
+if ($i.isAdmin || $i.isModerator) {
+	os.api('admin/abuse-user-reports', {
+		state: 'unresolved',
+		limit: 1,
+	}).then(reports => {
+		if (reports.length > 0) controlPanelIndicated = true;
+	});
+
+	fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases', {
+		method: 'GET',
+	}).then(res => res.json())
+		.then(async res => {
+			const meta = await os.api('admin/meta');
+			if (meta.enableReceivePrerelease) releasesCherryPick = res;
+			else releasesCherryPick = res.filter(x => x.prerelease === false);
+			if ((version < releasesCherryPick[0].tag_name) && (meta.skipCherryPickVersion < releasesCherryPick[0].tag_name)) controlPanelIndicated = true;
+		});
+}
 
 const calcViewState = () => {
 	iconOnly.value = (window.innerWidth <= 1279) || (defaultStore.state.menuDisplay === 'sideIcon');
@@ -122,27 +141,6 @@ function more(ev: MouseEvent) {
 function openProfile() {
 	mainRouter.push(`/@${$i.username}`);
 }
-
-onMounted(() => {
-	if ($i.isAdmin || $i.isModerator) {
-		os.api('admin/abuse-user-reports', {
-			state: 'unresolved',
-			limit: 1,
-		}).then(reports => {
-			if (reports.length > 0) controlPanelIndicated = true;
-		});
-
-		fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases', {
-			method: 'GET',
-		}).then(res => res.json())
-			.then(async res => {
-				const meta = await os.api('admin/meta');
-				if (meta.enableReceivePrerelease) releasesCherryPick = res;
-				else releasesCherryPick = res.filter(x => x.prerelease === false);
-				if ((version < releasesCherryPick[0].tag_name) && (meta.skipCherryPickVersion < releasesCherryPick[0].tag_name)) controlPanelIndicated = true;
-			});
-	}
-});
 </script>
 
 <style lang="scss" module>

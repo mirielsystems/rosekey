@@ -381,6 +381,9 @@ export type LiteInstanceMetadata = {
 	notesPerOneAd: number;
 	translatorAvailable: boolean;
 	serverRules: string[];
+	enableReceivePrerelease: boolean;
+	skipVersion: boolean;
+	skipCherryPickVersion: string | null;
 };
 
 export type DetailedInstanceMetadata = LiteInstanceMetadata & {
