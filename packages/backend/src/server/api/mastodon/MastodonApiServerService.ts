@@ -3,16 +3,18 @@ import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
-import type { NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { convertAccount, convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
+import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
+import { toSingleLast } from '@/misc/prelude/array.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -31,10 +33,13 @@ export class MastodonApiServerService {
         private notesRepository: NotesRepository,
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
+		@Inject(DI.accessTokensRepository)
+		private accessTokensRepository: AccessTokensRepository,
         @Inject(DI.config)
         private config: Config,
         private metaService: MetaService,
 		private userEntityService: UserEntityService,
+		private driveService: DriveService,
 		private mastoConverter: MastoConverters,
 	) { }
 
@@ -243,16 +248,46 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.patch('/v1/accounts/update_credentials', { preHandler: upload.none() }, async (_request, reply) => {
+		fastify.patch('/v1/accounts/update_credentials', { preHandler: upload.any() }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens); // we are using this here, because in private mode some info isnt
 			// displayed without being logged in
 			try {
+				if (_request.files.length > 0) {
+					const tokeninfo = await this.accessTokensRepository.findOneBy({ token: accessTokens });
+					console.error(tokeninfo);
+					if (tokeninfo && (_request.files as any)['avatar']) {
+						const file = toSingleLast((_request.files as any)['avatar']);
+						const user = await this.usersRepository.findOneBy({ id: tokeninfo.userId });
+						const upload = await this.driveService.addFile({
+							user: { id: tokeninfo.userId, host: user ? user.host : null },
+							path: file.path,
+							name: file.originalname !== null && file.originalname !== 'file' ? file.originalname : undefined,
+							sensitive: false,				
+						});
+						if (upload.type.startsWith('image/')) {
+							(_request.body as any).avatar = upload.id;
+						}
+					}
+					if (tokeninfo && (_request.files as any)['header']) {
+						const file = toSingleLast((_request.files as any)['header']);				
+						const user = await this.usersRepository.findOneBy({ id: tokeninfo.userId });
+						const upload = await this.driveService.addFile({
+							user: { id: tokeninfo.userId, host: user ? user.host : null },
+							path: file.path,
+							name: file.originalname !== null && file.originalname !== 'file' ? file.originalname : undefined,
+							sensitive: false,				
+						});
+						if (upload.type.startsWith('image/')) {
+							(_request.body as any).header = upload.id;
+						}
+					}
+				}
 				const data = await client.updateCredentials(_request.body!);
 				reply.send(convertAccount(data.data));
 			} catch (e: any) {
-				/* console.error(e); */
+				//console.error(e);
 				reply.code(401).send(e.response.data);
 			}
 		});
