@@ -9,7 +9,7 @@ import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { convertAccount, convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList } from './converters.js';
+import { convertAccount, convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
@@ -35,6 +35,7 @@ export class MastodonApiServerService {
         private config: Config,
         private metaService: MetaService,
 		private userEntityService: UserEntityService,
+		private mastoConverter: MastoConverters,
 	) { }
 
 	@bindThis
@@ -234,7 +235,7 @@ export class MastodonApiServerService {
 			const client = getClient(BASE_URL, accessTokens); // we are using this here, because in private mode some info isnt
 			// displayed without being logged in
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.verifyCredentials());
 			} catch (e: any) {
 				/* console.error(e); */
@@ -284,7 +285,7 @@ export class MastodonApiServerService {
 					ids = [ids];
 				}
 				users = ids;
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getRelationships(users));
 			} catch (e: any) {
 				/* console.error(e); */
@@ -317,7 +318,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getStatuses());
 			} catch (e: any) {
 				/* console.error(e);
@@ -345,7 +346,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getFollowers());
 			} catch (e: any) {
 				/* console.error(e);
@@ -359,7 +360,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getFollowing());
 			} catch (e: any) {
 				/* console.error(e);
@@ -387,7 +388,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.addFollow());
 			} catch (e: any) {
 				/* console.error(e);
@@ -401,7 +402,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.rmFollow());
 			} catch (e: any) {
 				/* console.error(e);
@@ -415,7 +416,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.addBlock());
 			} catch (e: any) {
 				/* console.error(e);
@@ -429,7 +430,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.rmBlock());
 			} catch (e: any) {
 				/* console.error(e);
@@ -443,7 +444,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.addMute());
 			} catch (e: any) {
 				/* console.error(e);
@@ -457,7 +458,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.rmMute());
 			} catch (e: any) {
 				/* console.error(e);
@@ -485,7 +486,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getBookmarks());
 			} catch (e: any) {
 				/* console.error(e);
@@ -499,7 +500,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getFavourites());
 			} catch (e: any) {
 				/* console.error(e);
@@ -513,7 +514,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getMutes());
 			} catch (e: any) {
 				/* console.error(e);
@@ -527,7 +528,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.getBlocks());
 			} catch (e: any) {
 				/* console.error(e);
@@ -555,7 +556,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.acceptFollow());
 			} catch (e: any) {
 				/* console.error(e);
@@ -569,7 +570,7 @@ export class MastodonApiServerService {
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
 			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.config, this.usersRepository, this.notesRepository, this.noteEditRepository, this.userEntityService);
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
 				reply.send(await account.rejectFollow());
 			} catch (e: any) {
 				/* console.error(e);
@@ -754,7 +755,7 @@ export class MastodonApiServerService {
 		//#endregion
 
 		//#region Timelines
-		const TLEndpoint = new ApiTimelineMastodon(fastify, this.config, this.usersRepository, this.notesRepository, this.userProfilesRepository, this.userEntityService);
+		const TLEndpoint = new ApiTimelineMastodon(fastify, this.config, this.mastoConverter);
 
 		// GET Endpoints
 		TLEndpoint.getTL();
@@ -779,7 +780,7 @@ export class MastodonApiServerService {
 		//#endregion
 
 		//#region Status
-		const NoteEndpoint = new ApiStatusMastodon(fastify, this.config, this.usersRepository, this.notesRepository, this.userProfilesRepository, this.userEntityService);
+		const NoteEndpoint = new ApiStatusMastodon(fastify, this.mastoConverter);
 
 		// GET Endpoints
 		NoteEndpoint.getStatus();
