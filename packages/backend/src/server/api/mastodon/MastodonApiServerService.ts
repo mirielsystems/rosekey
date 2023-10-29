@@ -259,9 +259,8 @@ export class MastodonApiServerService {
 					console.error(tokeninfo);
 					if (tokeninfo && (_request.files as any)['avatar']) {
 						const file = toSingleLast((_request.files as any)['avatar']);
-						const user = await this.usersRepository.findOneBy({ id: tokeninfo.userId });
 						const upload = await this.driveService.addFile({
-							user: { id: tokeninfo.userId, host: user ? user.host : null },
+							user: { id: tokeninfo.userId, host: null },
 							path: file.path,
 							name: file.originalname !== null && file.originalname !== 'file' ? file.originalname : undefined,
 							sensitive: false,				
@@ -272,9 +271,8 @@ export class MastodonApiServerService {
 					}
 					if (tokeninfo && (_request.files as any)['header']) {
 						const file = toSingleLast((_request.files as any)['header']);				
-						const user = await this.usersRepository.findOneBy({ id: tokeninfo.userId });
 						const upload = await this.driveService.addFile({
-							user: { id: tokeninfo.userId, host: user ? user.host : null },
+							user: { id: tokeninfo.userId, host: null },
 							path: file.path,
 							name: file.originalname !== null && file.originalname !== 'file' ? file.originalname : undefined,
 							sensitive: false,				
