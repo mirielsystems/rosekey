@@ -56,6 +56,7 @@ export class MiUserProfile {
 	public fields: {
 		name: string;
 		value: string;
+		verified_at: string;
 	}[];
 
 	@Column('varchar', {
