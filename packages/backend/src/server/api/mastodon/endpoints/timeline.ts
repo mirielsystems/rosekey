@@ -34,11 +34,9 @@ export function argsToBools(q: ParsedUrlQuery) {
 
 export class ApiTimelineMastodon {
 	private fastify: FastifyInstance;
-	private mastoconverter: MastoConverters;
 
-	constructor(fastify: FastifyInstance, config: Config, usersRepository: UsersRepository, notesRepository: NotesRepository, userEntityService: UserEntityService) {
+	constructor(fastify: FastifyInstance, config: Config, private mastoconverter: MastoConverters) {
 		this.fastify = fastify;
-		this.mastoconverter = new MastoConverters(config, usersRepository, notesRepository, userEntityService);
 	}
 
 	public async getTL() {

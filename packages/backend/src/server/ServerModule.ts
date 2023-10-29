@@ -25,6 +25,7 @@ import { SignupApiService } from './api/SignupApiService.js';
 import { StreamingApiServerService } from './api/StreamingApiServerService.js';
 import { OpenApiServerService } from './api/openapi/OpenApiServerService.js';
 import { ClientServerService } from './web/ClientServerService.js';
+import { MastoConverters } from './api/mastodon/converters.js';
 import { FeedService } from './web/FeedService.js';
 import { UrlPreviewService } from './web/UrlPreviewService.js';
 import { ClientLoggerService } from './web/ClientLoggerService.js';
@@ -98,6 +99,7 @@ import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js
 		MastodonApiServerService,
 		OAuth2ProviderService,
 		StripeWebhookServerService,
+		MastoConverters,
 	],
 	exports: [
 		ServerService,
