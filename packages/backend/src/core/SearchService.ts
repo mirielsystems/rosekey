@@ -160,6 +160,7 @@ export class SearchService {
 	public async searchNote(q: string, me: MiUser | null, opts: {
 		userId?: MiNote['userId'] | null;
 		channelId?: MiNote['channelId'] | null;
+		order?: string | null;
 		host?: string | null;
 		origin?: string | null;
 	}, pagination: {
@@ -189,7 +190,7 @@ export class SearchService {
 				}
 			}
 			const res = await this.meilisearchNoteIndex!.search(q, {
-				sort: ['createdAt:desc'],
+				sort: [`createdAt:${opts.order ? opts.order : 'desc'}`],
 				matchingStrategy: 'all',
 				attributesToRetrieve: ['id', 'createdAt'],
 				filter: compileQuery(filter),
