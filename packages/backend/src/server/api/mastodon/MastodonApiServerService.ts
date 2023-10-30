@@ -256,27 +256,27 @@ export class MastodonApiServerService {
 			try {
 				if (_request.files.length > 0 && accessTokens) {
 					const tokeninfo = await this.accessTokensRepository.findOneBy({ token: accessTokens.replace('Bearer ', '') });
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const avatar = (_request.files as any).find((obj: any) => {
 						return obj.fieldname === 'avatar';
 					});
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const header = (_request.files as any).find((obj: any) => {
 						return obj.fieldname === 'header';
 					});
 
 					if (tokeninfo && avatar) {
-						console.error('avatar');
 						const upload = await this.driveService.addFile({
 							user: { id: tokeninfo.userId, host: null },
 							path: avatar.path,
 							name: avatar.originalname !== null && avatar.originalname !== 'file' ? avatar.originalname : undefined,
 							sensitive: false,				
 						});
-						console.error(upload);
 						if (upload.type.startsWith('image/')) {
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
 							(_request.body as any).avatar = upload.id;
 						}
-					}
-					if (tokeninfo && (_request.files as any)['header']) {			
+					} else if (tokeninfo && header) {			
 						const upload = await this.driveService.addFile({
 							user: { id: tokeninfo.userId, host: null },
 							path: header.path,
@@ -284,6 +284,7 @@ export class MastodonApiServerService {
 							sensitive: false,				
 						});
 						if (upload.type.startsWith('image/')) {
+							// eslint-disable-next-line @typescript-eslint/no-explicit-any
 							(_request.body as any).header = upload.id;
 						}
 					}
