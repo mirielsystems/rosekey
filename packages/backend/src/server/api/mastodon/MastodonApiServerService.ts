@@ -291,7 +291,9 @@ export class MastodonApiServerService {
 					}
 				}
 
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any
 				if ((_request.body as any).fields_attributes) {
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					const fields = (_request.body as any).fields_attributes.map((field: any) => {
 						if (!(field.name.trim() === '' && field.value.trim() === '')) {
 							if (field.name.trim() === '') return reply.code(400).send('Field name can not be empty');
@@ -301,9 +303,10 @@ export class MastodonApiServerService {
 							...field,
 						};
 					});
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
 					(_request.body as any).fields_attributes = fields.filter((field: any) => field.name.trim().length > 0 && field.value.length > 0);		
 				}
-				
+
 				const data = await client.updateCredentials(_request.body!);
 				reply.send(this.mastoConverter.convertAccount(data.data));
 			} catch (e: any) {
