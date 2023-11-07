@@ -39,6 +39,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 		{{ i18n.ts.preventAiLearning }}<span class="_beta">{{ i18n.ts.beta }}</span>
 		<template #caption>{{ i18n.ts.preventAiLearningDescription }}</template>
 	</MkSwitch>
+	<MkSwitch v-model="isIndexable" @update:modelValue="save()">
+		{{ i18n.ts.makeIndexable }}
+		<template #caption>{{ i18n.ts.makeIndexableDescription }}</template>
+	</MkSwitch>
 	<MkSwitch v-model="isExplorable" @update:modelValue="save()">
 		{{ i18n.ts.makeExplorable }}
 		<template #caption>{{ i18n.ts.makeExplorableDescription }}</template>
@@ -94,6 +98,7 @@ const hideOnlineStatus = ref($i.hideOnlineStatus);
 const publicReactions = ref($i.publicReactions);
 const followingVisibility = ref($i.followingVisibility);
 const followersVisibility = ref($i.followersVisibility);
+const isIndexable = ref($i.isIndexable);
 
 const defaultNoteVisibility = computed(defaultStore.makeGetterSetter('defaultNoteVisibility'));
 const defaultNoteLocalOnly = computed(defaultStore.makeGetterSetter('defaultNoteLocalOnly'));
@@ -111,6 +116,7 @@ function save() {
 		publicReactions: !!publicReactions.value,
 		followingVisibility: followingVisibility.value,
 		followersVisibility: followersVisibility.value,
+		isIndexable: !!isIndexable.value,
 	});
 }
 

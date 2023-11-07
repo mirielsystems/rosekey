@@ -3484,6 +3484,11 @@ export interface Locale extends ILocale {
      */
     "showGapBetweenNotesInTimeline": string;
     /**
+     * MAKEINDEXABLE
+     */
+    "makeIndexable": string;
+    "makeIndexableDescription": string;
+    /**
      * 複製
      */
     "duplicate": string;

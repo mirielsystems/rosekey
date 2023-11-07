@@ -172,6 +172,12 @@ export class MiUser {
 	public isLocked: boolean;
 
 	@Column('boolean', {
+		default: true,
+		comment: 'Whether the User\'s notes get indexed.',
+	})
+	public isIndexable: boolean;
+
+	@Column('boolean', {
 		default: false,
 		comment: 'Whether the User is a bot.',
 	})

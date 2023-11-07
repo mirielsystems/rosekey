@@ -186,6 +186,7 @@ export interface IActor extends IObject {
 	};
 	'vcard:bday'?: string;
 	'vcard:Address'?: string;
+	isIndexable?: boolean;
 	listenbrainz?: string;
 }
 
