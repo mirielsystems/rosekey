@@ -36,10 +36,10 @@ export class MiUserProfile {
 	})
 	public birthday: string | null;
 
-	@Column("varchar", {
+	@Column('varchar', {
 		length: 128,
 		nullable: true,
-		comment: "The ListenBrainz username of the User.",
+		comment: 'The ListenBrainz username of the User.',
 	})
 	public listenbrainz: string | null;
 
@@ -56,7 +56,7 @@ export class MiUserProfile {
 	public fields: {
 		name: string;
 		value: string;
-		verified_at: string;
+		verified_at?: string;
 	}[];
 
 	@Column('varchar', {
