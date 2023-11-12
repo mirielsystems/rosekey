@@ -7491,6 +7491,10 @@ export interface Locale extends ILocale {
              */
             "canInvite": string;
             /**
+             * ノートインポート
+             */
+            "canImportNotes": string;
+            /**
              * 招待コードの作成可能数
              */
             "inviteLimit": string;

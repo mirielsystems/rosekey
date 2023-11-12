@@ -1903,6 +1903,7 @@ _role:
     canPublicNote: "Can send public notes"
     canEditNote: "Note editing"
     mentionMax: "Maximum number of mentions in a note"
+    canImportNotes: "Can import notes"
     canInvite: "Can create instance invite codes"
     inviteLimit: "Invite limit"
     inviteLimitCycle: "Invite limit cooldown"

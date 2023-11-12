@@ -78,6 +78,7 @@ export const ROLE_POLICIES = [
 	'canPublicNote',
 	'canEditNote',
 	'mentionLimit',
+	'canImportNotes',
 	'canInvite',
 	'inviteLimit',
 	'inviteLimitCycle',
