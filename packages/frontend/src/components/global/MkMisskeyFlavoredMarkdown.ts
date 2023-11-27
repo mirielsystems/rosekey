@@ -13,6 +13,7 @@ import MkLink from '@/components/MkLink.vue';
 import MkMention from '@/components/MkMention.vue';
 import MkEmoji from '@/components/global/MkEmoji.vue';
 import MkCustomEmoji from '@/components/global/MkCustomEmoji.vue';
+import MkFormula from "@/components/MkFormula.vue";
 import MkCode from '@/components/MkCode.vue';
 import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
@@ -446,16 +447,24 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 				})];
 			}
 
-			case 'mathInline': {
-				const ret = document.createElement('span');
-				temml.render(token.props.formula, ret, {});
-				return [h('span', { innerHTML: ret.innerHTML })];
+			case "mathInline": {
+				return [
+					h(MkFormula, {
+						key: Math.random(),
+						formula: token.props.formula,
+						block: false,
+					}),
+				];
 			}
 
-			case 'mathBlock': {
-				const ret = document.createElement('div');
-				temml.render(token.props.formula, ret, { displayMode: true });
-				return [h('div', { innerHTML: ret.innerHTML })];
+			case "mathBlock": {
+				return [
+					h(MkFormula, {
+						key: Math.random(),
+						formula: token.props.formula,
+						block: true,
+					}),
+				];
 			}
 
 			case 'search': {
