@@ -1346,6 +1346,8 @@ additionalPermissionsForFlash: "Allow to add permission to Play"
 thisFlashRequiresTheFollowingPermissions: "This Play requires the following permissions"
 doYouWantToAllowThisPlayToAccessYourAccount: "Do you want to allow this Play to access your account?"
 translateProfile: "Translate profile"
+translateLanguage: "Note translate language"
+useUILanguageAsTranslateLanguage: "Use UI language"
 _nsfwOpenBehavior:
   click: "Click to open"
   doubleClick: "Double click to open"

@@ -1347,6 +1347,8 @@ additionalPermissionsForFlash: "Playへの追加許可"
 thisFlashRequiresTheFollowingPermissions: "このPlayは以下の権限を要求しています"
 doYouWantToAllowThisPlayToAccessYourAccount: "このPlayによるアカウントへのアクセスを許可しますか？"
 translateProfile: "プロフィールを翻訳する"
+translateLanguage: "投稿翻訳に使用する言語"
+useUILanguageAsTranslateLanguage: "UI言語を使用する"
 
 _nsfwOpenBehavior:
   click: "タップして開く"
