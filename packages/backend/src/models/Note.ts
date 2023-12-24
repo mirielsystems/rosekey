@@ -73,6 +73,7 @@ export class MiNote {
 	public hasEvent: boolean;
 
 	// TODO: varcharにしたい
+	@Index() // USING pgroonga
 	@Column('text', {
 		nullable: true,
 	})
