@@ -101,6 +101,10 @@ type Source = {
 	perUserNotificationsMaxCount?: number;
 	deactivateAntennaThreshold?: number;
 	pidFile: string;
+	stripe?: {
+		secretKey: string;
+		webhookSecret: string;
+	};
 };
 
 export type Config = {
@@ -187,6 +191,11 @@ export type Config = {
 	perUserNotificationsMaxCount: number;
 	deactivateAntennaThreshold: number;
 	pidFile: string;
+
+	stripe: {
+		secretKey: string;
+		webhookSecret?: string;
+	} | undefined;
 };
 
 const _filename = fileURLToPath(import.meta.url);

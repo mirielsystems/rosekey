@@ -722,4 +722,9 @@ export class MiMeta {
 		nullable: true,
 	})
 	public skipCherryPickVersion: string | null;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public enableSubscriptions: boolean;
 }
