@@ -168,6 +168,11 @@ export class MiRole {
 	})
 	public displayOrder: number;
 
+	@Column('varchar', {
+		length: 128, nullable: true,
+	})
+	public stripeProductId: string | null;
+
 	@Column('jsonb', {
 		default: { },
 	})
