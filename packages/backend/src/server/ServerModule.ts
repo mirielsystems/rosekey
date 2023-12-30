@@ -48,6 +48,7 @@ import { UserListChannelService } from './api/stream/channels/user-list.js';
 import { RoleTimelineChannelService } from './api/stream/channels/role-timeline.js';
 import { ReversiChannelService } from './api/stream/channels/reversi.js';
 import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js';
+import { StripeWebhookServerService } from '@/server/StripeWebhookServerService.js';
 
 @Module({
 	imports: [
@@ -96,7 +97,8 @@ import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js
 		OpenApiServerService,
 		StripeWebhookServerService,
 		OAuth2ProviderService,
-	],	exports: [
+	],
+	exports: [
 		ServerService,
 	],
 })
