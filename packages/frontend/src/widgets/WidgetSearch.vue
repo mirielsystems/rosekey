@@ -15,8 +15,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, onMounted } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
+import { defineAsyncComponent, ref } from 'vue';
+import { useWidgetPropsManager, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
 import MkInput from '@/components/MkInput.vue';
 import MkContainer from '@/components/MkContainer.vue';
 import { i18n } from '@/i18n.js';
@@ -54,14 +54,12 @@ function onInputKeydown(evt: KeyboardEvent) {
 
 const router = useRouter();
 
-let key = $ref(0);
-let searchQuery = $ref('');
-let notePagination = $ref();
-let searchOrigin = $ref('combined');
-let user = $ref(null);
-let isLocalOnly = $ref(false);
-let order = $ref(true);
-let filetype = $ref(null);
+let key = ref(0);
+let searchQuery = ref('');
+let notePagination = ref();
+let isLocalOnly = ref(false);
+let order = ref(true);
+let filetype = ref<null | string>(null);
 
 function options(ev) {
 	os.popupMenu([{
@@ -74,7 +72,7 @@ function options(ev) {
 				icon: 'ph-image ph-bold ph-lg',
 				text: 'With Images',
 				action: () => {
-					filetype = 'image';
+					filetype.value = 'image';
 				},
 			},
 			{
@@ -82,7 +80,7 @@ function options(ev) {
 				icon: 'ph-music-notes-simple ph-bold ph-lg',
 				text: 'With Audios',
 				action: () => {
-					filetype = 'audio';
+					filetype.value = 'audio';
 				},
 			},
 			{
@@ -90,20 +88,14 @@ function options(ev) {
 				icon: 'ph-video ph-bold ph-lg',
 				text: 'With Videos',
 				action: () => {
-					filetype = 'video';
+					filetype.value = 'video';
 				},
 			}],
 	}], ev.currentTarget ?? ev.target);
 }
 
-function selectUser() {
-	os.selectUser().then(_user => {
-		user = _user;
-	});
-}
-
 async function search() {
-	const query = searchQuery.toString().trim();
+	const query = searchQuery.value.toString().trim();
 
 	if (query == null || query === '') return;
 
@@ -125,24 +117,34 @@ async function search() {
 		return;
 	}
 
-	notePagination = {
+	if (query.match(/^@[a-z0-9_.-]+@[a-z0-9_.-]+$/i)) {
+		router.push(`/${query}`);
+		return;
+	}
+
+	if (query.startsWith('#')) {
+		router.push(`/tags/${encodeURIComponent(query.substring(1))}`);
+		return;
+	}
+
+	notePagination.value = {
 		endpoint: 'notes/search',
 		limit: 10,
 		params: {
 			query: searchQuery,
-			userId: user ? user.id : null,
-			order: order ? 'desc' : 'asc',
-			filetype: filetype,
+			userId: null,
+			order: order.value ? 'desc' : 'asc',
+			filetype: filetype.value,
 		},
 	};
 
-	if (isLocalOnly) notePagination.params.host = '.';
+	if (isLocalOnly.value) notePagination.value.params.host = '.';
 
-	key++;
+	key.value++;
 
 	os.popup(defineAsyncComponent(() => import('@/components/SkSearchResultWindow.vue')), {
-		noteKey: key,
-		notePagination: notePagination,
+		noteKey: key.value,
+		notePagination: notePagination.value,
 	}, {
 	}, 'closed');
 }
@@ -153,3 +155,9 @@ defineExpose<WidgetComponentExpose>({
 	id: props.widget ? props.widget.id : null,
 });
 </script>
+
+<style lang="scss" scoped>
+.skw-search {
+	border-radius: var(--radius-sm) !important;
+}
+</style>

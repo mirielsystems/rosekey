@@ -18,7 +18,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<p v-if="!readOnly" :class="$style.info">
 		<span>{{ i18n.t('_poll.totalVotes', { n: total }) }}</span>
 		<span v-if="note.poll.multiple"> · </span>
-		<span v-if="note.poll.multiple">{{ i18n.ts._poll.multiple }}</span>
+		<span v-if="note.poll.multiple" style="color: var(--accent); font-weight: bolder;">{{ i18n.ts._poll.multiple }}</span>
 		<span> · </span>
 		<a v-if="!closed && !isVoted" style="color: inherit;" @click="showResult = !showResult">{{ showResult ? i18n.ts._poll.vote : i18n.ts._poll.showResult }}</a>
 		<span v-if="isVoted">{{ i18n.ts._poll.voted }}</span>
@@ -103,8 +103,8 @@ const vote = async (id) => {
 
 async function refresh() {
 	if (!props.note.uri) return;
-	const obj = await os.apiWithDialog("ap/show", { uri: props.note.uri });
-	if (obj.type === "Note" && obj.object.poll) {
+	const obj = await os.apiWithDialog('ap/show', { uri: props.note.uri });
+	if (obj.type === 'Note' && obj.object.poll) {
 		props.note.poll = obj.object.poll; // eslint-disable-line vue/no-mutating-props
 	}
 }

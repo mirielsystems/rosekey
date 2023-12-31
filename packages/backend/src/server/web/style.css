@@ -44,7 +44,7 @@ html {
 	display: inline-block;
 	width: 28px;
 	height: 28px;
-	transform: translateY(70px);
+	transform: translateY(80px);
 	color: var(--accent);
 }
 #splashSpinner > .spinner {
@@ -73,4 +73,18 @@ html {
 	100% {
 		transform: rotate(360deg);
 	}
+}
+
+#splashText {
+	position: absolute;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	left: 0;
+	margin: auto;
+	display: inline-block;
+	width: 70%;
+	height: 0;
+	text-align: center;
+	transform: translateY(40px);
 }

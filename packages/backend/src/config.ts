@@ -7,6 +7,7 @@ import * as fs from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import * as yaml from 'js-yaml';
+import { globSync } from 'glob';
 import type { RedisOptions } from 'ioredis';
 
 type RedisOptionsSource = Partial<RedisOptions> & {
@@ -64,6 +65,7 @@ type Source = {
 	allowedPrivateNetworks?: string[];
 
 	maxFileSize?: number;
+	maxNoteLength?: number;
 
 	clusterLimit?: number;
 
@@ -85,7 +87,10 @@ type Source = {
 	proxyRemoteFiles?: boolean;
 	videoThumbnailGenerator?: string;
 
+	customMOTD?: string[];
+
 	signToActivityPubGet?: boolean;
+	checkActivityPubGetSignature?: boolean;
 
 	perChannelMaxNoteCacheCount?: number;
 	perUserNotificationsMaxCount?: number;
@@ -129,6 +134,7 @@ export type Config = {
 	proxyBypassHosts: string[] | undefined;
 	allowedPrivateNetworks: string[] | undefined;
 	maxFileSize: number | undefined;
+	maxNoteLength: number;
 	clusterLimit: number | undefined;
 	id: string;
 	outgoingAddress: string | undefined;
@@ -142,7 +148,9 @@ export type Config = {
 	deliverJobMaxAttempts: number | undefined;
 	inboxJobMaxAttempts: number | undefined;
 	proxyRemoteFiles: boolean | undefined;
+	customMOTD: string[] | undefined;
 	signToActivityPubGet: boolean | undefined;
+	checkActivityPubGetSignature: boolean | undefined;
 
 	version: string;
 	host: string;
@@ -188,11 +196,18 @@ const path = process.env.MISSKEY_CONFIG_YML
 
 export function loadConfig(): Config {
 	const meta = JSON.parse(fs.readFileSync(`${_dirname}/../../../built/meta.json`, 'utf-8'));
-	const clientManifestExists = fs.existsSync(_dirname + '/../../../built/_vite_/manifest.json');
+	const clientManifestExists = fs.existsSync(`${_dirname}/../../../built/_vite_/manifest.json`);
 	const clientManifest = clientManifestExists ?
 		JSON.parse(fs.readFileSync(`${_dirname}/../../../built/_vite_/manifest.json`, 'utf-8'))
 		: { 'src/_boot_.ts': { file: 'src/_boot_.ts' } };
-	const config = yaml.load(fs.readFileSync(path, 'utf-8')) as Source;
+
+	const config = globSync(path).sort()
+		.map(path => fs.readFileSync(path, 'utf-8'))
+		.map(contents => yaml.load(contents) as Source)
+		.reduce(
+			(acc: Source, cur: Source) => Object.assign(acc, cur),
+			{} as Source,
+		) as Source;
 
 	const url = tryCreateUrl(config.url);
 	const version = meta.version;
@@ -236,6 +251,7 @@ export function loadConfig(): Config {
 		proxyBypassHosts: config.proxyBypassHosts,
 		allowedPrivateNetworks: config.allowedPrivateNetworks,
 		maxFileSize: config.maxFileSize,
+		maxNoteLength: config.maxNoteLength ?? 3000,
 		clusterLimit: config.clusterLimit,
 		outgoingAddress: config.outgoingAddress,
 		outgoingAddressFamily: config.outgoingAddressFamily,
@@ -248,7 +264,9 @@ export function loadConfig(): Config {
 		deliverJobMaxAttempts: config.deliverJobMaxAttempts,
 		inboxJobMaxAttempts: config.inboxJobMaxAttempts,
 		proxyRemoteFiles: config.proxyRemoteFiles,
+		customMOTD: config.customMOTD,
 		signToActivityPubGet: config.signToActivityPubGet,
+		checkActivityPubGetSignature: config.checkActivityPubGetSignature,
 		mediaProxy: externalMediaProxy ?? internalMediaProxy,
 		externalMediaProxyEnabled: externalMediaProxy !== null && externalMediaProxy !== internalMediaProxy,
 		videoThumbnailGenerator: config.videoThumbnailGenerator ?

@@ -27,6 +27,7 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkFolder from '@/components/MkFolder.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -37,15 +38,15 @@ const props = defineProps<{
 	user: Misskey.entities.User;
 }>();
 
-let reason = $ref('');
-let email = $ref('');
+let reason = ref('');
+let email = ref('');
 
 function getReason() {
 	return os.api('admin/show-user', {
 		userId: props.user.id,
 	}).then(info => {
-		reason = info?.signupReason;
-		email = info?.email;
+		reason.value = info?.signupReason;
+		email.value = info?.email;
 	});
 }
 

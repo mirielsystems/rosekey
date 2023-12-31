@@ -32,7 +32,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 	<FormSection>
 		<div class="_gaps_m">
-			<FormLink @click="chooseUploadFolder()">
+			<FormLink to="" @click="chooseUploadFolder()">
 				{{ i18n.ts.uploadFolder }}
 				<template #suffix>{{ uploadFolder ? uploadFolder.name : '-' }}</template>
 				<template #suffixIcon><i class="ph-folder ph-bold ph-lg"></i></template>
@@ -54,6 +54,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { computed, ref } from 'vue';
+import * as Misskey from 'misskey-js';
 import tinycolor from 'tinycolor2';
 import FormLink from '@/components/form/link.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
@@ -69,10 +70,10 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { $i } from '@/account.js';
 
 const fetching = ref(true);
-const usage = ref<any>(null);
-const capacity = ref<any>(null);
-const uploadFolder = ref<any>(null);
-let alwaysMarkNsfw = $ref($i.alwaysMarkNsfw);
+const usage = ref<number | null>(null);
+const capacity = ref<number | null>(null);
+const uploadFolder = ref<Misskey.entities.DriveFolder | null>(null);
+const alwaysMarkNsfw = ref($i.alwaysMarkNsfw);
 
 const meterStyle = computed(() => {
 	return {
@@ -117,20 +118,20 @@ function chooseUploadFolder() {
 
 function saveProfile() {
 	os.api('i/update', {
-		alwaysMarkNsfw: !!alwaysMarkNsfw,
+		alwaysMarkNsfw: !!alwaysMarkNsfw.value,
 	}).catch(err => {
 		os.alert({
 			type: 'error',
 			title: i18n.ts.error,
 			text: err.message,
 		});
-		alwaysMarkNsfw = true;
+		alwaysMarkNsfw.value = true;
 	});
 }
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.drive,

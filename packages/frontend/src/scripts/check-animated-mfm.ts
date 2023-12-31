@@ -1,4 +1,4 @@
-import * as mfm from 'mfm-js';
+import * as mfm from '@sharkey/sfm-js';
 
 export function checkAnimationFromMfm(nodes: mfm.MfmNode[]): boolean {
 	const animatedNodes = mfm.extract(nodes, (node) => {

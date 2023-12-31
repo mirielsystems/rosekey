@@ -8,6 +8,7 @@ import { bindThis } from '@/decorators.js';
 import { HybridTimelineChannelService } from './channels/hybrid-timeline.js';
 import { LocalTimelineChannelService } from './channels/local-timeline.js';
 import { HomeTimelineChannelService } from './channels/home-timeline.js';
+import { BubbleTimelineChannelService } from './channels/bubble-timeline.js';
 import { GlobalTimelineChannelService } from './channels/global-timeline.js';
 import { MainChannelService } from './channels/main.js';
 import { ChannelChannelService } from './channels/channel.js';
@@ -19,6 +20,7 @@ import { AntennaChannelService } from './channels/antenna.js';
 import { DriveChannelService } from './channels/drive.js';
 import { HashtagChannelService } from './channels/hashtag.js';
 import { RoleTimelineChannelService } from './channels/role-timeline.js';
+import { type MiChannelService } from './channel.js';
 
 @Injectable()
 export class ChannelsService {
@@ -28,6 +30,7 @@ export class ChannelsService {
 		private localTimelineChannelService: LocalTimelineChannelService,
 		private hybridTimelineChannelService: HybridTimelineChannelService,
 		private globalTimelineChannelService: GlobalTimelineChannelService,
+		private bubbleTimelineChannelService: BubbleTimelineChannelService,
 		private userListChannelService: UserListChannelService,
 		private hashtagChannelService: HashtagChannelService,
 		private roleTimelineChannelService: RoleTimelineChannelService,
@@ -41,13 +44,14 @@ export class ChannelsService {
 	}
 
 	@bindThis
-	public getChannelService(name: string) {
+	public getChannelService(name: string): MiChannelService<boolean> {
 		switch (name) {
 			case 'main': return this.mainChannelService;
 			case 'homeTimeline': return this.homeTimelineChannelService;
 			case 'localTimeline': return this.localTimelineChannelService;
 			case 'hybridTimeline': return this.hybridTimelineChannelService;
 			case 'globalTimeline': return this.globalTimelineChannelService;
+			case 'bubbleTimeline': return this.bubbleTimelineChannelService;
 			case 'userList': return this.userListChannelService;
 			case 'hashtag': return this.hashtagChannelService;
 			case 'roleTimeline': return this.roleTimelineChannelService;

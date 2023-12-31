@@ -10,6 +10,9 @@
 <a href="https://joinsharkey.org">
 		<img src="https://custom-icon-badges.herokuapp.com/badge/find_an-instance-acea31?logoColor=acea31&style=for-the-badge&logo=sharkey&labelColor=363B40" alt="find an instance"/></a>
 
+<a href="https://docs.joinsharkey.org/docs/install/fresh/">
+		<img src="https://custom-icon-badges.herokuapp.com/badge/create_an-instance-FBD53C?logoColor=FBD53C&style=for-the-badge&logo=server&labelColor=363B40" alt="create an instance"/></a>
+
 <a href="./CONTRIBUTING.md">
 		<img src="https://custom-icon-badges.herokuapp.com/badge/become_a-contributor-A371F7?logoColor=A371F7&style=for-the-badge&logo=git-merge&labelColor=363B40" alt="become a contributor"/></a>
 
@@ -49,3 +52,7 @@ With Sharkey, you can enable sign-ups, subject to manual moderator approval and 
 </div>
 
 <div style="clear: both;"></div>
+
+## Documentation
+
+Sharkey Documentation can be found at [Sharkey Documentation](https://docs.joinsharkey.org/docs/install/fresh/)

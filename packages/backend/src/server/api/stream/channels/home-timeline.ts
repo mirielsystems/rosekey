@@ -10,12 +10,13 @@ import { isInstanceMuted } from '@/misc/is-instance-muted.js';
 import type { Packed } from '@/misc/json-schema.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
-import Channel from '../channel.js';
+import Channel, { type MiChannelService } from '../channel.js';
 
 class HomeTimelineChannel extends Channel {
 	public readonly chName = 'homeTimeline';
 	public static shouldShare = false;
-	public static requireCredential = true;
+	public static requireCredential = true as const;
+	public static kind = 'read:account';
 	private withRenotes: boolean;
 	private withFiles: boolean;
 
@@ -51,7 +52,7 @@ class HomeTimelineChannel extends Channel {
 		}
 
 		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances))) return;
+		if (isInstanceMuted(note, new Set<string>(this.userProfile!.mutedInstances)) && !this.following[note.userId]) return;
 
 		if (note.visibility === 'followers') {
 			if (!isMe && !Object.hasOwn(this.following, note.userId)) return;
@@ -101,9 +102,10 @@ class HomeTimelineChannel extends Channel {
 }
 
 @Injectable()
-export class HomeTimelineChannelService {
+export class HomeTimelineChannelService implements MiChannelService<true> {
 	public readonly shouldShare = HomeTimelineChannel.shouldShare;
 	public readonly requireCredential = HomeTimelineChannel.requireCredential;
+	public readonly kind = HomeTimelineChannel.kind;
 
 	constructor(
 		private noteEntityService: NoteEntityService,

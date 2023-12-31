@@ -9,7 +9,7 @@ doctype html
 	-
 	  _____ _                _
 	 /  ___| |              | |
-	 \ `--.| |__   __ _ _ __| | _____ _   _ 
+	 \ `--.| |__   __ _ _ __| | _____ _   _
 	  `--. \ '_ \ / _` | '__| |/ / _ \ | | |
 	 /\__/ / | | | (_| | |  |   <  __/ |_| |
 	 \____/|_| |_|\__,_|_|  |_|\_\___|\__, |
@@ -18,7 +18,7 @@ doctype html
 
 	 Thank you for using Sharkey!
 	 If you are reading this message... how about joining the development?
-	 https://github.com/transfem-org/sharkey
+	 https://git.joinsharkey.org/Sharkey/Sharkey
 
 
 html
@@ -41,6 +41,7 @@ html
 		link(rel='prefetch' href=notFoundImageUrl)
 		//- https://github.com/misskey-dev/misskey/issues/9842
 		link(rel='stylesheet' href='/assets/phosphor-icons/bold/style.css')
+		link(rel='stylesheet' href='/static-assets/fonts/sharkey-icons/style.css')
 		link(rel='modulepreload' href=`/vite/${clientEntry.file}`)
 		script(src='/client-assets/libopenmpt.js')
 
@@ -84,6 +85,9 @@ html
 			| Please turn on your JavaScript
 		div#splash
 			img#splashIcon(src= icon || '/static-assets/splash.png')
+			span#splashText
+				block randomMOTD
+					= randomMOTD
 			div#splashSpinner
 				<svg class="spinner bg" viewBox="0 0 152 152" xmlns="http://www.w3.org/2000/svg">
 					<g transform="matrix(1,0,0,1,12,12)">

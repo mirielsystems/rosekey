@@ -9,9 +9,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="!thin_ && narrow && props.displayMyAvatar && $i" class="_button" :class="$style.buttonsLeft" @click="openAccountMenu">
 			<MkAvatar :class="$style.avatar" :user="$i"/>
 		</div>
-		<div v-else-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft"/>
+		<div v-else-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft">
+			<button v-if="displayBackButton" class="_button" :class="$style.button" @click.stop="goBack()" @touchstart="preventDrag">
+				<i class="ph-caret-left ph-bold ph-lg"></i>
+			</button>
+		</div>
 
 		<template v-if="metadata">
+			<div v-if="displayBackButton && !narrow" style="margin: 0 -45px 0 0;" :class="$style.buttonsLeft">
+				<button class="_button" :class="$style.button" style="left: 5px;" @click.stop="goBack()" @touchstart="preventDrag">
+					<i class="ph-caret-left ph-bold ph-lg"></i>
+				</button>
+			</div>
 			<div v-if="!hideTitle" :class="$style.titleContainer" @click="top">
 				<div v-if="metadata.avatar" :class="$style.titleAvatarContainer">
 					<MkAvatar :class="$style.titleAvatar" :user="metadata.avatar" indicator/>
@@ -41,25 +50,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted, onUnmounted, ref, inject } from 'vue';
+import { onMounted, onUnmounted, ref, inject, shallowRef, computed } from 'vue';
 import tinycolor from 'tinycolor2';
 import XTabs, { Tab } from './MkPageHeader.tabs.vue';
 import { scrollToTop } from '@/scripts/scroll.js';
 import { globalEvents } from '@/events.js';
 import { injectPageMetadata } from '@/scripts/page-metadata.js';
 import { $i, openAccountMenu as openAccountMenu_ } from '@/account.js';
+import { PageHeaderItem } from '@/types/page-header.js';
 
 const props = withDefaults(defineProps<{
 	tabs?: Tab[];
 	tab?: string;
-	actions?: {
-		text: string;
-		icon: string;
-		highlighted?: boolean;
-		handler: (ev: MouseEvent) => void;
-	}[];
+	actions?: PageHeaderItem[] | null;
 	thin?: boolean;
 	displayMyAvatar?: boolean;
+	displayBackButton?: boolean;
 }>(), {
 	tabs: () => ([] as Tab[]),
 });
@@ -68,18 +74,20 @@ const emit = defineEmits<{
 	(ev: 'update:tab', key: string);
 }>();
 
+const displayBackButton = props.displayBackButton && history.state.key !== 'index' && history.length > 1 && inject('shouldBackButton', true);
+
 const metadata = injectPageMetadata();
 
 const hideTitle = inject('shouldOmitHeaderTitle', false);
 const thin_ = props.thin || inject('shouldHeaderThin', false);
 
-let el = $shallowRef<HTMLElement | undefined>(undefined);
+const el = shallowRef<HTMLElement | undefined>(undefined);
 const bg = ref<string | undefined>(undefined);
-let narrow = $ref(false);
-const hasTabs = $computed(() => props.tabs.length > 0);
-const hasActions = $computed(() => props.actions && props.actions.length > 0);
-const show = $computed(() => {
-	return !hideTitle || hasTabs || hasActions;
+const narrow = ref(false);
+const hasTabs = computed(() => props.tabs.length > 0);
+const hasActions = computed(() => props.actions && props.actions.length > 0);
+const show = computed(() => {
+	return !hideTitle || hasTabs.value || hasActions.value;
 });
 
 const preventDrag = (ev: TouchEvent) => {
@@ -87,8 +95,8 @@ const preventDrag = (ev: TouchEvent) => {
 };
 
 const top = () => {
-	if (el) {
-		scrollToTop(el as HTMLElement, { behavior: 'smooth' });
+	if (el.value) {
+		scrollToTop(el.value as HTMLElement, { behavior: 'smooth' });
 	}
 };
 
@@ -100,6 +108,10 @@ function openAccountMenu(ev: MouseEvent) {
 
 function onTabClick(): void {
 	top();
+}
+
+function goBack(): void {
+	window.history.back();
 }
 
 const calcBg = () => {
@@ -115,14 +127,14 @@ onMounted(() => {
 	calcBg();
 	globalEvents.on('themeChanged', calcBg);
 
-	if (el && el.parentElement) {
-		narrow = el.parentElement.offsetWidth < 500;
+	if (el.value && el.value.parentElement) {
+		narrow.value = el.value.parentElement.offsetWidth < 500;
 		ro = new ResizeObserver((entries, observer) => {
-			if (el && el.parentElement && document.body.contains(el as HTMLElement)) {
-				narrow = el.parentElement.offsetWidth < 500;
+			if (el.value && el.value.parentElement && document.body.contains(el.value as HTMLElement)) {
+				narrow.value = el.value.parentElement.offsetWidth < 500;
 			}
 		});
-		ro.observe(el.parentElement as HTMLElement);
+		ro.observe(el.value.parentElement as HTMLElement);
 	}
 });
 

@@ -39,6 +39,7 @@ import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { MenuItem } from '@/types/menu.js';
 
 const props = withDefaults(defineProps<{
 	folder: Misskey.entities.DriveFolder;
@@ -250,7 +251,7 @@ function setAsUploadFolder() {
 }
 
 function onContextmenu(ev: MouseEvent) {
-	let menu;
+	let menu: MenuItem[];
 	menu = [{
 		text: i18n.ts.openInWindow,
 		icon: 'ph-app-window ph-bold ph-lg',
@@ -260,18 +261,18 @@ function onContextmenu(ev: MouseEvent) {
 			}, {
 			}, 'closed');
 		},
-	}, null, {
+	}, { type: 'divider' }, {
 		text: i18n.ts.rename,
 		icon: 'ph-textbox ph-bold ph-lg',
 		action: rename,
-	}, null, {
+	}, { type: 'divider' }, {
 		text: i18n.ts.delete,
 		icon: 'ph-trash ph-bold ph-lg',
 		danger: true,
 		action: deleteFolder,
 	}];
 	if (defaultStore.state.devMode) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-identification-card ph-bold ph-lg',
 			text: i18n.ts.copyFolderId,
 			action: () => {

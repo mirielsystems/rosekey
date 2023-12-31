@@ -24,6 +24,8 @@ import * as ep___admin_avatarDecorations_delete from './endpoints/admin/avatar-d
 import * as ep___admin_avatarDecorations_list from './endpoints/admin/avatar-decorations/list.js';
 import * as ep___admin_avatarDecorations_update from './endpoints/admin/avatar-decorations/update.js';
 import * as ep___admin_deleteAllFilesOfAUser from './endpoints/admin/delete-all-files-of-a-user.js';
+import * as ep___admin_unsetUserAvatar from './endpoints/admin/unset-user-avatar.js';
+import * as ep___admin_unsetUserBanner from './endpoints/admin/unset-user-banner.js';
 import * as ep___admin_drive_cleanRemoteFiles from './endpoints/admin/drive/clean-remote-files.js';
 import * as ep___admin_drive_cleanup from './endpoints/admin/drive/cleanup.js';
 import * as ep___admin_drive_files from './endpoints/admin/drive/files.js';
@@ -277,6 +279,7 @@ import * as ep___notes_favorites_create from './endpoints/notes/favorites/create
 import * as ep___notes_favorites_delete from './endpoints/notes/favorites/delete.js';
 import * as ep___notes_featured from './endpoints/notes/featured.js';
 import * as ep___notes_globalTimeline from './endpoints/notes/global-timeline.js';
+import * as ep___notes_bubbleTimeline from './endpoints/notes/bubble-timeline.js';
 import * as ep___notes_hybridTimeline from './endpoints/notes/hybrid-timeline.js';
 import * as ep___notes_localTimeline from './endpoints/notes/local-timeline.js';
 import * as ep___notes_mentions from './endpoints/notes/mentions.js';
@@ -395,6 +398,8 @@ const $admin_avatarDecorations_delete: Provider = { provide: 'ep:admin/avatar-de
 const $admin_avatarDecorations_list: Provider = { provide: 'ep:admin/avatar-decorations/list', useClass: ep___admin_avatarDecorations_list.default };
 const $admin_avatarDecorations_update: Provider = { provide: 'ep:admin/avatar-decorations/update', useClass: ep___admin_avatarDecorations_update.default };
 const $admin_deleteAllFilesOfAUser: Provider = { provide: 'ep:admin/delete-all-files-of-a-user', useClass: ep___admin_deleteAllFilesOfAUser.default };
+const $admin_unsetUserAvatar: Provider = { provide: 'ep:admin/unset-user-avatar', useClass: ep___admin_unsetUserAvatar.default };
+const $admin_unsetUserBanner: Provider = { provide: 'ep:admin/unset-user-banner', useClass: ep___admin_unsetUserBanner.default };
 const $admin_drive_cleanRemoteFiles: Provider = { provide: 'ep:admin/drive/clean-remote-files', useClass: ep___admin_drive_cleanRemoteFiles.default };
 const $admin_drive_cleanup: Provider = { provide: 'ep:admin/drive/cleanup', useClass: ep___admin_drive_cleanup.default };
 const $admin_drive_files: Provider = { provide: 'ep:admin/drive/files', useClass: ep___admin_drive_files.default };
@@ -648,6 +653,7 @@ const $notes_favorites_create: Provider = { provide: 'ep:notes/favorites/create'
 const $notes_favorites_delete: Provider = { provide: 'ep:notes/favorites/delete', useClass: ep___notes_favorites_delete.default };
 const $notes_featured: Provider = { provide: 'ep:notes/featured', useClass: ep___notes_featured.default };
 const $notes_globalTimeline: Provider = { provide: 'ep:notes/global-timeline', useClass: ep___notes_globalTimeline.default };
+const $notes_bubbleTimeline: Provider = { provide: 'ep:notes/bubble-timeline', useClass: ep___notes_bubbleTimeline.default };
 const $notes_hybridTimeline: Provider = { provide: 'ep:notes/hybrid-timeline', useClass: ep___notes_hybridTimeline.default };
 const $notes_localTimeline: Provider = { provide: 'ep:notes/local-timeline', useClass: ep___notes_localTimeline.default };
 const $notes_mentions: Provider = { provide: 'ep:notes/mentions', useClass: ep___notes_mentions.default };
@@ -770,6 +776,8 @@ const $sponsors: Provider = { provide: 'ep:sponsors', useClass: ep___sponsors.de
 		$admin_avatarDecorations_list,
 		$admin_avatarDecorations_update,
 		$admin_deleteAllFilesOfAUser,
+		$admin_unsetUserAvatar,
+		$admin_unsetUserBanner,
 		$admin_drive_cleanRemoteFiles,
 		$admin_drive_cleanup,
 		$admin_drive_files,
@@ -1023,6 +1031,7 @@ const $sponsors: Provider = { provide: 'ep:sponsors', useClass: ep___sponsors.de
 		$notes_favorites_delete,
 		$notes_featured,
 		$notes_globalTimeline,
+		$notes_bubbleTimeline,
 		$notes_hybridTimeline,
 		$notes_localTimeline,
 		$notes_mentions,
@@ -1139,6 +1148,8 @@ const $sponsors: Provider = { provide: 'ep:sponsors', useClass: ep___sponsors.de
 		$admin_avatarDecorations_list,
 		$admin_avatarDecorations_update,
 		$admin_deleteAllFilesOfAUser,
+		$admin_unsetUserAvatar,
+		$admin_unsetUserBanner,
 		$admin_drive_cleanRemoteFiles,
 		$admin_drive_cleanup,
 		$admin_drive_files,
@@ -1392,6 +1403,7 @@ const $sponsors: Provider = { provide: 'ep:sponsors', useClass: ep___sponsors.de
 		$notes_favorites_delete,
 		$notes_featured,
 		$notes_globalTimeline,
+		$notes_bubbleTimeline,
 		$notes_hybridTimeline,
 		$notes_localTimeline,
 		$notes_mentions,

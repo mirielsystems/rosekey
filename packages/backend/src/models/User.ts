@@ -166,8 +166,10 @@ export class MiUser {
 	})
 	public avatarDecorations: {
 		id: string;
-		angle: number;
-		flipH: boolean;
+		angle?: number;
+		flipH?: boolean;
+		offsetX?: number;
+		offsetY?: number;
 	}[];
 
 	@Index()

@@ -12,12 +12,12 @@ import { MetaService } from '@/core/MetaService.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { bindThis } from '@/decorators.js';
 import { RoleService } from '@/core/RoleService.js';
-import Channel from '../channel.js';
+import Channel, { type MiChannelService } from '../channel.js';
 
 class GlobalTimelineChannel extends Channel {
 	public readonly chName = 'globalTimeline';
 	public static shouldShare = false;
-	public static requireCredential = false;
+	public static requireCredential = false as const;
 	private withRenotes: boolean;
 	private withFiles: boolean;
 	private withBots: boolean;
@@ -67,7 +67,7 @@ class GlobalTimelineChannel extends Channel {
 		if (note.renote && note.text == null && (note.fileIds == null || note.fileIds.length === 0) && !this.withRenotes) return;
 
 		// Ignore notes from instances the user has muted
-		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? []))) return;
+		if (isInstanceMuted(note, new Set<string>(this.userProfile?.mutedInstances ?? [])) && !this.following[note.userId]) return;
 
 		// 流れてきたNoteがミュートしているユーザーが関わるものだったら無視する
 		if (isUserRelated(note, this.userIdsWhoMeMuting)) return;
@@ -96,9 +96,10 @@ class GlobalTimelineChannel extends Channel {
 }
 
 @Injectable()
-export class GlobalTimelineChannelService {
+export class GlobalTimelineChannelService implements MiChannelService<false> {
 	public readonly shouldShare = GlobalTimelineChannel.shouldShare;
 	public readonly requireCredential = GlobalTimelineChannel.requireCredential;
+	public readonly kind = GlobalTimelineChannel.kind;
 
 	constructor(
 		private metaService: MetaService,

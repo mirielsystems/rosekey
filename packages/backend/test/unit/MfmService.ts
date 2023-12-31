@@ -4,7 +4,7 @@
  */
 
 import * as assert from 'assert';
-import * as mfm from 'mfm-js';
+import * as mfm from '@sharkey/sfm-js';
 import { Test } from '@nestjs/testing';
 
 import { CoreModule } from '@/core/CoreModule.js';

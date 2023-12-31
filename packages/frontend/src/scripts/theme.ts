@@ -42,10 +42,11 @@ export const getBuiltinThemes = () => Promise.all(
 		'd-green-lime',
 		'd-green-orange',
 		'd-cherry',
-		'd-transfem-cherry',
 		'd-ice',
 		'd-u0',
-	].map(name => import(`../themes/${name}.json5`).then(({ default: _default }): Theme => _default)),
+		'rosepine',
+		'rosepine-dawn',
+	].map(name => import(`@/themes/${name}.json5`).then(({ default: _default }): Theme => _default)),
 );
 
 export const getBuiltinThemesRef = () => {
@@ -53,6 +54,8 @@ export const getBuiltinThemesRef = () => {
 	getBuiltinThemes().then(themes => builtinThemes.value = themes);
 	return builtinThemes;
 };
+
+const themeFontFaceName = 'sharkey-theme-font-face';
 
 let timeout = null;
 
@@ -84,7 +87,32 @@ export function applyTheme(theme: Theme, persist = true) {
 		}
 	}
 
+	let existingFontFace;
+	document.fonts.forEach(
+		(fontFace) => {
+			if (fontFace.family === themeFontFaceName) existingFontFace = fontFace;
+		},
+	);
+	if (existingFontFace) document.fonts.delete(existingFontFace);
+
+	const fontFaceSrc = props.fontFaceSrc;
+	const fontFaceOpts = props.fontFaceOpts || {};
+
+	if (fontFaceSrc) {
+		const fontFace = new FontFace(
+			themeFontFaceName,
+			fontFaceSrc, fontFaceOpts,
+		);
+		document.fonts.add(fontFace);
+		fontFace.load().catch(
+			(failure) => {
+				console.log(failure);
+			},
+		);
+	}
+
 	for (const [k, v] of Object.entries(props)) {
+		if (k.startsWith('font')) continue;
 		document.documentElement.style.setProperty(`--${k}`, v.toString());
 	}
 
@@ -128,6 +156,10 @@ function compile(theme: Theme): Record<string, string> {
 
 	for (const [k, v] of Object.entries(theme.props)) {
 		if (k.startsWith('$')) continue; // ignore const
+		if (k.startsWith('font')) { // font specs are different
+			props[k] = v;
+			continue;
+		}
 
 		props[k] = v.startsWith('"') ? v.replace(/^"\s*/, '') : genValue(getColor(v));
 	}

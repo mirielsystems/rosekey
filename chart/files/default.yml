@@ -77,17 +77,17 @@ dbReplications: false
 # You can configure any number of replicas here
 #dbSlaves:
 #  -
-#    host: 
-#    port: 
-#    db: 
-#    user: 
-#    pass: 
+#    host:
+#    port:
+#    db:
+#    user:
+#    pass:
 #  -
-#    host: 
-#    port: 
-#    db: 
-#    user: 
-#    pass: 
+#    host:
+#    port:
+#    db:
+#    user:
+#    pass:
 
 #   ┌─────────────────────┐
 #───┘ Redis configuration └─────────────────────────────────────
@@ -167,7 +167,7 @@ id: "aidx"
 
 # Job rate limiter
 # deliverJobPerSec: 128
-# inboxJobPerSec: 16
+# inboxJobPerSec: 32
 
 # Job attempts
 # deliverJobMaxAttempts: 12
@@ -194,6 +194,8 @@ id: "aidx"
 
 # Sign to ActivityPub GET request (default: true)
 signToActivityPubGet: true
+# check that inbound ActivityPub GET requests are signed ("authorized fetch")
+checkActivityPubGetSignature: false
 
 #allowedPrivateNetworks: [
 #  '127.0.0.1/32'

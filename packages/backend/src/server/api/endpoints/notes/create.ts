@@ -11,7 +11,7 @@ import type { UsersRepository, NotesRepository, BlockingsRepository, DriveFilesR
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiChannel } from '@/models/Channel.js';
-import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
+import type { Config } from '@/config.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { NoteCreateService } from '@/core/NoteCreateService.js';
@@ -82,6 +82,12 @@ export const meta = {
 			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce15',
 		},
 
+		maxLength: {
+			message: 'You tried posting a note which is too long.',
+			code: 'MAX_LENGTH',
+			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce16',
+		},
+
 		cannotCreateAlreadyExpiredPoll: {
 			message: 'Poll is already expired.',
 			code: 'CANNOT_CREATE_ALREADY_EXPIRED_POLL',
@@ -121,7 +127,7 @@ export const paramDef = {
 		visibleUserIds: { type: 'array', uniqueItems: true, items: {
 			type: 'string', format: 'misskey:id',
 		} },
-		cw: { type: 'string', nullable: true, minLength: 1, maxLength: 100 },
+		cw: { type: 'string', nullable: true, minLength: 1, maxLength: 500 },
 		localOnly: { type: 'boolean', default: false },
 		reactionAcceptance: { type: 'string', nullable: true, enum: [null, 'likeOnly', 'likeOnlyForRemote', 'nonSensitiveOnly', 'nonSensitiveOnlyForLocalLikeOnlyForRemote'], default: null },
 		noExtractMentions: { type: 'boolean', default: false },
@@ -136,7 +142,6 @@ export const paramDef = {
 		text: {
 			type: 'string',
 			minLength: 1,
-			maxLength: MAX_NOTE_TEXT_LENGTH,
 			nullable: true,
 		},
 		fileIds: {
@@ -184,6 +189,9 @@ export const paramDef = {
 @Injectable()
 export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
+		@Inject(DI.config)
+		private config: Config,
+
 		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
@@ -203,6 +211,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private noteCreateService: NoteCreateService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
+			if (ps.text && (ps.text.length > this.config.maxNoteLength)) {
+				throw new ApiError(meta.errors.maxLength);
+			}
+
 			let visibleUsers: MiUser[] = [];
 			if (ps.visibleUserIds) {
 				visibleUsers = await this.usersRepository.findBy({
@@ -262,7 +274,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				if (renote.channelId && renote.channelId !== ps.channelId) {
 					// チャンネルのノートに対しリノート要求がきたとき、チャンネル外へのリノート可否をチェック
 					// リノートのユースケースのうち、チャンネル内→チャンネル外は少数だと考えられるため、JOINはせず必要な時に都度取得する
-					const renoteChannel = await this.channelsRepository.findOneById(renote.channelId);
+					const renoteChannel = await this.channelsRepository.findOneBy({ id: renote.channelId });
 					if (renoteChannel == null) {
 						// リノートしたいノートが書き込まれているチャンネルが無い
 						throw new ApiError(meta.errors.noSuchChannel);

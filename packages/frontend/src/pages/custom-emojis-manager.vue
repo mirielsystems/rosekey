@@ -80,7 +80,7 @@ import MkInput from '@/components/MkInput.vue';
 import MkPagination from '@/components/MkPagination.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import FormSplit from '@/components/form/split.vue';
-import { selectFile, selectFiles } from '@/scripts/select-file.js';
+import { selectFile } from '@/scripts/select-file.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
@@ -88,9 +88,9 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 const emojisPaginationComponent = shallowRef<InstanceType<typeof MkPagination>>();
 
 const tab = ref('local');
-const query = ref(null);
-const queryRemote = ref(null);
-const host = ref(null);
+const query = ref<string | null>(null);
+const queryRemote = ref<string | null>(null);
+const host = ref<string | null>(null);
 const selectMode = ref(false);
 const selectedEmojis = ref<string[]>([]);
 
@@ -155,7 +155,7 @@ const edit = (emoji) => {
 	}, 'closed');
 };
 
-const im = (emoji) => {
+const importEmoji = (emoji) => {
 	os.apiWithDialog('admin/emoji/copy', {
 		emojiId: emoji.id,
 	});
@@ -169,13 +169,13 @@ const remoteMenu = (emoji, ev: MouseEvent) => {
 	{
 		text: i18n.ts.import,
 		icon: 'ph-plus ph-bold ph-lg',
-		action: () => { im(emoji); },
+		action: () => { importEmoji(emoji); },
 	},
 	{
 		text: i18n.ts.delete,
-		icon: "ph-trash ph-bold ph-lg",
+		icon: 'ph-trash ph-bold ph-lg',
 		action: () => {
-			os.apiWithDialog("admin/emoji/delete", {
+			os.apiWithDialog('admin/emoji/delete', {
 				id: emoji.id,
 			});
 		},
@@ -296,7 +296,7 @@ const delBulk = async () => {
 	emojisPaginationComponent.value.reload();
 };
 
-const headerActions = $computed(() => [{
+const headerActions = computed(() => [{
 	asFullButton: true,
 	icon: 'ph-plus ph-bold ph-lg',
 	text: i18n.ts.addEmoji,
@@ -306,7 +306,7 @@ const headerActions = $computed(() => [{
 	handler: menu,
 }]);
 
-const headerTabs = $computed(() => [{
+const headerTabs = computed(() => [{
 	key: 'local',
 	title: i18n.ts.local,
 }, {

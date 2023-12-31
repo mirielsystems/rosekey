@@ -6,7 +6,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import * as Redis from 'ioredis';
 import { DI } from '@/di-symbols.js';
-import type { EmojisRepository, NoteReactionsRepository, UsersRepository, NotesRepository } from '@/models/_.js';
+import type { EmojisRepository, NoteReactionsRepository, UsersRepository, NotesRepository, NoteThreadMutingsRepository } from '@/models/_.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
 import type { MiRemoteUser, MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
@@ -81,6 +81,9 @@ export class ReactionService {
 		@Inject(DI.noteReactionsRepository)
 		private noteReactionsRepository: NoteReactionsRepository,
 
+		@Inject(DI.noteThreadMutingsRepository)
+		private noteThreadMutingsRepository: NoteThreadMutingsRepository,
+
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
 
@@ -138,7 +141,7 @@ export class ReactionService {
 						reaction = reacterHost ? `:${name}@${reacterHost}:` : `:${name}:`;
 
 						// センシティブ
-						if ((note.reactionAcceptance === 'nonSensitiveOnly') && emoji.isSensitive) {
+						if ((note.reactionAcceptance === 'nonSensitiveOnly' || note.reactionAcceptance === 'nonSensitiveOnlyForLocalLikeOnlyForRemote') && emoji.isSensitive) {
 							reaction = FALLBACK;
 						}
 					} else {
@@ -244,10 +247,19 @@ export class ReactionService {
 
 		// リアクションされたユーザーがローカルユーザーなら通知を作成
 		if (note.userHost === null) {
-			this.notificationService.createNotification(note.userId, 'reaction', {
-				noteId: note.id,
-				reaction: reaction,
-			}, user.id);
+			const isThreadMuted = await this.noteThreadMutingsRepository.exist({
+				where: {
+					userId: note.userId,
+					threadId: note.threadId ?? note.id,
+				},
+			});
+
+			if (!isThreadMuted) {
+				this.notificationService.createNotification(note.userId, 'reaction', {
+					noteId: note.id,
+					reaction: reaction,
+				}, user.id);
+			}
 		}
 
 		//#region 配信

@@ -178,6 +178,7 @@ export class ClientServerService {
 			infoImageUrl: meta.infoImageUrl ?? 'https://launcher.moe/nothinghere.png',
 			notFoundImageUrl: meta.notFoundImageUrl ?? 'https://launcher.moe/missingpage.webp',
 			instanceUrl: this.config.url,
+			randomMOTD: this.config.customMOTD ? this.config.customMOTD[Math.floor(Math.random() * this.config.customMOTD.length)] : undefined,
 		};
 	}
 

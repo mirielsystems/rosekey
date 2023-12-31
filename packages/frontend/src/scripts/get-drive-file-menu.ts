@@ -82,7 +82,7 @@ export function getDriveFileMenu(file: Misskey.entities.DriveFile, folder?: Miss
 		to: `/my/drive/file/${file.id}`,
 		text: i18n.ts._fileViewer.title,
 		icon: 'ph-file-text ph-bold ph-lg',
-	}, null, {
+	}, { type: 'divider' }, {
 		text: i18n.ts.rename,
 		icon: 'ph-textbox ph-bold ph-lg',
 		action: () => rename(file),
@@ -101,7 +101,7 @@ export function getDriveFileMenu(file: Misskey.entities.DriveFile, folder?: Miss
 			aspectRatio: NaN,
 			uploadFolder: folder ? folder.id : folder,
 		}),
-	}] : [], null, {
+	}] : [], { type: 'divider' }, {
 		text: i18n.ts.createNoteFromTheFile,
 		icon: 'ph-pencil ph-bold ph-lg',
 		action: () => os.post({
@@ -118,7 +118,7 @@ export function getDriveFileMenu(file: Misskey.entities.DriveFile, folder?: Miss
 		text: i18n.ts.download,
 		icon: 'ph-download ph-bold ph-lg',
 		download: file.name,
-	}, null, {
+	}, { type: 'divider' }, {
 		text: i18n.ts.delete,
 		icon: 'ph-trash ph-bold ph-lg',
 		danger: true,
@@ -126,7 +126,7 @@ export function getDriveFileMenu(file: Misskey.entities.DriveFile, folder?: Miss
 	}];
 
 	if (defaultStore.state.devMode) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-identification-card ph-bold ph-lg',
 			text: i18n.ts.copyFileId,
 			action: () => {

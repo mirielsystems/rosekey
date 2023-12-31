@@ -9,6 +9,7 @@ export const meta = {
 
 	requireCredential: true,
 	requireModerator: true,
+	kind: 'write:admin:silence-user',
 } as const;
 
 export const paramDef = {

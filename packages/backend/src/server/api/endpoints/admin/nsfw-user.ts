@@ -8,6 +8,7 @@ export const meta = {
 
 	requireCredential: true,
 	requireModerator: true,
+	kind: 'write:admin:nsfw-user',
 } as const;
 
 export const paramDef = {

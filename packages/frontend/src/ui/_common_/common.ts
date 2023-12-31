@@ -34,7 +34,7 @@ function toolsMenuItems(): MenuItem[] {
 		icon: 'ph-smiley ph-bold ph-lg',
 	} : undefined, ($i && ($i.isAdmin || $i.policies.canManageAvatarDecorations)) ? {
 		type: 'link',
-		to: '/admin/avatar-decorations',
+		to: '/avatar-decorations',
 		text: i18n.ts.manageAvatarDecorations,
 		icon: 'ph-sparkle ph-bold ph-lg',
 	} : undefined];
@@ -64,7 +64,7 @@ export function openInstanceMenu(ev: MouseEvent) {
 		text: i18n.ts.charts,
 		icon: 'ph-chart-line ph-bold ph-lg',
 		to: '/about#charts',
-	}, null, {
+	}, { type: 'divider' }, {
 		type: 'link',
 		text: i18n.ts.ads,
 		icon: 'ph-flag ph-bold ph-lg',
@@ -79,29 +79,29 @@ export function openInstanceMenu(ev: MouseEvent) {
 		text: i18n.ts.tools,
 		icon: 'ph-toolbox ph-bold ph-lg',
 		children: toolsMenuItems(),
-	}, null, (instance.impressumUrl) ? {
+	}, { type: 'divider' }, (instance.impressumUrl) ? {
 		text: i18n.ts.impressum,
 		icon: 'ph-newspaper-clipping ph-bold ph-lg',
 		action: () => {
-			window.open(instance.impressumUrl, '_blank');
+			window.open(instance.impressumUrl, '_blank', 'noopener');
 		},
 	} : undefined, (instance.tosUrl) ? {
 		text: i18n.ts.termsOfService,
 		icon: 'ph-notebook ph-bold ph-lg',
 		action: () => {
-			window.open(instance.tosUrl, '_blank');
+			window.open(instance.tosUrl, '_blank', 'noopener');
 		},
 	} : undefined, (instance.privacyPolicyUrl) ? {
 		text: i18n.ts.privacyPolicy,
 		icon: 'ph-shield ph-bold ph-lg',
 		action: () => {
-			window.open(instance.privacyPolicyUrl, '_blank');
+			window.open(instance.privacyPolicyUrl, '_blank', 'noopener');
 		},
-	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl) ? undefined : null, {
+	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl) ? undefined : { type: 'divider' }, {
 		text: i18n.ts.help,
 		icon: 'ph-question ph-bold ph-lg',
 		action: () => {
-			window.open('https://misskey-hub.net/help.html', '_blank');
+			window.open('https://misskey-hub.net/docs/for-users/', '_blank', 'noopener');
 		},
 	}, ($i) ? {
 		text: i18n.ts._initialTutorial.launchTutorial,
@@ -112,6 +112,7 @@ export function openInstanceMenu(ev: MouseEvent) {
 	} : undefined, {
 		type: 'link',
 		text: i18n.ts.aboutMisskey,
+		icon: 'sk-icons sk-shark ph-bold',
 		to: '/about-sharkey',
 	}], ev.currentTarget ?? ev.target, {
 		align: 'left',

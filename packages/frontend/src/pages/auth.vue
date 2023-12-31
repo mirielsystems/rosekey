@@ -42,7 +42,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import XForm from './auth.form.vue';
 import MkSignin from '@/components/MkSignin.vue';
@@ -58,33 +58,33 @@ const props = defineProps<{
 const getUrlParams = () =>
 	window.location.search
 		.substring(1)
-		.split("&")
+		.split('&')
 		.reduce((result, query) => {
-			const [k, v] = query.split("=");
+			const [k, v] = query.split('=');
 			result[k] = decodeURI(v);
 			return result;
 		}, {});
 
-let state = $ref<'waiting' | 'accepted' | 'fetch-session-error' | 'denied' | null>(null);
-let session = $ref<Misskey.entities.AuthSession | null>(null);
+const state = ref<'waiting' | 'accepted' | 'fetch-session-error' | 'denied' | null>(null);
+const session = ref<Misskey.entities.AuthSessionShowResponse | null>(null);
 
 function accepted() {
-	state = 'accepted';
+	state.value = 'accepted';
 	const isMastodon = !!getUrlParams().mastodon;
-	if (session && session.app.callbackUrl && isMastodon) {
+	if (session.value && session.value.app.callbackUrl && isMastodon) {
 		const redirectUri = decodeURIComponent(getUrlParams().redirect_uri);
-		if (!session.app.callbackUrl.includes('elk.zone') && !session.app.callbackUrl.split("\n").includes(redirectUri)) {
-			state = "fetch-session-error";
-			throw new Error("Callback URI doesn't match registered app");
+		if (!session.value.app.callbackUrl.includes('elk.zone') && !session.value.app.callbackUrl.split('\n').includes(redirectUri)) {
+			state.value = 'fetch-session-error';
+			throw new Error('Callback URI doesn\'t match registered app');
 		}
-		const callbackUrl = session.app.callbackUrl.includes('elk.zone') ? new URL(session.app.callbackUrl) : new URL(redirectUri);
-		callbackUrl.searchParams.append("code", session.token);
-		if (getUrlParams().state) callbackUrl.searchParams.append("state", getUrlParams().state);
+		const callbackUrl = session.value.app.callbackUrl.includes('elk.zone') ? new URL(session.value.app.callbackUrl) : new URL(redirectUri);
+		callbackUrl.searchParams.append('code', session.value.token);
+		if (getUrlParams().state) callbackUrl.searchParams.append('state', getUrlParams().state);
 		location.href = callbackUrl.toString();
-	} else if (session && session.app.callbackUrl) {
-		const url = new URL(session.app.callbackUrl);
+	} else if (session.value && session.value.app.callbackUrl) {
+		const url = new URL(session.value.app.callbackUrl);
 		if (['javascript:', 'file:', 'data:', 'mailto:', 'tel:'].includes(url.protocol)) throw new Error('invalid url');
-		location.href = `${session.app.callbackUrl}?token=${session.token}`;
+		location.href = `${session.value.app.callbackUrl}?token=${session.value.token}`;
 	}
 }
 
@@ -96,27 +96,27 @@ onMounted(async () => {
 	if (!$i) return;
 
 	try {
-		session = await os.api('auth/session/show', {
+		session.value = await os.api('auth/session/show', {
 			token: props.token,
 		});
 
 		// 既に連携していた場合
-		if (session.app.isAuthorized) {
+		if (session.value.app.isAuthorized) {
 			await os.api('auth/accept', {
-				token: session.token,
+				token: session.value.token,
 			});
 			accepted();
 		} else {
-			state = 'waiting';
+			state.value = 'waiting';
 		}
 	} catch (err) {
-		state = 'fetch-session-error';
+		state.value = 'fetch-session-error';
 	}
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts._auth.shareAccessTitle,

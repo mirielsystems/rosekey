@@ -119,7 +119,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 			userId: user.id,
 		});
 	}
-	
+
 	async function invalidateFollow() {
 		if (!await getConfirmed(i18n.ts.breakFollowConfirm)) return;
 
@@ -189,7 +189,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 			const canonical = user.host === null ? `@${user.username}` : `@${user.username}@${user.host}`;
 			os.post({ specified: user, initialText: `${canonical} ` });
 		},
-	}, null, {
+	}, { type: 'divider' }, {
 		icon: 'ph-pencil ph-bold ph-lg',
 		text: i18n.ts.editMemo,
 		action: () => {
@@ -313,7 +313,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 		}]);
 		//}
 
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: user.isMuted ? 'ph-eye ph-bold ph-lg' : 'ph-eye-slash ph-bold ph-lg',
 			text: user.isMuted ? i18n.ts.unmute : i18n.ts.mute,
 			action: toggleMute,
@@ -335,7 +335,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 			}]);
 		}
 
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-warning-circle ph-bold ph-lg',
 			text: i18n.ts.reportAbuse,
 			action: reportAbuse,
@@ -343,15 +343,15 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 	}
 
 	if (user.host !== null) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-arrows-counter-clockwise ph-bold ph-lg',
 			text: i18n.ts.updateRemoteUser,
 			action: userInfoUpdate,
 		}]);
 	}
-	
+
 	if (defaultStore.state.devMode) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-identification-card ph-bold ph-lg',
 			text: i18n.ts.copyUserId,
 			action: () => {
@@ -361,7 +361,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 	}
 
 	if ($i && meId === user.id) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: 'divider' }, {
 			icon: 'ph-pencil ph-bold ph-lg',
 			text: i18n.ts.editProfile,
 			action: () => {
@@ -371,7 +371,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: Router 
 	}
 
 	if (userActions.length > 0) {
-		menu = menu.concat([null, ...userActions.map(action => ({
+		menu = menu.concat([{ type: 'divider' }, ...userActions.map(action => ({
 			icon: 'ph-plug ph-bold ph-lg',
 			text: action.title,
 			action: () => {

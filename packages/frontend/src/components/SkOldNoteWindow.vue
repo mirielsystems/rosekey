@@ -30,7 +30,7 @@
 			<div :class="$style.noteContent">
 				<p v-if="appearNote.cw != null" :class="$style.cw">
 					<Mfm v-if="appearNote.cw != ''" style="margin-right: 8px;" :text="appearNote.cw" :author="appearNote.user" :nyaize="'account'"/>
-					<MkCwButton v-model="showContent" :note="appearNote"/>
+					<MkCwButton v-model="showContent" :text="appearNote.text" :files="appearNote.files" :poll="appearNote.poll"/>
 				</p>
 				<div v-show="appearNote.cw == null || showContent">
 					<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ i18n.ts.private }})</span>
@@ -76,8 +76,8 @@
 </template>
 
 <script lang="ts" setup>
-import { inject, onMounted, ref, shallowRef } from 'vue';
-import * as mfm from 'mfm-js';
+import { inject, onMounted, ref, shallowRef, computed } from 'vue';
+import * as mfm from '@sharkey/sfm-js';
 import * as Misskey from 'misskey-js';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
@@ -89,7 +89,6 @@ import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 import { userPage } from '@/filters/user.js';
 import { defaultStore, noteViewInterruptors } from '@/store.js';
 import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
-import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
 import { deepClone } from '@/scripts/clone.js';
 import { dateTimeFormat } from '@/scripts/intl-const.js';
@@ -106,42 +105,42 @@ const emit = defineEmits<{
 
 const inChannel = inject('inChannel', null);
 
-let note = $ref(deepClone(props.note));
+let note = ref(deepClone(props.note));
 
 // plugin
 if (noteViewInterruptors.length > 0) {
 	onMounted(async () => {
-		let result = deepClone(note);
+		let result = deepClone(note.value);
 		for (const interruptor of noteViewInterruptors) {
 			result = await interruptor.handler(result);
 		}
-		note = result;
+		note.value = result;
 	});
 }
 
 const replaceContent = () => {
-	props.oldText ? note.text = props.oldText : undefined;
-	note.createdAt = props.updatedAt;
+	props.oldText ? note.value.text = props.oldText : undefined;
+	note.value.createdAt = props.updatedAt;
 };
 replaceContent();
 
 const isRenote = (
-	note.renote != null &&
-	note.text == null &&
-	note.fileIds.length === 0 &&
-	note.poll == null
+	note.value.renote != null &&
+	note.value.text == null &&
+	note.value.fileIds.length === 0 &&
+	note.value.poll == null
 );
 
 const el = shallowRef<HTMLElement>();
-let appearNote = $computed(() => isRenote ? note.renote as Misskey.entities.Note : note);
-const renoteUrl = appearNote.renote ? appearNote.renote.url : null;
-const renoteUri = appearNote.renote ? appearNote.renote.uri : null;
+let appearNote = computed(() => isRenote ? note.value.renote as Misskey.entities.Note : note.value);
+const renoteUrl = appearNote.value.renote ? appearNote.value.renote.url : null;
+const renoteUri = appearNote.value.renote ? appearNote.value.renote.uri : null;
 
 const showContent = ref(false);
 const translation = ref(null);
 const translating = ref(false);
-const urls = appearNote.text ? extractUrlFromMfm(mfm.parse(appearNote.text)).filter(u => u !== renoteUrl && u !== renoteUri) : null;
-const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultStore.state.instanceTicker === 'remote' && appearNote.user.instance);
+const urls = appearNote.value.text ? extractUrlFromMfm(mfm.parse(appearNote.value.text)).filter(u => u !== renoteUrl && u !== renoteUri) : null;
+const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultStore.state.instanceTicker === 'remote' && appearNote.value.user.instance);
 
 </script>
 

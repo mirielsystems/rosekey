@@ -11,6 +11,7 @@ import { MetaService } from '@/core/MetaService.js';
 export const meta = {
 	requireCredential: true,
 	prohibitMoved: true,
+	kind: 'write:account',
 } as const;
 
 export const paramDef = {

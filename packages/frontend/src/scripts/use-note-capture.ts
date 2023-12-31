@@ -14,6 +14,8 @@ export function useNoteCapture(props: {
 	note: Ref<Misskey.entities.Note>;
 	pureNote: Ref<Misskey.entities.Note>;
 	isDeletedRef: Ref<boolean>;
+	onReplyCallback: (replyNote: Misskey.entities.Note) => void | undefined;
+	onDeleteCallback: (id: Misskey.entities.Note['id']) => void | undefined;
 }) {
 	const note = props.note;
 	const pureNote = props.pureNote !== undefined ? props.pureNote : props.note;
@@ -25,6 +27,21 @@ export function useNoteCapture(props: {
 		if ((id !== note.value.id) && (id !== pureNote.value.id)) return;
 
 		switch (type) {
+			case 'replied': {
+				if (!props.onReplyCallback) break;
+
+				// notes/show may throw if the current user can't see the note
+				try {
+					const replyNote = await os.api('notes/show', {
+						noteId: body.id,
+					});
+
+					await props.onReplyCallback(replyNote);
+				} catch { /* empty */ }
+				
+				break;
+			}
+
 			case 'reacted': {
 				const reaction = body.reaction;
 
@@ -76,21 +93,26 @@ export function useNoteCapture(props: {
 
 			case 'deleted': {
 				props.isDeletedRef.value = true;
+
+				if (props.onDeleteCallback) await props.onDeleteCallback(id);
 				break;
 			}
 
 			case 'updated': {
-				const editedNote = await os.api("notes/show", {
-					noteId: id,
-				});
+				try {
+					const editedNote = await os.api('notes/show', {
+						noteId: id,
+					});
+					
+					const keys = new Set<string>();
+					Object.keys(editedNote)
+						.concat(Object.keys(note.value))
+						.forEach((key) => keys.add(key));
+					keys.forEach((key) => {
+						note.value[key] = editedNote[key];
+					});
+				} catch { /* empty */ }
 
-				const keys = new Set<string>();
-				Object.keys(editedNote)
-					.concat(Object.keys(note.value))
-					.forEach((key) => keys.add(key));
-				keys.forEach((key) => {
-					note.value[key] = editedNote[key];
-				});
 				break;
 			}
 		}

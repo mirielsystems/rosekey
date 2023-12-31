@@ -9,6 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<i v-if="widgetProps.src === 'home'" class="ph-house ph-bold ph-lg"></i>
 		<i v-else-if="widgetProps.src === 'local'" class="ph-planet ph-bold ph-lg"></i>
 		<i v-else-if="widgetProps.src === 'social'" class="ph-rocket-launch ph-bold ph-lg"></i>
+		<i v-else-if="widgetProps.src === 'bubble'" class="ph-drop ph-bold ph-lg"></i>
 		<i v-else-if="widgetProps.src === 'global'" class="ph-globe-hemisphere-west ph-bold ph-lg"></i>
 		<i v-else-if="widgetProps.src === 'list'" class="ph-list ph-bold ph-lg"></i>
 		<i v-else-if="widgetProps.src === 'antenna'" class="ph-flying-saucer ph-bold ph-lg"></i>
@@ -20,7 +21,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</button>
 	</template>
 
-	<div v-if="(((widgetProps.src === 'local' || widgetProps.src === 'social') && !isLocalTimelineAvailable) || (widgetProps.src === 'global' && !isGlobalTimelineAvailable))" :class="$style.disabled">
+	<div v-if="(((widgetProps.src === 'local' || widgetProps.src === 'social') && !isLocalTimelineAvailable) || (widgetProps.src === 'bubble' && !isBubbleTimelineAvailable) || (widgetProps.src === 'global' && !isGlobalTimelineAvailable))" :class="$style.disabled">
 		<p :class="$style.disabledTitle">
 			<i class="ph-minus ph-bold ph-lg"></i>
 			{{ i18n.ts._disabledTimeline.title }}
@@ -35,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import { useWidgetPropsManager, Widget, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
+import { useWidgetPropsManager, WidgetComponentEmits, WidgetComponentExpose, WidgetComponentProps } from './widget.js';
 import { GetFormResultType } from '@/scripts/form.js';
 import * as os from '@/os.js';
 import MkContainer from '@/components/MkContainer.vue';
@@ -47,6 +48,7 @@ import { instance } from '@/instance.js';
 const name = 'timeline';
 const isLocalTimelineAvailable = (($i == null && instance.policies.ltlAvailable) || ($i != null && $i.policies.ltlAvailable));
 const isGlobalTimelineAvailable = (($i == null && instance.policies.gtlAvailable) || ($i != null && $i.policies.gtlAvailable));
+const isBubbleTimelineAvailable = (($i == null && instance.policies.btlAvailable) || ($i != null && $i.policies.btlAvailable));
 
 const widgetPropsDef = {
 	showHeader: {
@@ -127,10 +129,14 @@ const choose = async (ev) => {
 		icon: 'ph-rocket-launch ph-bold ph-lg',
 		action: () => { setSrc('social'); },
 	}, {
+		text: 'Bubble',
+		icon: 'ph-drop ph-bold ph-lg',
+		action: () => { setSrc('bubble'); },
+	}, {
 		text: i18n.ts._timelines.global,
 		icon: 'ph-globe-hemisphere-west ph-bold ph-lg',
 		action: () => { setSrc('global'); },
-	}, antennaItems.length > 0 ? null : undefined, ...antennaItems, listItems.length > 0 ? null : undefined, ...listItems], ev.currentTarget ?? ev.target).then(() => {
+	}, antennaItems.length > 0 ? { type: 'divider' } : undefined, ...antennaItems, listItems.length > 0 ? { type: 'divider' } : undefined, ...listItems], ev.currentTarget ?? ev.target).then(() => {
 		menuOpened.value = false;
 	});
 };

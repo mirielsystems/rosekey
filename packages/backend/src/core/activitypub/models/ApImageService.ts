@@ -15,6 +15,7 @@ import { DriveService } from '@/core/DriveService.js';
 import type Logger from '@/logger.js';
 import { bindThis } from '@/decorators.js';
 import { checkHttps } from '@/misc/check-https.js';
+import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { ApResolverService } from '../ApResolverService.js';
 import { ApLoggerService } from '../ApLoggerService.js';
 import type { IObject } from '../type.js';
@@ -31,6 +32,7 @@ export class ApImageService {
 		private apResolverService: ApResolverService,
 		private driveService: DriveService,
 		private apLoggerService: ApLoggerService,
+		private federatedInstanceService: FederatedInstanceService,
 	) {
 		this.logger = this.apLoggerService.logger;
 	}
@@ -67,6 +69,12 @@ export class ApImageService {
 		// 1. remote sensitive file is also on
 		// 2. or the image is not sensitive
 		const shouldBeCached = instance.cacheRemoteFiles && (instance.cacheRemoteSensitiveFiles || !image.sensitive);
+
+		await this.federatedInstanceService.fetch(actor.host).then(async i => {
+			if (i.isNSFW) {
+				image.sensitive = true;
+			}
+		});
 
 		const file = await this.driveService.uploadFromUrl({
 			url: image.url,

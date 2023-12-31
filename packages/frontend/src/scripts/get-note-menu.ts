@@ -18,6 +18,7 @@ import { getUserMenu } from '@/scripts/get-user-menu.js';
 import { clipsCache } from '@/cache.js';
 import { MenuItem } from '@/types/menu.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
+import { isSupportShare } from '@/scripts/navigator.js';
 
 export async function getNoteClipMenu(props: {
 	note: Misskey.entities.Note;
@@ -60,7 +61,7 @@ export async function getNoteClipMenu(props: {
 				},
 			);
 		},
-	})), null, {
+	})), { type: 'divider' }, {
 		icon: 'ph-plus ph-bold ph-lg',
 		text: i18n.ts.createNew,
 		action: async () => {
@@ -93,7 +94,7 @@ export async function getNoteClipMenu(props: {
 	}];
 }
 
-export function getAbuseNoteMenu(note: misskey.entities.Note, text: string): MenuItem {
+export function getAbuseNoteMenu(note: Misskey.entities.Note, text: string): MenuItem {
 	return {
 		icon: 'ph-warning-circle ph-bold ph-lg',
 		text,
@@ -107,7 +108,7 @@ export function getAbuseNoteMenu(note: misskey.entities.Note, text: string): Men
 	};
 }
 
-export function getCopyNoteLinkMenu(note: misskey.entities.Note, text: string): MenuItem {
+export function getCopyNoteLinkMenu(note: Misskey.entities.Note, text: string): MenuItem {
 	return {
 		icon: 'ph-link ph-bold ph-lg',
 		text,
@@ -132,7 +133,7 @@ export function getCopyNoteOriginLinkMenu(note: misskey.entities.Note, text: str
 export function getNoteMenu(props: {
 	note: Misskey.entities.Note;
 	menuButton: Ref<HTMLElement>;
-	translation: Ref<any>;
+	translation: Ref<Misskey.entities.NotesTranslateResponse | null>;
 	translating: Ref<boolean>;
 	isDeleted: Ref<boolean>;
 	currentClip?: Misskey.entities.Clip;
@@ -285,7 +286,7 @@ export function getNoteMenu(props: {
 					text: i18n.ts.unclip,
 					danger: true,
 					action: unclip,
-				}, null] : []
+				}, { type: 'divider' }] : []
 			), {
 				icon: 'ph-info ph-bold ph-lg',
 				text: i18n.ts.details,
@@ -302,20 +303,20 @@ export function getNoteMenu(props: {
 				icon: 'ph-arrow-square-out ph-bold ph-lg',
 				text: i18n.ts.showOnRemote,
 				action: () => {
-					window.open(appearNote.url ?? appearNote.uri, '_blank');
+					window.open(appearNote.url ?? appearNote.uri, '_blank', 'noopener');
 				},
 			} : undefined,
-			{
+			...(isSupportShare() ? [{
 				icon: 'ph-share-network ph-bold ph-lg',
 				text: i18n.ts.share,
 				action: share,
-			},
+			}] : []),
 			$i && $i.policies.canUseTranslator && instance.translatorAvailable ? {
 				icon: 'ph-translate ph-bold ph-lg',
 				text: i18n.ts.translate,
 				action: translate,
 			} : undefined,
-			null,
+			{ type: 'divider' },
 			statePromise.then(state => state.isFavorited ? {
 				icon: 'ph-star-half ph-bold ph-lg',
 				text: i18n.ts.unfavorite,
@@ -362,7 +363,7 @@ export function getNoteMenu(props: {
 			},
 			/*
 		...($i.isModerator || $i.isAdmin ? [
-			null,
+			{ type: 'divider' },
 			{
 				icon: 'ph-megaphone ph-bold ph-lg',
 				text: i18n.ts.promote,
@@ -371,13 +372,13 @@ export function getNoteMenu(props: {
 			: []
 		),*/
 			...(appearNote.userId !== $i.id ? [
-				null,
+				{ type: 'divider' },
 				appearNote.userId !== $i.id ? getAbuseNoteMenu(appearNote, i18n.ts.reportAbuse) : undefined,
 			]
 			: []
 			),
 			...(appearNote.userId === $i.id || $i.isModerator || $i.isAdmin ? [
-				null,
+				{ type: 'divider' },
 				appearNote.userId === $i.id ? {
 					icon: 'ph-pencil ph-bold ph-lg',
 					text: i18n.ts.edit,
@@ -415,14 +416,14 @@ export function getNoteMenu(props: {
 			icon: 'ph-arrow-square-out ph-bold ph-lg',
 			text: i18n.ts.showOnRemote,
 			action: () => {
-				window.open(appearNote.url ?? appearNote.uri, '_blank');
+				window.open(appearNote.url ?? appearNote.uri, '_blank', 'noopener');
 			},
 		} : undefined]
 			.filter(x => x !== undefined);
 	}
 
 	if (noteActions.length > 0) {
-		menu = menu.concat([null, ...noteActions.map(action => ({
+		menu = menu.concat([{ type: "divider" }, ...noteActions.map(action => ({
 			icon: 'ph-plug ph-bold ph-lg',
 			text: action.title,
 			action: () => {
@@ -432,7 +433,7 @@ export function getNoteMenu(props: {
 	}
 
 	if (defaultStore.state.devMode) {
-		menu = menu.concat([null, {
+		menu = menu.concat([{ type: "divider" }, {
 			icon: 'ph-identification-card ph-bold ph-lg',
 			text: i18n.ts.copyNoteId,
 			action: () => {
@@ -518,7 +519,7 @@ export function getRenoteMenu(props: {
 		}]);
 	}
 
-	if (!appearNote.channel || appearNote.channel?.allowRenoteToExternal) {
+	if (!appearNote.channel || appearNote.channel.allowRenoteToExternal) {
 		normalRenoteItems.push(...[{
 			text: i18n.ts.renote,
 			icon: 'ti ti-repeat',
@@ -561,10 +562,9 @@ export function getRenoteMenu(props: {
 		}]);
 	}
 
-	// nullを挟むことで区切り線を出せる
 	const renoteItems = [
 		...normalRenoteItems,
-		...(channelRenoteItems.length > 0 && normalRenoteItems.length > 0) ? [null] : [],
+		...(channelRenoteItems.length > 0 && normalRenoteItems.length > 0) ? [{ type: 'divider' }] : [],
 		...channelRenoteItems,
 	];
 

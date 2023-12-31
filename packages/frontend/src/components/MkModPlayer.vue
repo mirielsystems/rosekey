@@ -7,7 +7,11 @@
 </div>
 
 <div v-else class="mod-player-enabled">
-	<div class="pattern-display">
+	<div class="pattern-display" @click="togglePattern()">
+		<div v-if="patternHide" class="pattern-hide">
+			<b><i class="ph-eye ph-bold ph-lg"></i> Pattern Hidden</b>
+			<span>{{ i18n.ts.clickToShow }}</span>
+		</div>
 		<canvas ref="displayCanvas" class="pattern-canvas"></canvas>
 	</div>
 	<div class="controls">
@@ -29,7 +33,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, nextTick } from 'vue';
+import { ref, nextTick, computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
@@ -71,9 +75,11 @@ const props = defineProps<{
 	module: Misskey.entities.DriveFile
 }>();
 
-const isSensitive = $computed(() => { return props.module.isSensitive; });
-const url = $computed(() => { return props.module.url; });
-let hide = ref((defaultStore.state.nsfw === 'force') ? true : isSensitive && (defaultStore.state.nsfw !== 'ignore'));
+const isSensitive = computed(() => { return props.module.isSensitive; });
+const url = computed(() => { return props.module.url; });
+let hide = ref((defaultStore.state.nsfw === 'force') ? true : isSensitive.value && (defaultStore.state.nsfw !== 'ignore'));
+let patternHide = ref(false);
+let firstFrame = ref(true);
 let playing = ref(false);
 let displayCanvas = ref<HTMLCanvasElement>();
 let progress = ref<HTMLProgressElement>();
@@ -84,7 +90,7 @@ const rowBuffer = 24;
 let buffer = null;
 let isSeeking = false;
 
-player.value.load(url).then((result) => {
+player.value.load(url.value).then((result) => {
 	buffer = result;
 	try {
 		player.value.play(buffer);
@@ -156,13 +162,39 @@ function performSeek() {
 
 function toggleVisible() {
 	hide.value = !hide.value;
+	if (!hide.value && patternHide.value) {
+		firstFrame.value = true;
+		patternHide.value = false;
+	}
 	nextTick(() => { stop(hide.value); });
+}
+
+function togglePattern() {
+	patternHide.value = !patternHide.value;
+	if (!patternHide.value) {
+		if (player.value.getRow() === 0) {
+			try {
+				player.value.play(buffer);
+				display();
+			} catch (err) {
+				console.warn(err);
+			}
+			player.value.stop();
+		}
+	}
 }
 
 function display() {
 	if (!displayCanvas.value) {
 		stop();
 		return;
+	}
+
+	if (patternHide.value) return;
+
+	if (firstFrame.value) {
+		firstFrame.value = false;
+		patternHide.value = true;
 	}
 
 	const canvas = displayCanvas.value;
@@ -211,7 +243,7 @@ function display() {
 				const instr = part.substring(4, 6);
 				ctx.fillStyle = colours.instr[active];
 				ctx.fillText(instr, baseOffset + CHAR_WIDTH * 5, baseRowOffset);
-				
+
 				const volume = part.substring(6, 9);
 				ctx.fillStyle = colours.volume[active];
 				ctx.fillText(volume, baseOffset + CHAR_WIDTH * 7, baseRowOffset);
@@ -271,12 +303,32 @@ function display() {
 			background-color: black;
 			height: 100%;
 		}
+		.pattern-hide {
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			background: rgba(64, 64, 64, 0.3);
+			backdrop-filter: blur(2em);
+			color: #fff;
+			font-size: 12px;
+
+			position: absolute;
+			z-index: 0;
+			width: 100%;
+			height: 100%;
+
+			> span {
+				display: block;
+			}
+		}
 	}
 
 	> .controls {
 		display: flex;
 		width: 100%;
 		background-color: var(--bg);
+		z-index: 1;
 
 		> * {
 			padding: 4px 8px;

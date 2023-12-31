@@ -4,6 +4,8 @@
  */
 
 import { computed, reactive } from 'vue';
+import { clearCache } from './scripts/clear-cache.js';
+import { instance } from './instance.js';
 import { $i } from '@/account.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { openInstanceMenu } from '@/ui/_common_/common.js';
@@ -12,7 +14,6 @@ import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { ui } from '@/config.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
-import { instance } from './instance.js';
 
 export const navbarItemDef = reactive({
 	notifications: {
@@ -164,5 +165,12 @@ export const navbarItemDef = reactive({
 		icon: 'ph-user ph-bold ph-lg',
 		show: computed(() => $i != null),
 		to: `/@${$i?.username}`,
+	},
+	cacheClear: {
+		title: i18n.ts.clearCache,
+		icon: 'ph-trash ph-bold ph-lg',
+		action: (ev) => {
+			clearCache();
+		},
 	},
 });

@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div>
 			<p v-if="note.cw != null" :class="$style.cw">
 				<Mfm v-if="note.cw != ''" style="margin-right: 8px;" :text="note.cw" :author="note.user" :nyaize="'respect'" :emojiUrls="note.emojis"/>
-				<MkCwButton v-model="showContent" :note="note" v-on:click.stop/>
+				<MkCwButton v-model="showContent" :text="note.text" :files="note.files" :poll="note.poll" @click.stop/>
 			</p>
 			<div v-show="note.cw == null || showContent">
 				<MkSubNoteContent :hideFiles="hideFiles" :class="$style.text" :note="note"/>
@@ -22,12 +22,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { watch } from 'vue';
+import { ref, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
-import { $i } from '@/account.js';
+import { defaultStore } from '@/store.js';
 
 const props = defineProps<{
 	note: Misskey.entities.Note;
@@ -35,10 +35,10 @@ const props = defineProps<{
 	hideFiles?: boolean;
 }>();
 
-let showContent = $ref(false);
+let showContent = ref(defaultStore.state.uncollapseCW);
 
 watch(() => props.expandAllCws, (expandAllCws) => {
-	if (expandAllCws !== showContent) showContent = expandAllCws;
+	if (expandAllCws !== showContent.value) showContent.value = expandAllCws;
 });
 </script>
 

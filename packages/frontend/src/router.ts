@@ -55,6 +55,10 @@ export const routes = [{
 		name: 'profile',
 		component: page(() => import('./pages/settings/profile.vue')),
 	}, {
+		path: '/avatar-decoration',
+		name: 'avatarDecoration',
+		component: page(() => import('./pages/settings/avatar-decoration.vue')),
+	}, {
 		path: '/roles',
 		name: 'roles',
 		component: page(() => import('./pages/settings/roles.vue')),
@@ -63,9 +67,9 @@ export const routes = [{
 		name: 'privacy',
 		component: page(() => import('./pages/settings/privacy.vue')),
 	}, {
-		path: '/reaction',
-		name: 'reaction',
-		component: page(() => import('./pages/settings/reaction.vue')),
+		path: '/emoji-picker',
+		name: 'emojiPicker',
+		component: page(() => import('./pages/settings/emoji-picker.vue')),
 	}, {
 		path: '/drive',
 		name: 'drive',
@@ -307,6 +311,10 @@ export const routes = [{
 }, {
 	path: '/channels',
 	component: page(() => import('./pages/channels.vue')),
+}, {
+	path: '/avatar-decorations',
+	name: 'avatarDecorations',
+	component: page(() => import('./pages/avatar-decorations.vue')),
 }, {
 	path: '/custom-emojis-manager',
 	component: page(() => import('./pages/custom-emojis-manager.vue')),

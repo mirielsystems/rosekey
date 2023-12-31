@@ -7,7 +7,6 @@ import { IsNull, LessThanOrEqual, MoreThan, Brackets } from 'typeorm';
 import { Inject, Injectable } from '@nestjs/common';
 import JSON5 from 'json5';
 import type { AdsRepository, UsersRepository } from '@/models/_.js';
-import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { MetaService } from '@/core/MetaService.js';
@@ -172,19 +171,33 @@ export const meta = {
 					type: 'object',
 					optional: false, nullable: false,
 					properties: {
-						place: {
+						id: {
 							type: 'string',
 							optional: false, nullable: false,
+							format: 'id',
+							example: 'xxxxxxxxxx',
 						},
 						url: {
 							type: 'string',
 							optional: false, nullable: false,
 							format: 'url',
 						},
+						place: {
+							type: 'string',
+							optional: false, nullable: false,
+						},
+						ratio: {
+							type: 'number',
+							optional: false, nullable: false,
+						},
 						imageUrl: {
 							type: 'string',
 							optional: false, nullable: false,
 							format: 'url',
+						},
+						dayOfWeek: {
+							type: 'integer',
+							optional: false, nullable: false,
 						},
 					},
 				},
@@ -257,6 +270,33 @@ export const meta = {
 						default: true,
 					},
 				},
+			},
+			backgroundImageUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			impressumUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			logoImageUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			privacyPolicyUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			serverRules: {
+				type: 'array',
+				optional: false, nullable: false,
+				items: {
+					type: 'string',
+				},
+			},
+			themeColor: {
+				type: 'string',
+				optional: false, nullable: true,
 			},
 		},
 	},
@@ -334,7 +374,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				iconUrl: instance.iconUrl,
 				backgroundImageUrl: instance.backgroundImageUrl,
 				logoImageUrl: instance.logoImageUrl,
-				maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
+				maxNoteTextLength: this.config.maxNoteLength,
 				// クライアントの手間を減らすためあらかじめJSONに変換しておく
 				defaultLightTheme: instance.defaultLightTheme ? JSON.stringify(JSON5.parse(instance.defaultLightTheme)) : null,
 				defaultDarkTheme: instance.defaultDarkTheme ? JSON.stringify(JSON5.parse(instance.defaultDarkTheme)) : null,

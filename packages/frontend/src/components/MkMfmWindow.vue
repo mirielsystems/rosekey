@@ -391,7 +391,7 @@ const preview_inlineMath = ref(
 const preview_blockMath = ref("\\[x= \\frac{-b' \\pm \\sqrt{(b')^2-ac}}{a}\\]");
 const preview_quote = ref(`> ${i18n.ts._mfm.dummy}`);
 const preview_search = ref(
-	`${i18n.ts._mfm.dummy} [search]\n${i18n.ts._mfm.dummy} [検索]\n${i18n.ts._mfm.dummy} 検索`,
+	`${i18n.ts._mfm.dummy} [search]\n${i18n.ts._mfm.dummy} [検索]`,
 );
 const preview_jelly = ref(
 	"$[jelly 🍮] $[jelly.speed=3s 🍮] $[jelly.delay=3s 🍮] $[jelly.loop=3 🍮]",

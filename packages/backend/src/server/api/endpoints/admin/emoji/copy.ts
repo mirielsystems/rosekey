@@ -7,11 +7,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { IsNull } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { EmojisRepository } from '@/models/_.js';
-import { IdService } from '@/core/IdService.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import { DI } from '@/di-symbols.js';
 import { DriveService } from '@/core/DriveService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
+import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { EmojiEntityService } from '@/core/entities/EmojiEntityService.js';
 import { ApiError } from '../../../error.js';
 
@@ -20,6 +19,7 @@ export const meta = {
 
 	requireCredential: true,
 	requireRolePolicy: 'canManageCustomEmojis',
+	kind: 'write:admin:emoji',
 
 	errors: {
 		noSuchEmoji: {
@@ -62,21 +62,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	constructor(
 		@Inject(DI.emojisRepository)
 		private emojisRepository: EmojisRepository,
-
 		private emojiEntityService: EmojiEntityService,
-		private idService: IdService,
-		private globalEventService: GlobalEventService,
+		private customEmojiService: CustomEmojiService,
 		private driveService: DriveService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const emoji = await this.emojisRepository.findOneBy({ id: ps.emojiId });
-
 			if (emoji == null) {
 				throw new ApiError(meta.errors.noSuchEmoji);
 			}
-
-			const isDuplicate = await this.emojisRepository.findOneBy({ name: emoji.name, host: IsNull() } );
-			if (isDuplicate) throw new ApiError(meta.errors.duplicateName);
 
 			let driveFile: MiDriveFile;
 
@@ -84,28 +78,27 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				// Create file
 				driveFile = await this.driveService.uploadFromUrl({ url: emoji.originalUrl, user: null, force: true });
 			} catch (e) {
+				// TODO: need to return Drive Error
 				throw new ApiError();
 			}
 
-			const copied = await this.emojisRepository.insert({
-				id: this.idService.gen(),
-				updatedAt: new Date(),
+			// Duplication Check
+			const isDuplicate = await this.customEmojiService.checkDuplicate(emoji.name);
+			if (isDuplicate) throw new ApiError(meta.errors.duplicateName);
+
+			const addedEmoji = await this.customEmojiService.add({
+				driveFile,
 				name: emoji.name,
+				category: emoji.category,
+				aliases: emoji.aliases,
 				host: null,
-				aliases: [],
-				originalUrl: driveFile.url,
-				publicUrl: driveFile.webpublicUrl ?? driveFile.url,
-				type: driveFile.webpublicType ?? driveFile.type,
 				license: emoji.license,
-			}).then(x => this.emojisRepository.findOneByOrFail(x.identifiers[0]));
+				isSensitive: emoji.isSensitive,
+				localOnly: emoji.localOnly,
+				roleIdsThatCanBeUsedThisEmojiAsReaction: emoji.roleIdsThatCanBeUsedThisEmojiAsReaction,
+			}, me);
 
-			this.globalEventService.publishBroadcastStream('emojiAdded', {
-				emoji: await this.emojiEntityService.packDetailed(copied.id),
-			});
-
-			return {
-				id: copied.id,
-			};
+			return this.emojiEntityService.packDetailed(addedEmoji);
 		});
 	}
 }

@@ -34,6 +34,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #label>{{ i18n.ts.privacyPolicyUrl }}</template>
 					</MkInput>
 
+					<MkTextarea v-if="bubbleTimelineEnabled" v-model="bubbleTimeline">
+						<template #label>Bubble timeline</template>
+						<template #caption>Choose which instances should be displayed in the bubble.</template>
+					</MkTextarea>
+
 					<MkTextarea v-model="preservedUsernames">
 						<template #label>{{ i18n.ts.preservedUsernames }}</template>
 						<template #caption>{{ i18n.ts.preservedUsernamesDescription }}</template>
@@ -42,6 +47,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkTextarea v-model="sensitiveWords">
 						<template #label>{{ i18n.ts.sensitiveWords }}</template>
 						<template #caption>{{ i18n.ts.sensitiveWordsDescription }}<br>{{ i18n.ts.sensitiveWordsDescription2 }}</template>
+					</MkTextarea>
+
+					<MkTextarea v-model="hiddenTags">
+						<template #label>{{ i18n.ts.hiddenTags }}</template>
+						<template #caption>{{ i18n.ts.hiddenTagsDescription }}</template>
 					</MkTextarea>
 				</div>
 			</FormSuspense>
@@ -58,13 +68,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
+import { ref, computed } from 'vue';
 import XHeader from './_header_.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkInput from '@/components/MkInput.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
-import FormSection from '@/components/form/section.vue';
-import FormSplit from '@/components/form/split.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
 import { fetchInstance } from '@/instance.js';
@@ -73,40 +81,48 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkButton from '@/components/MkButton.vue';
 import FormLink from '@/components/form/link.vue';
 
-let enableRegistration: boolean = $ref(false);
-let emailRequiredForSignup: boolean = $ref(false);
-let approvalRequiredForSignup: boolean = $ref(false);
-let sensitiveWords: string = $ref('');
-let preservedUsernames: string = $ref('');
-let tosUrl: string | null = $ref(null);
-let privacyPolicyUrl: string | null = $ref(null);
+const enableRegistration = ref<boolean>(false);
+const emailRequiredForSignup = ref<boolean>(false);
+const approvalRequiredForSignup = ref<boolean>(false);
+const bubbleTimelineEnabled = ref<boolean>(false);
+const sensitiveWords = ref<string>('');
+const hiddenTags = ref<string>('');
+const preservedUsernames = ref<string>('');
+const bubbleTimeline = ref<string>('');
+const tosUrl = ref<string | null>(null);
+const privacyPolicyUrl = ref<string | null>(null);
 
 async function init() {
 	const meta = await os.api('admin/meta');
-	enableRegistration = !meta.disableRegistration;
-	emailRequiredForSignup = meta.emailRequiredForSignup;
-	approvalRequiredForSignup = meta.approvalRequiredForSignup;
-	sensitiveWords = meta.sensitiveWords.join('\n');
-	preservedUsernames = meta.preservedUsernames.join('\n');
-	tosUrl = meta.tosUrl;
-	privacyPolicyUrl = meta.privacyPolicyUrl;
+	enableRegistration.value = !meta.disableRegistration;
+	emailRequiredForSignup.value = meta.emailRequiredForSignup;
+	approvalRequiredForSignup.value = meta.approvalRequiredForSignup;
+	sensitiveWords.value = meta.sensitiveWords.join('\n');
+	hiddenTags.value = meta.hiddenTags.join('\n');
+	preservedUsernames.value = meta.preservedUsernames.join('\n');
+	tosUrl.value = meta.tosUrl;
+	privacyPolicyUrl.value = meta.privacyPolicyUrl;
+	bubbleTimeline.value = meta.bubbleInstances.join('\n');
+	bubbleTimelineEnabled.value = meta.policies.btlAvailable;
 }
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
-		disableRegistration: !enableRegistration,
-		emailRequiredForSignup,
-		approvalRequiredForSignup,
-		tosUrl,
-		privacyPolicyUrl,
-		sensitiveWords: sensitiveWords.split('\n'),
-		preservedUsernames: preservedUsernames.split('\n'),
+		disableRegistration: !enableRegistration.value,
+		emailRequiredForSignup: emailRequiredForSignup.value,
+		approvalRequiredForSignup: approvalRequiredForSignup.value,
+		tosUrl: tosUrl.value,
+		privacyPolicyUrl: privacyPolicyUrl.value,
+		sensitiveWords: sensitiveWords.value.split('\n'),
+		hiddenTags: hiddenTags.value.split('\n'),
+		preservedUsernames: preservedUsernames.value.split('\n'),
+		bubbleInstances: bubbleTimeline.value.split('\n'),
 	}).then(() => {
 		fetchInstance();
 	});
 }
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.moderation,

@@ -7,7 +7,6 @@ import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
-import { MAX_NOTE_TEXT_LENGTH } from '@/const.js';
 import { MemorySingleCache } from '@/misc/cache.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { bindThis } from '@/decorators.js';
@@ -96,6 +95,11 @@ export class NodeinfoServerService {
 				metadata: {
 					nodeName: meta.name,
 					nodeDescription: meta.description,
+					nodeAdmins: [{
+						name: meta.maintainerName,
+						email: meta.maintainerEmail,
+					}],
+					// deprecated
 					maintainer: {
 						name: meta.maintainerName,
 						email: meta.maintainerEmail,
@@ -109,10 +113,11 @@ export class NodeinfoServerService {
 					disableRegistration: meta.disableRegistration,
 					disableLocalTimeline: !basePolicies.ltlAvailable,
 					disableGlobalTimeline: !basePolicies.gtlAvailable,
+					disableBubbleTimeline: !basePolicies.btlAvailable,
 					emailRequiredForSignup: meta.emailRequiredForSignup,
 					enableHcaptcha: meta.enableHcaptcha,
 					enableRecaptcha: meta.enableRecaptcha,
-					maxNoteTextLength: MAX_NOTE_TEXT_LENGTH,
+					maxNoteTextLength: this.config.maxNoteLength,
 					enableEmail: meta.enableEmail,
 					enableServiceWorker: meta.enableServiceWorker,
 					proxyAccountName: proxyAccount ? proxyAccount.username : null,

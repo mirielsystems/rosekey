@@ -616,7 +616,7 @@ function getMenu() {
 		type: 'switch',
 		text: i18n.ts.keepOriginalUploading,
 		ref: keepOriginal,
-	}, null, {
+	}, { type: 'divider' }, {
 		text: i18n.ts.addFile,
 		type: 'label',
 	}, {
@@ -627,7 +627,7 @@ function getMenu() {
 		text: i18n.ts.fromUrl,
 		icon: 'ph-link ph-bold ph-lg',
 		action: () => { urlUpload(); },
-	}, null, {
+	}, { type: 'divider' }, {
 		text: folder.value ? folder.value.name : i18n.ts.drive,
 		type: 'label',
 	}, folder.value ? {

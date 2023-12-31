@@ -16,6 +16,41 @@ import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js';
 import type { FastifyInstance } from 'fastify';
 
+const kinds = [
+	'read:account',
+	'write:account',
+	'read:blocks',
+	'write:blocks',
+	'read:drive',
+	'write:drive',
+	'read:favorites',
+	'write:favorites',
+	'read:following',
+	'write:following',
+	'read:messaging',
+	'write:messaging',
+	'read:mutes',
+	'write:mutes',
+	'write:notes',
+	'read:notifications',
+	'write:notifications',
+	'read:reactions',
+	'write:reactions',
+	'write:votes',
+	'read:pages',
+	'write:pages',
+	'write:page-likes',
+	'read:page-likes',
+	'read:user-groups',
+	'write:user-groups',
+	'read:channels',
+	'write:channels',
+	'read:gallery',
+	'write:gallery',
+	'read:gallery-likes',
+	'write:gallery-likes',
+];
+
 function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
 	const accessToken = accessTokenArr[accessTokenArr.length - 1];
@@ -30,6 +65,22 @@ export class OAuth2ProviderService {
 		@Inject(DI.config)
 		private config: Config,
 	) { }
+
+	// https://datatracker.ietf.org/doc/html/rfc8414.html
+	// https://indieauth.spec.indieweb.org/#indieauth-server-metadata
+	public generateRFC8414() {
+		return {
+			issuer: this.config.url,
+			authorization_endpoint: new URL('/oauth/authorize', this.config.url),
+			token_endpoint: new URL('/oauth/token', this.config.url),
+			scopes_supported: kinds,
+			response_types_supported: ['code'],
+			grant_types_supported: ['authorization_code'],
+			service_documentation: 'https://misskey-hub.net',
+			code_challenge_methods_supported: ['S256'],
+			authorization_response_iss_parameter_supported: true,
+		};
+	}
 
 	@bindThis
 	public async createServer(fastify: FastifyInstance): Promise<void> {
@@ -80,7 +131,7 @@ export class OAuth2ProviderService {
 
 		fastify.register(multer.contentParser);
 
-		fastify.get('/oauth/authorize', async (request, reply) => {
+		fastify.get('/authorize', async (request, reply) => {
 			const query: any = request.query;
 			let param = "mastodon=true";
 			if (query.state) param += `&state=${query.state}`;
@@ -91,7 +142,7 @@ export class OAuth2ProviderService {
 			);
 		});
 
-		fastify.get('/oauth/authorize/', async (request, reply) => {
+		fastify.get('/authorize/', async (request, reply) => {
 			const query: any = request.query;
 			let param = "mastodon=true";
 			if (query.state) param += `&state=${query.state}`;
@@ -102,7 +153,7 @@ export class OAuth2ProviderService {
 			);
 		});
 
-		fastify.post('/oauth/token', { preHandler: upload.none() }, async (request, reply) => {
+		fastify.post('/token', { preHandler: upload.none() }, async (request, reply) => {
 			const body: any = request.body || request.query;
 			if (body.grant_type === "client_credentials") {
 				const ret = {

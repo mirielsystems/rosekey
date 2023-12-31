@@ -29,7 +29,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { onActivated, onMounted, onUnmounted, provide, watch } from 'vue';
+import { ComputedRef, Ref, onActivated, onMounted, onUnmounted, provide, watch, ref, computed } from 'vue';
 import { i18n } from '@/i18n.js';
 import MkSuperMenu from '@/components/MkSuperMenu.vue';
 import MkInfo from '@/components/MkInfo.vue';
@@ -37,7 +37,7 @@ import { instance } from '@/instance.js';
 import * as os from '@/os.js';
 import { lookupUser, lookupUserByEmail } from '@/scripts/lookup-user.js';
 import { useRouter } from '@/router.js';
-import { definePageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata.js';
+import { PageMetadata, definePageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata.js';
 
 const isEmpty = (x: string | null) => x == null || x === '';
 
@@ -51,24 +51,24 @@ const indexInfo = {
 
 provide('shouldOmitHeaderTitle', false);
 
-let INFO = $ref(indexInfo);
-let childInfo = $ref(null);
-let narrow = $ref(false);
-let view = $ref(null);
-let el = $ref(null);
-let pageProps = $ref({});
+const INFO = ref(indexInfo);
+const childInfo: Ref<ComputedRef<PageMetadata> | null> = ref(null);
+const narrow = ref(false);
+const view = ref(null);
+const el = ref<HTMLDivElement | null>(null);
+const pageProps = ref({});
 let noMaintainerInformation = isEmpty(instance.maintainerName) || isEmpty(instance.maintainerEmail);
 let noBotProtection = !instance.disableRegistration && !instance.enableHcaptcha && !instance.enableRecaptcha && !instance.enableTurnstile;
 let noEmailServer = !instance.enableEmail;
-let thereIsUnresolvedAbuseReport = $ref(false);
-let pendingUserApprovals = $ref(false);
-let currentPage = $computed(() => router.currentRef.value.child);
+const thereIsUnresolvedAbuseReport = ref(false);
+const pendingUserApprovals = ref(false);
+const currentPage = computed(() => router.currentRef.value.child);
 
 os.api('admin/abuse-user-reports', {
 	state: 'unresolved',
 	limit: 1,
 }).then(reports => {
-	if (reports.length > 0) thereIsUnresolvedAbuseReport = true;
+	if (reports.length > 0) thereIsUnresolvedAbuseReport.value = true;
 });
 
 os.api('admin/show-users', {
@@ -76,16 +76,16 @@ os.api('admin/show-users', {
 	origin: 'local',
 	limit: 1,
 }).then(approvals => {
-	if (approvals.length > 0) pendingUserApprovals = true;
+	if (approvals.length > 0) pendingUserApprovals.value = true;
 });
 
 const NARROW_THRESHOLD = 600;
 const ro = new ResizeObserver((entries, observer) => {
 	if (entries.length === 0) return;
-	narrow = entries[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
+	narrow.value = entries[0].borderBoxSize[0].inlineSize < NARROW_THRESHOLD;
 });
 
-const menuDef = $computed(() => [{
+const menuDef = computed(() => [{
 	title: i18n.ts.quickAction,
 	items: [{
 		type: 'button',
@@ -104,72 +104,72 @@ const menuDef = $computed(() => [{
 		icon: 'ph-gauge ph-bold ph-lg',
 		text: i18n.ts.dashboard,
 		to: '/admin/overview',
-		active: currentPage?.route.name === 'overview',
+		active: currentPage.value?.route.name === 'overview',
 	}, {
 		icon: 'ph-users ph-bold ph-lg',
 		text: i18n.ts.users,
 		to: '/admin/users',
-		active: currentPage?.route.name === 'users',
+		active: currentPage.value?.route.name === 'users',
 	}, {
 		icon: 'ph-user-plus ph-bold ph-lg',
 		text: i18n.ts.invite,
 		to: '/admin/invites',
-		active: currentPage?.route.name === 'invites',
+		active: currentPage.value?.route.name === 'invites',
 	}, {
 		icon: 'ph-chalkboard-teacher ph-bold ph-lg',
 		text: i18n.ts.approvals,
 		to: '/admin/approvals',
-		active: currentPage?.route.name === 'approvals',
+		active: currentPage.value?.route.name === 'approvals',
 	}, {
 		icon: 'ph-seal-check ph-bold ph-lg',
 		text: i18n.ts.roles,
 		to: '/admin/roles',
-		active: currentPage?.route.name === 'roles',
+		active: currentPage.value?.route.name === 'roles',
 	}, {
 		icon: 'ph-smiley ph-bold ph-lg',
 		text: i18n.ts.customEmojis,
 		to: '/admin/emojis',
-		active: currentPage?.route.name === 'emojis',
+		active: currentPage.value?.route.name === 'emojis',
 	}, {
 		icon: 'ph-sparkle ph-bold ph-lg',
 		text: i18n.ts.avatarDecorations,
 		to: '/admin/avatar-decorations',
-		active: currentPage?.route.name === 'avatarDecorations',
+		active: currentPage.value?.route.name === 'avatarDecorations',
 	}, {
 		icon: 'ph-globe-hemisphere-west ph-bold ph-lg',
 		text: i18n.ts.federation,
 		to: '/admin/federation',
-		active: currentPage?.route.name === 'federation',
+		active: currentPage.value?.route.name === 'federation',
 	}, {
 		icon: 'ph-clock ph-bold ph-lg-play',
 		text: i18n.ts.jobQueue,
 		to: '/admin/queue',
-		active: currentPage?.route.name === 'queue',
+		active: currentPage.value?.route.name === 'queue',
 	}, {
 		icon: 'ph-cloud ph-bold ph-lg',
 		text: i18n.ts.files,
 		to: '/admin/files',
-		active: currentPage?.route.name === 'files',
+		active: currentPage.value?.route.name === 'files',
 	}, {
 		icon: 'ph-megaphone ph-bold ph-lg',
 		text: i18n.ts.announcements,
 		to: '/admin/announcements',
-		active: currentPage?.route.name === 'announcements',
+		active: currentPage.value?.route.name === 'announcements',
 	}, {
 		icon: 'ph-flag ph-bold ph-lg',
 		text: i18n.ts.ads,
 		to: '/admin/ads',
-		active: currentPage?.route.name === 'ads',
+		active: currentPage.value?.route.name === 'ads',
 	}, {
 		icon: 'ph-warning-circle ph-bold ph-lg',
 		text: i18n.ts.abuseReports,
 		to: '/admin/abuses',
-		active: currentPage?.route.name === 'abuses',
+		active: currentPage.value?.route.name === 'abuses',
 	}, {
 		icon: 'ph-list ph-bold ph-lg-search',
 		text: i18n.ts.moderationLogs,
 		to: '/admin/modlog',
-		active: currentPage?.route.name === 'modlog',
+		active: currentPage.value?.route.name === 'modlog',
 	}],
 }, {
 	title: i18n.ts.settings,
@@ -177,57 +177,57 @@ const menuDef = $computed(() => [{
 		icon: 'ph-gear ph-bold ph-lg',
 		text: i18n.ts.general,
 		to: '/admin/settings',
-		active: currentPage?.route.name === 'settings',
+		active: currentPage.value?.route.name === 'settings',
 	}, {
 		icon: 'ph-paint-roller ph-bold ph-lg',
 		text: i18n.ts.branding,
 		to: '/admin/branding',
-		active: currentPage?.route.name === 'branding',
+		active: currentPage.value?.route.name === 'branding',
 	}, {
 		icon: 'ph-shield ph-bold ph-lg',
 		text: i18n.ts.moderation,
 		to: '/admin/moderation',
-		active: currentPage?.route.name === 'moderation',
+		active: currentPage.value?.route.name === 'moderation',
 	}, {
 		icon: 'ph-envelope ph-bold ph-lg',
 		text: i18n.ts.emailServer,
 		to: '/admin/email-settings',
-		active: currentPage?.route.name === 'email-settings',
+		active: currentPage.value?.route.name === 'email-settings',
 	}, {
 		icon: 'ph-cloud ph-bold ph-lg',
 		text: i18n.ts.objectStorage,
 		to: '/admin/object-storage',
-		active: currentPage?.route.name === 'object-storage',
+		active: currentPage.value?.route.name === 'object-storage',
 	}, {
 		icon: 'ph-lock ph-bold ph-lg',
 		text: i18n.ts.security,
 		to: '/admin/security',
-		active: currentPage?.route.name === 'security',
+		active: currentPage.value?.route.name === 'security',
 	}, {
 		icon: 'ph-planet ph-bold ph-lg',
 		text: i18n.ts.relays,
 		to: '/admin/relays',
-		active: currentPage?.route.name === 'relays',
+		active: currentPage.value?.route.name === 'relays',
 	}, {
 		icon: 'ph-prohibit ph-bold ph-lg',
 		text: i18n.ts.instanceBlocking,
 		to: '/admin/instance-block',
-		active: currentPage?.route.name === 'instance-block',
+		active: currentPage.value?.route.name === 'instance-block',
 	}, {
 		icon: 'ph-ghost ph-bold ph-lg',
 		text: i18n.ts.proxyAccount,
 		to: '/admin/proxy-account',
-		active: currentPage?.route.name === 'proxy-account',
+		active: currentPage.value?.route.name === 'proxy-account',
 	}, {
 		icon: 'ph-arrow-square-out ph-bold ph-lg',
 		text: i18n.ts.externalServices,
 		to: '/admin/external-services',
-		active: currentPage?.route.name === 'external-services',
+		active: currentPage.value?.route.name === 'external-services',
 	}, {
 		icon: 'ph-faders ph-bold ph-lg',
 		text: i18n.ts.other,
 		to: '/admin/other-settings',
-		active: currentPage?.route.name === 'other-settings',
+		active: currentPage.value?.route.name === 'other-settings',
 	}],
 }, {
 	title: i18n.ts.info,
@@ -235,28 +235,28 @@ const menuDef = $computed(() => [{
 		icon: 'ph-database ph-bold ph-lg',
 		text: i18n.ts.database,
 		to: '/admin/database',
-		active: currentPage?.route.name === 'database',
+		active: currentPage.value?.route.name === 'database',
 	}],
 }]);
 
-watch(narrow, () => {
-	if (currentPage?.route.name == null && !narrow) {
+watch(narrow.value, () => {
+	if (currentPage.value?.route.name == null && !narrow.value) {
 		router.push('/admin/overview');
 	}
 });
 
 onMounted(() => {
-	ro.observe(el);
+	ro.observe(el.value);
 
-	narrow = el.offsetWidth < NARROW_THRESHOLD;
-	if (currentPage?.route.name == null && !narrow) {
+	narrow.value = el.value.offsetWidth < NARROW_THRESHOLD;
+	if (currentPage.value?.route.name == null && !narrow.value) {
 		router.push('/admin/overview');
 	}
 });
 
 onActivated(() => {
-	narrow = el.offsetWidth < NARROW_THRESHOLD;
-	if (currentPage?.route.name == null && !narrow) {
+	narrow.value = el.value.offsetWidth < NARROW_THRESHOLD;
+	if (currentPage.value?.route.name == null && !narrow.value) {
 		router.push('/admin/overview');
 	}
 });
@@ -266,16 +266,17 @@ onUnmounted(() => {
 });
 
 watch(router.currentRef, (to) => {
-	if (to.route.path === '/admin' && to.child?.route.name == null && !narrow) {
+	if (to.route.path === '/admin' && to.child?.route.name == null && !narrow.value) {
 		router.replace('/admin/overview');
 	}
 });
 
 provideMetadataReceiver((info) => {
 	if (info == null) {
-		childInfo = null;
+		childInfo.value = null;
 	} else {
-		childInfo = info;
+		childInfo.value = info;
+		INFO.value.needWideArea = info.value.needWideArea ?? undefined;
 	}
 });
 
@@ -283,7 +284,7 @@ function invite() {
 	os.api('admin/invite/create').then(x => {
 		os.alert({
 			type: 'info',
-			text: x?.[0].code,
+			text: x[0].code,
 		});
 	}).catch(err => {
 		os.alert({
@@ -327,11 +328,11 @@ function lookup(ev: MouseEvent) {
 	}], ev.currentTarget ?? ev.target);
 }
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
-definePageMetadata(INFO);
+definePageMetadata(INFO.value);
 
 defineExpose({
 	header: {

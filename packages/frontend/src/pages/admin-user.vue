@@ -109,6 +109,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</template>
 						</MkFolder>
 
+						<div>
+							<MkButton v-if="iAmModerator" inline danger style="margin-right: 8px;" @click="unsetUserAvatar"><i class="ph-user-circle ph-bold ph-lg"></i> {{ i18n.ts.unsetUserAvatar }}</MkButton>
+							<MkButton v-if="iAmModerator" inline danger @click="unsetUserBanner"><i class="ph-photo ph-bold ph-lg"></i> {{ i18n.ts.unsetUserBanner }}</MkButton>
+						</div>
 						<MkButton v-if="$i.isAdmin" inline danger @click="deleteAccount">{{ i18n.ts.deleteAccount }}</MkButton>
 					</div>
 				</FormSection>
@@ -117,7 +121,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div v-else-if="tab === 'roles'" class="_gaps">
 				<MkButton v-if="user.host == null" primary rounded @click="assignRole"><i class="ph-plus ph-bold ph-lg"></i> {{ i18n.ts.assign }}</MkButton>
 
-				<div v-for="role in info.roles" :key="role.id" :class="$style.roleItem">
+				<div v-for="role in info.roles" :key="role.id">
 					<div :class="$style.roleItemMain">
 						<MkRolePreview :class="$style.role" :role="role" :forModeration="true"/>
 						<button class="_button" :class="$style.roleToggle" @click="toggleRoleItem(role)"><i class="ph-caret-down ph-bold ph-lg"></i></button>
@@ -186,7 +190,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, watch } from 'vue';
+import { computed, defineAsyncComponent, watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkChart from '@/components/MkChart.vue';
 import MkObjectView from '@/components/MkObjectView.vue';
@@ -203,12 +207,12 @@ import MkFileListForAdmin from '@/components/MkFileListForAdmin.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import * as os from '@/os.js';
 import { url } from '@/config.js';
-import { userPage, acct } from '@/filters/user.js';
+import { acct } from '@/filters/user.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
 import { iAmAdmin, $i } from '@/account.js';
 import MkRolePreview from '@/components/MkRolePreview.vue';
-import MkPagination, { Paging } from '@/components/MkPagination.vue';
+import MkPagination from '@/components/MkPagination.vue';
 
 const props = withDefaults(defineProps<{
 	userId: string;
@@ -217,20 +221,19 @@ const props = withDefaults(defineProps<{
 	initialTab: 'overview',
 });
 
-let tab = $ref(props.initialTab);
-let chartSrc = $ref('per-user-notes');
-let user = $ref<null | Misskey.entities.UserDetailed>();
-let init = $ref<ReturnType<typeof createFetcher>>();
-let info = $ref();
-let ips = $ref(null);
-let ap = $ref(null);
-let moderator = $ref(false);
-let silenced = $ref(false);
-let approved = $ref(false);
-let suspended = $ref(false);
-let markedAsNSFW = $ref(false);
-let moderationNote = $ref('');
-
+const tab = ref(props.initialTab);
+const chartSrc = ref('per-user-notes');
+const user = ref<null | Misskey.entities.UserDetailed>();
+const init = ref<ReturnType<typeof createFetcher>>();
+const info = ref<any>();
+const ips = ref<Misskey.entities.AdminGetUserIpsResponse | null>(null);
+const ap = ref<any>(null);
+const moderator = ref(false);
+const silenced = ref(false);
+const approved = ref(false);
+const suspended = ref(false);
+const markedAsNSFW = ref(false);
+const moderationNote = ref('');
 const filesPagination = {
 	endpoint: 'admin/drive/files' as const,
 	limit: 10,
@@ -245,7 +248,7 @@ const announcementsPagination = {
 		userId: props.userId,
 	})),
 };
-let expandedRoles = $ref([]);
+const expandedRoles = ref([]);
 
 function createFetcher() {
 	return () => Promise.all([os.api('users/show', {
@@ -255,29 +258,28 @@ function createFetcher() {
 	}), iAmAdmin ? os.api('admin/get-user-ips', {
 		userId: props.userId,
 	}) : Promise.resolve(null)]).then(([_user, _info, _ips]) => {
-		user = _user;
-		info = _info;
-		ips = _ips;
-		moderator = info.isModerator;
-		silenced = info.isSilenced;
-		approved = info.approved;
-		suspended = info.isSuspended;
-		moderationNote = info.moderationNote;
-		markedAsNSFW = info.alwaysMarkNsfw;
+		user.value = _user;
+		info.value = _info;
+		ips.value = _ips;
+		moderator.value = info.value.isModerator;
+		silenced.value = info.value.isSilenced;
+		approved.value = info.value.approved;
+		suspended.value = info.value.isSuspended;
+		moderationNote.value = info.value.moderationNote;
 
-		watch($$(moderationNote), async () => {
-			await os.api('admin/update-user-note', { userId: user.id, text: moderationNote });
+		watch(moderationNote, async () => {
+			await os.api('admin/update-user-note', { userId: user.value.id, text: moderationNote.value });
 			await refreshUser();
 		});
 	});
 }
 
 function refreshUser() {
-	init = createFetcher();
+	init.value = createFetcher();
 }
 
 async function updateRemoteUser() {
-	await os.apiWithDialog('federation/update-remote-user', { userId: user.id });
+	await os.apiWithDialog('federation/update-remote-user', { userId: user.value.id });
 	refreshUser();
 }
 
@@ -290,7 +292,7 @@ async function resetPassword() {
 		return;
 	} else {
 		const { password } = await os.api('admin/reset-password', {
-			userId: user.id,
+			userId: user.value.id,
 		});
 		os.alert({
 			type: 'success',
@@ -305,9 +307,9 @@ async function toggleNSFW(v) {
 		text: v ? i18n.ts.nsfwConfirm : i18n.ts.unNsfwConfirm,
 	});
 	if (confirm.canceled) {
-		markedAsNSFW = !v;
+		markedAsNSFW.value = !v;
 	} else {
-		await os.api(v ? 'admin/nsfw-user' : 'admin/unnsfw-user', { userId: user.id });
+		await os.api(v ? 'admin/nsfw-user' : 'admin/unnsfw-user', { userId: user.value.id });
 		await refreshUser();
 	}
 }
@@ -318,9 +320,9 @@ async function toggleSilence(v) {
 		text: v ? i18n.ts.silenceConfirm : i18n.ts.unsilenceConfirm,
 	});
 	if (confirm.canceled) {
-		silenced = !v;
+		silenced.value = !v;
 	} else {
-		await os.api(v ? 'admin/silence-user' : 'admin/unsilence-user', { userId: user.id });
+		await os.api(v ? 'admin/silence-user' : 'admin/unsilence-user', { userId: user.value.id });
 		await refreshUser();
 	}
 }
@@ -331,11 +333,49 @@ async function toggleSuspend(v) {
 		text: v ? i18n.ts.suspendConfirm : i18n.ts.unsuspendConfirm,
 	});
 	if (confirm.canceled) {
-		suspended = !v;
+		suspended.value = !v;
 	} else {
-		await os.api(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.id });
+		await os.api(v ? 'admin/suspend-user' : 'admin/unsuspend-user', { userId: user.value.id });
 		await refreshUser();
 	}
+}
+
+async function unsetUserAvatar() {
+	const confirm = await os.confirm({
+		type: 'warning',
+		text: i18n.ts.unsetUserAvatarConfirm,
+	});
+	if (confirm.canceled) return;
+	const process = async () => {
+		await os.api('admin/unset-user-avatar', { userId: user.value.id });
+		os.success();
+	};
+	await process().catch(err => {
+		os.alert({
+			type: 'error',
+			text: err.toString(),
+		});
+	});
+	refreshUser();
+}
+
+async function unsetUserBanner() {
+	const confirm = await os.confirm({
+		type: 'warning',
+		text: i18n.ts.unsetUserBannerConfirm,
+	});
+	if (confirm.canceled) return;
+	const process = async () => {
+		await os.api('admin/unset-user-banner', { userId: user.value.id });
+		os.success();
+	};
+	await process().catch(err => {
+		os.alert({
+			type: 'error',
+			text: err.toString(),
+		});
+	});
+	refreshUser();
 }
 
 async function deleteAllFiles() {
@@ -345,7 +385,7 @@ async function deleteAllFiles() {
 	});
 	if (confirm.canceled) return;
 	const process = async () => {
-		await os.api('admin/delete-all-files-of-a-user', { userId: user.id });
+		await os.api('admin/delete-all-files-of-a-user', { userId: user.value.id });
 		os.success();
 	};
 	await process().catch(err => {
@@ -365,13 +405,13 @@ async function deleteAccount() {
 	if (confirm.canceled) return;
 
 	const typed = await os.inputText({
-		text: i18n.t('typeToConfirm', { x: user?.username }),
+		text: i18n.t('typeToConfirm', { x: user.value?.username }),
 	});
 	if (typed.canceled) return;
 
-	if (typed.result === user?.username) {
+	if (typed.result === user.value?.username) {
 		await os.apiWithDialog('admin/delete-account', {
-			userId: user.id,
+			userId: user.value.id,
 		});
 	} else {
 		os.alert({
@@ -414,7 +454,7 @@ async function assignRole() {
 		: period === 'oneMonth' ? Date.now() + (1000 * 60 * 60 * 24 * 30)
 		: null;
 
-	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.id, expiresAt });
+	await os.apiWithDialog('admin/roles/assign', { roleId, userId: user.value.id, expiresAt });
 	refreshUser();
 }
 
@@ -424,50 +464,50 @@ async function unassignRole(role, ev) {
 		icon: 'ph-x ph-bold ph-lg',
 		danger: true,
 		action: async () => {
-			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.id });
+			await os.apiWithDialog('admin/roles/unassign', { roleId: role.id, userId: user.value.id });
 			refreshUser();
 		},
 	}], ev.currentTarget ?? ev.target);
 }
 
 function toggleRoleItem(role) {
-	if (expandedRoles.includes(role.id)) {
-		expandedRoles = expandedRoles.filter(x => x !== role.id);
+	if (expandedRoles.value.includes(role.id)) {
+		expandedRoles.value = expandedRoles.value.filter(x => x !== role.id);
 	} else {
-		expandedRoles.push(role.id);
+		expandedRoles.value.push(role.id);
 	}
 }
 
 function createAnnouncement() {
 	os.popup(defineAsyncComponent(() => import('@/components/MkUserAnnouncementEditDialog.vue')), {
-		user,
+		user: user.value,
 	}, {}, 'closed');
 }
 
 function editAnnouncement(announcement) {
 	os.popup(defineAsyncComponent(() => import('@/components/MkUserAnnouncementEditDialog.vue')), {
-		user,
+		user: user.value,
 		announcement,
 	}, {}, 'closed');
 }
 
 watch(() => props.userId, () => {
-	init = createFetcher();
+	init.value = createFetcher();
 }, {
 	immediate: true,
 });
 
-watch($$(user), () => {
+watch(user, () => {
 	os.api('ap/get', {
-		uri: user.uri ?? `${url}/users/${user.id}`,
+		uri: user.value.uri ?? `${url}/users/${user.value.id}`,
 	}).then(res => {
-		ap = res;
+		ap.value = res;
 	});
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => [{
+const headerTabs = computed(() => [{
 	key: 'overview',
 	title: i18n.ts.overview,
 	icon: 'ph-info ph-bold ph-lg',
@@ -494,7 +534,7 @@ const headerTabs = $computed(() => [{
 }]);
 
 definePageMetadata(computed(() => ({
-	title: user ? acct(user) : i18n.ts.userInfo,
+	title: user.value ? acct(user.value) : i18n.ts.userInfo,
 	icon: 'ph-warning-circle ph-bold ph-lg',
 })));
 </script>
@@ -607,9 +647,6 @@ definePageMetadata(computed(() => ({
 	> :global(.ip) {
 		margin-left: auto;
 	}
-}
-
-.roleItem {
 }
 
 .roleItemMain {
