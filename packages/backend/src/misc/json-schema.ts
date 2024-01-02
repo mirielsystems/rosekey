@@ -50,6 +50,7 @@ import {
 	packedRoleCondFormulaFollowersOrFollowingOrNotesSchema,
 	packedRoleCondFormulaValueSchema,
 } from '@/models/json-schema/role.js';
+import { packedSubscriptionPlanSchema } from "@/models/json-schema/subscription-plan.js";
 import { packedAdSchema } from '@/models/json-schema/ad.js';
 import { packedReversiGameLiteSchema, packedReversiGameDetailedSchema } from '@/models/json-schema/reversi-game.js';
 
@@ -98,6 +99,7 @@ export const refs = {
 	RoleCondFormulaValueCreated: packedRoleCondFormulaValueCreatedSchema,
 	RoleCondFormulaFollowersOrFollowingOrNotes: packedRoleCondFormulaFollowersOrFollowingOrNotesSchema,
 	RoleCondFormulaValue: packedRoleCondFormulaValueSchema,
+	SubscriptionPlan: packedSubscriptionPlanSchema,
 	RoleLite: packedRoleLiteSchema,
 	Role: packedRoleSchema,
 	RolePolicies: packedRolePoliciesSchema,
