@@ -214,8 +214,11 @@ export class MiUser {
 	})
 	public subscriptionStatus: typeof subscriptionStatus[number];
 
-	@Column(id())
-	public subscriptionPlanId: SubscriptionPlan['id'];
+	@Column({
+		...id(),
+		nullable: true,
+	})
+	public subscriptionPlanId: SubscriptionPlan['id'] | null;
 
 	@Column('varchar', {
 		length: 128, array: true, default: '{}',
