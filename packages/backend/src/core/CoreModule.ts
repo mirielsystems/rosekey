@@ -113,6 +113,7 @@ import { NotificationEntityService } from './entities/NotificationEntityService.
 import { PageEntityService } from './entities/PageEntityService.js';
 import { PageLikeEntityService } from './entities/PageLikeEntityService.js';
 import { SigninEntityService } from './entities/SigninEntityService.js';
+import { SubscriptionPlanEntityService } from "@/core/entities/SubscriptionPlanEntityService.js";
 import { UserEntityService } from './entities/UserEntityService.js';
 import { UserGroupEntityService } from './entities/UserGroupEntityService.js';
 import { UserGroupInvitationEntityService } from './entities/UserGroupInvitationEntityService.js';
@@ -265,6 +266,7 @@ const $FlashEntityService: Provider = { provide: 'FlashEntityService', useExisti
 const $FlashLikeEntityService: Provider = { provide: 'FlashLikeEntityService', useExisting: FlashLikeEntityService };
 const $RoleEntityService: Provider = { provide: 'RoleEntityService', useExisting: RoleEntityService };
 const $ReversiGameEntityService: Provider = { provide: 'ReversiGameEntityService', useExisting: ReversiGameEntityService };
+const $SubscriptionPlanEntityService: Provider = { provide: 'SubscriptionPlanEntityService', useExisting: SubscriptionPlanEntityService };
 
 const $ApAudienceService: Provider = { provide: 'ApAudienceService', useExisting: ApAudienceService };
 const $ApDbResolverService: Provider = { provide: 'ApDbResolverService', useExisting: ApDbResolverService };
@@ -411,6 +413,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		RoleEntityService,
 		ReversiGameEntityService,
 
+		SubscriptionPlanEntityService,
 		ApAudienceService,
 		ApDbResolverService,
 		ApDeliverManagerService,
@@ -552,6 +555,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$RoleEntityService,
 		$ReversiGameEntityService,
 
+		$SubscriptionPlanEntityService,
 		$ApAudienceService,
 		$ApDbResolverService,
 		$ApDeliverManagerService,
@@ -693,6 +697,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		RoleEntityService,
 		ReversiGameEntityService,
 
+		SubscriptionPlanEntityService,
 		ApAudienceService,
 		ApDbResolverService,
 		ApDeliverManagerService,
@@ -833,6 +838,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$RoleEntityService,
 		$ReversiGameEntityService,
 
+		$SubscriptionPlanEntityService,
 		$ApAudienceService,
 		$ApDbResolverService,
 		$ApDeliverManagerService,
