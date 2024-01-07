@@ -43,6 +43,7 @@ export type RoleCondFormulaValueIsLocalOrRemote = components['schemas']['RoleCon
 export type RoleCondFormulaValueCreated = components['schemas']['RoleCondFormulaValueCreated'];
 export type RoleCondFormulaFollowersOrFollowingOrNotes = components['schemas']['RoleCondFormulaFollowersOrFollowingOrNotes'];
 export type RoleCondFormulaValue = components['schemas']['RoleCondFormulaValue'];
+export type SubscriptionPlan = components['schemas']['SubscriptionPlan'];
 export type RoleLite = components['schemas']['RoleLite'];
 export type Role = components['schemas']['Role'];
 export type RolePolicies = components['schemas']['RolePolicies'];
