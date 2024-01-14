@@ -4985,7 +4985,7 @@ export type components = {
       /** @example usd */
       currency: string;
       /** @example New Plan */
-      description: string;
+      description?: string | null;
       /** @example price_xxxxxxxxxx */
       stripePriceId: string;
       /**
@@ -10329,8 +10329,8 @@ export type operations = {
       content: {
         'application/json': {
           name: string;
-          price?: number;
-          currency?: string;
+          price: number;
+          currency: string;
           description?: string;
           stripePriceId: string;
           /** Format: misskey:id */
