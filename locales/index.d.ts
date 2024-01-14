@@ -1538,6 +1538,11 @@ export interface Locale extends ILocale {
      * 登録日
      */
     "registeredDate": string;
+     /**
+     * Stripe
+     */
+    "subscription": string;
+    "subscriptionStatus": string;
     /**
      * 場所
      */
@@ -7085,6 +7090,21 @@ export interface Locale extends ILocale {
                 "flavor": string;
             };
         };
+    };
+    "_subscription": {
+        "price": string;
+        "subscribe": string;
+        "manage": string;
+        "changePlan": string;
+        "confirmChangePlan": string;
+        "incomplete": string;
+        "incomplete_expired": string;
+        "trialing": string;
+        "active": string;
+        "pastDue": string;
+        "canceled": string;
+        "unpaid": string;
+        "none": string;
     };
     "_role": {
         /**
