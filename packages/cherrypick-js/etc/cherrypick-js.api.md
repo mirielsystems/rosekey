@@ -329,6 +329,18 @@ type AdminShowUsersRequest = operations['admin/show-users']['requestBody']['cont
 type AdminShowUsersResponse = operations['admin/show-users']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
+type AdminSubscriptionPlansArchiveRequest = operations['admin/subscription-plans/archive']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AdminSubscriptionPlansCreateRequest = operations['admin/subscription-plans/create']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type AdminSubscriptionPlansCreateResponse = operations['admin/subscription-plans/create']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
+type AdminSubscriptionPlansUpdateRequest = operations['admin/subscription-plans/update']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
 type AdminSuspendUserRequest = operations['admin/suspend-user']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -1266,6 +1278,10 @@ declare namespace entities {
         AdminRolesUpdateDefaultPoliciesRequest,
         AdminRolesUsersRequest,
         AdminRolesUsersResponse,
+        AdminSubscriptionPlansCreateRequest,
+        AdminSubscriptionPlansCreateResponse,
+        AdminSubscriptionPlansUpdateRequest,
+        AdminSubscriptionPlansArchiveRequest,
         AnnouncementsRequest,
         AnnouncementsResponse,
         AntennasCreateRequest,
@@ -1645,6 +1661,10 @@ declare namespace entities {
         RolesUsersResponse,
         RolesNotesRequest,
         RolesNotesResponse,
+        SubscriptionCreateRequest,
+        SubscriptionPlansListResponse,
+        SubscriptionPlansShowRequest,
+        SubscriptionPlansShowResponse,
         RequestResetPasswordRequest,
         ResetPasswordRequest,
         ServerInfoResponse,
@@ -2990,6 +3010,21 @@ export class Stream extends EventEmitter<StreamEvents> {
     // (undocumented)
     useChannel<C extends keyof Channels>(channel: C, params?: Channels[C]['params'], name?: string): ChannelConnection<Channels[C]>;
 }
+
+// @public (undocumented)
+type SubscriptionCreateRequest = operations['subscription/create']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type SubscriptionPlan = components['schemas']['SubscriptionPlan'];
+
+// @public (undocumented)
+type SubscriptionPlansListResponse = operations['subscription-plans/list']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
+type SubscriptionPlansShowRequest = operations['subscription-plans/show']['requestBody']['content']['application/json'];
+
+// @public (undocumented)
+type SubscriptionPlansShowResponse = operations['subscription-plans/show']['responses']['200']['content']['application/json'];
 
 // Warning: (ae-forgotten-export) The symbol "SwitchCase" needs to be exported by the entry point index.d.ts
 // Warning: (ae-forgotten-export) The symbol "IsCaseMatched" needs to be exported by the entry point index.d.ts

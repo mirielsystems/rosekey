@@ -54,7 +54,7 @@ export const subscriptionStatus = [
 	'paused',
 	'canceled',
 	'unpaid',
-	'none'
+	'none',
 ] as const;
 
 export const moderationLogTypes = [
@@ -95,6 +95,9 @@ export const moderationLogTypes = [
 	'deleteAvatarDecoration',
 	'unsetUserAvatar',
 	'unsetUserBanner',
+	'createSubscriptionPlan',
+	'updateSubscriptionPlan',
+	'archiveSubscriptionPlan',
 ] as const;
 
 export type ModerationLogPayloads = {

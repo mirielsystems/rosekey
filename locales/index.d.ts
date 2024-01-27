@@ -7093,6 +7093,17 @@ export interface Locale extends ILocale {
     };
     "_subscription": {
         "price": string;
+        /**
+         * 通貨
+         */
+        "currency": string;
+        /**
+         * Stripeの価格ID
+         */
+        "stripePriceId": string;
+        /**
+         * 購入
+         */
         "subscribe": string;
         "manage": string;
         "changePlan": string;
@@ -10545,6 +10556,18 @@ export interface Locale extends ILocale {
          * ユーザーのバナーを解除
          */
         "unsetUserBanner": string;
+        /**
+         * サブスクリプションプランを作成
+         */
+        "createSubscriptionPlan": string;
+        /**
+         * サブスクリプションプランを更新
+         */
+        "updateSubscriptionPlan": string;
+        /**
+         * サブスクリプションプランをアーカイブ
+         */
+        "archiveSubscriptionPlan": string;
     };
     "_fileViewer": {
         /**

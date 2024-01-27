@@ -109,8 +109,8 @@ import type {
 	AdminRolesUsersResponse,
 	AdminSubscriptionPlansCreateRequest,
 	AdminSubscriptionPlansCreateResponse,
+	AdminSubscriptionPlansUpdateRequest,
 	AdminSubscriptionPlansArchiveRequest,
-	AdminSubscriptionPlansArchiveResponse,
 	AnnouncementsRequest,
 	AnnouncementsResponse,
 	AntennasCreateRequest,
@@ -492,6 +492,8 @@ import type {
 	RolesNotesResponse,
 	SubscriptionCreateRequest,
 	SubscriptionPlansListResponse,
+	SubscriptionPlansShowRequest,
+	SubscriptionPlansShowResponse,
 	RequestResetPasswordRequest,
 	ResetPasswordRequest,
 	ServerInfoResponse,
@@ -687,7 +689,8 @@ export type Endpoints = {
 	'admin/roles/update-default-policies': { req: AdminRolesUpdateDefaultPoliciesRequest; res: EmptyResponse };
 	'admin/roles/users': { req: AdminRolesUsersRequest; res: AdminRolesUsersResponse };
 	'admin/subscription-plans/create': { req: AdminSubscriptionPlansCreateRequest; res: AdminSubscriptionPlansCreateResponse };
-	'admin/subscription-plans/archive': { req: AdminSubscriptionPlansArchiveRequest; res: AdminSubscriptionPlansArchiveResponse };
+	'admin/subscription-plans/update': { req: AdminSubscriptionPlansUpdateRequest; res: EmptyResponse };
+	'admin/subscription-plans/archive': { req: AdminSubscriptionPlansArchiveRequest; res: EmptyResponse };
 	'announcements': { req: AnnouncementsRequest; res: AnnouncementsResponse };
 	'antennas/create': { req: AntennasCreateRequest; res: AntennasCreateResponse };
 	'antennas/delete': { req: AntennasDeleteRequest; res: EmptyResponse };
@@ -938,6 +941,7 @@ export type Endpoints = {
 	'subscription/create': { req: SubscriptionCreateRequest; res: EmptyResponse };
 	'subscription/manage': { req: EmptyRequest; res: EmptyResponse };
 	'subscription-plans/list': { req: EmptyRequest; res: SubscriptionPlansListResponse };
+	'subscription-plans/show': { req: SubscriptionPlansShowRequest; res: SubscriptionPlansShowResponse };
 	'request-reset-password': { req: RequestResetPasswordRequest; res: EmptyResponse };
 	'reset-db': { req: EmptyRequest; res: EmptyResponse };
 	'reset-password': { req: ResetPasswordRequest; res: EmptyResponse };

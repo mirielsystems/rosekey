@@ -482,6 +482,10 @@ const routes: RouteDef[] = [{
 		name: 'invites',
 		component: page(() => import('@/pages/admin/invites.vue')),
 	}, {
+		path: '/subscription-plans',
+		name: 'subscription-plans',
+		component: page(() => import('@/pages/admin/subscription-plans.vue')),
+	}, {
 		path: '/update',
 		name: 'update',
 		component: page(() => import('@/pages/admin/update.vue')),
