@@ -57,6 +57,9 @@ getImageTag:
     - tags
 buildDocker:
   stage: deploy
+  needs:
+    - job: getImageTag
+      artifacts: true
   parallel:
     matrix:
       - ARCH: amd64
@@ -71,7 +74,7 @@ buildDocker:
       /kaniko/executor
       --context "${CI_PROJECT_DIR}"
       --dockerfile "${CI_PROJECT_DIR}/Dockerfile"
-      --destination "${CI_REGISTRY_IMAGE}:${ARCH}"
+      --destination "${CI_REGISTRY_IMAGE}:${REGISTRY_PUSH_TAG}-${ARCH}"
   only:
     - stable
     - develop
@@ -96,7 +99,7 @@ mergeManifests:
       push from-args
       --platforms linux/amd64,linux/arm64
       --tags ${REGISTRY_PUSH_VERSION}
-      --template ${CI_REGISTRY_IMAGE}:ARCH
+      --template ${CI_REGISTRY_IMAGE}:${REGISTRY_PUSH_TAG}-ARCH
       --target ${CI_REGISTRY_IMAGE}:${REGISTRY_PUSH_TAG}
   only:
     - stable
