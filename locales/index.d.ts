@@ -5201,6 +5201,14 @@ export interface Locale extends ILocale {
      */
     "tosAndPrivacyPolicy": string;
     /**
+     * 特定商取引法に基づく表記
+     */
+    "commerceDisclosure": string;
+    /**
+     * 特定商取引法に基づく表記URL
+     */
+    "commerceDisclosureUrl": string;
+    /**
      * アイコンデコレーション
      */
     "avatarDecorations": string;

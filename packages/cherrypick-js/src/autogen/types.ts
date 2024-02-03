@@ -5296,6 +5296,7 @@ export type operations = {
             summalyProxy: string | null;
             themeColor: string | null;
             tosUrl: string | null;
+            commerceDisclosureUrl: string | null;
             uri: string;
             version: string;
             doNotSendNotificationEmailsForAbuseReport: boolean;
@@ -9670,6 +9671,7 @@ export type operations = {
           perUserHomeTimelineCacheMax?: number;
           perUserListTimelineCacheMax?: number;
           notesPerOneAd?: number;
+          commerceDisclosureUrl?: string | null;
           silencedHosts?: string[] | null;
           doNotSendNotificationEmailsForAbuseReport?: boolean;
           emailToReceiveAbuseReport?: string | null;

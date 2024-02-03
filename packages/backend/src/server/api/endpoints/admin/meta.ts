@@ -499,6 +499,10 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
+			commerceDisclosureUrl: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
 			uri: {
 				type: 'string',
 				optional: false, nullable: false,
@@ -681,6 +685,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				enableReceivePrerelease: instance.enableReceivePrerelease,
 				skipVersion: instance.skipVersion,
 				skipCherryPickVersion: instance.skipCherryPickVersion,
+				commerceDisclosureUrl: instance.commerceDisclosureUrl,
 			};
 		});
 	}
