@@ -4032,6 +4032,7 @@ export type components = {
       subscriptionStatus: 'incomplete' | 'incomplete_expired' | 'trialing' | 'active' | 'past_due' | 'paused' | 'canceled' | 'unpaid' | 'none';
       /** Format: id */
       subscriptionPlanId: string | null;
+      stripeSubscriptionId: string | null;
       /** @enum {string} */
       twoFactorBackupCodesStock: 'full' | 'partial' | 'none';
       hideOnlineStatus: boolean;
