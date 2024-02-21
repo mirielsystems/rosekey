@@ -1365,7 +1365,7 @@ _group:
   leader: "Group owner"
   banish: "Banish"
   banishConfirm: "Do you really want to banish \"{name}\" from \"{group}\"?"
-_CherryPick:
+_cherrypick:
   function: "Proprietary Functions"
   functionDescription: "Enables or disables proprietary features that Rosekey adds."
   nickname: "Nickname function"
