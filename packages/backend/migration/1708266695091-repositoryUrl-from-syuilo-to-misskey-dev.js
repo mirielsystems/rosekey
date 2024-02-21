@@ -7,7 +7,7 @@ export class RepositoryUrlFromSyuiloToMisskeyDev1708266695091 {
     name = 'RepositoryUrlFromSyuiloToMisskeyDev1708266695091'
 
     async up(queryRunner) {
-        await queryRunner.query(`UPDATE "meta" SET "repositoryUrl" = 'https://github.com/kokonect-link/cherrypick' WHERE "repositoryUrl" = 'https://github.com/syuilo/misskey'`);
+        await queryRunner.query(`UPDATE "meta" SET "repositoryUrl" = 'https://github.com/freelynetwork/rosekey' WHERE "repositoryUrl" = 'https://github.com/syuilo/misskey'`);
     }
 
     async down(queryRunner) {
