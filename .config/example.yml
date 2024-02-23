@@ -186,6 +186,12 @@ redis:
 #  index: ''
 #  scope: local
 
+#   ┌──────────────────────────────┐
+#───┘ Stripe payment configuration └─────────────────────────────
+#stripe:
+  #secretKey: sk_test_...
+  #webhookSecret: whsec_...
+
 #   ┌───────────────┐
 #───┘ ID generation └───────────────────────────────────────────
 
@@ -204,12 +210,6 @@ redis:
 # ID SETTINGS AFTER THAT!
 
 id: 'aidx'
-
-#   ┌──────────────────────────────┐
-#───┘ Stripe payment configuration └─────────────────────────────
-#stripe:
-  #secretKey: sk_test_...
-  #webhookSecret: whsec_...
 
 #   ┌─────────────────────┐
 #───┘ Other configuration └─────────────────────────────────────

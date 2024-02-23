@@ -221,6 +221,11 @@ export class MiUser {
 	public subscriptionPlanId: SubscriptionPlan['id'] | null;
 
 	@Column('varchar', {
+		length: 128, nullable: true,
+	})
+	public stripeSubscriptionId: string | null;
+
+	@Column('varchar', {
 		length: 128, array: true, default: '{}',
 	})
 	public emojis: string[];
