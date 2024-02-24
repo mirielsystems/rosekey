@@ -22,7 +22,8 @@ const HTML = 'text/html; charset=utf-8';
 const JSON_UTF8 = 'application/json; charset=utf-8';
 
 describe('Webリソース', () => {
-	let alice: misskey.entities.SignupResponse;
+
+	let alice: misskey.entities.MeSignup;
 	let aliceUploadedFile: any;
 	let alicesPost: any;
 	let alicePage: any;
@@ -31,7 +32,7 @@ describe('Webリソース', () => {
 	let aliceGalleryPost: any;
 	let aliceChannel: any;
 
-	let bob: misskey.entities.SignupResponse;
+	let bob: misskey.entities.MeSignup;
 
 	type Request = {
 		path: string,

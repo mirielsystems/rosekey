@@ -183,38 +183,3 @@ export type EmojiDeleted = {
 export type AnnouncementCreated = {
 	announcement: Announcement;
 };
-
-export type SignupRequest = {
-	username: string;
-	password: string;
-	host?: string;
-	invitationCode?: string;
-	emailAddress?: string;
-	'hcaptcha-response'?: string | null;
-	'g-recaptcha-response'?: string | null;
-	'turnstile-response'?: string | null;
-}
-
-export type SignupResponse = MeDetailed & {
-	token: string;
-}
-
-export type SignupPendingRequest = {
-	code: string;
-};
-
-export type SignupPendingResponse = {
-	id: User['id'],
-	i: string,
-};
-
-export type SigninRequest = {
-	username: string;
-	password: string;
-	token?: string;
-};
-
-export type SigninResponse = {
-	id: User['id'],
-	i: string,
-};

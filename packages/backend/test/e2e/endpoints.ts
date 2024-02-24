@@ -14,10 +14,10 @@ import { api, initTestDb, post, signup, simpleGet, uploadFile } from '../utils.j
 import type * as misskey from 'cherrypick-js';
 
 describe('Endpoints', () => {
-	let alice: misskey.entities.SignupResponse;
-	let bob: misskey.entities.SignupResponse;
-	let carol: misskey.entities.SignupResponse;
-	let dave: misskey.entities.SignupResponse;
+	let alice: misskey.entities.MeSignup;
+	let bob: misskey.entities.MeSignup;
+	let carol: misskey.entities.MeSignup;
+	let dave: misskey.entities.MeSignup;
 
 	beforeAll(async () => {
 		alice = await signup({ username: 'alice' });

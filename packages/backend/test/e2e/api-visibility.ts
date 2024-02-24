@@ -13,15 +13,15 @@ describe('API visibility', () => {
 	describe('Note visibility', () => {
 		//#region vars
 		/** ヒロイン */
-		let alice: misskey.entities.SignupResponse;
+		let alice: misskey.entities.MeSignup;
 		/** フォロワー */
-		let follower: misskey.entities.SignupResponse;
+		let follower: misskey.entities.MeSignup;
 		/** 非フォロワー */
-		let other: misskey.entities.SignupResponse;
+		let other: misskey.entities.MeSignup;
 		/** 非フォロワーでもリプライやメンションをされた人 */
-		let target: misskey.entities.SignupResponse;
+		let target: misskey.entities.MeSignup;
 		/** specified mentionでmentionを飛ばされる人 */
-		let target2: misskey.entities.SignupResponse;
+		let target2: misskey.entities.MeSignup;
 
 		/** public-post */
 		let pub: any;

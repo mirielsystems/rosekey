@@ -10,7 +10,8 @@ import { api, post, signup, uploadUrl } from '../utils.js';
 import type * as misskey from 'cherrypick-js';
 
 describe('users/notes', () => {
-	let alice: misskey.entities.SignupResponse;
+
+	let alice: misskey.entities.MeSignup;
 	let jpgNote: any;
 	let pngNote: any;
 	let jpgPngNote: any;
