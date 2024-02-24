@@ -7332,6 +7332,10 @@ export interface Locale extends ILocale {
              * アイコンデコレーションの最大取付個数
              */
             "avatarDecorationLimit": string;
+            /**
+             * サウンドにドライブファイルを使えるようにする。
+             */
+            "canUseDriveFileInSoundSettings": string;
         };
         "_condition": {
             /**
