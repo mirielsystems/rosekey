@@ -56,6 +56,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</MkTextarea>
 
 					<FormSection>
+						<template #label>{{ i18n.ts.subscription }}</template>
+
+						<div class="_gaps_m">
+							<MkSwitch v-model="enableSubscriptions">
+								<template #label>{{ i18n.ts.subscription }}</template>
+							</MkSwitch>
+						</div>
+					</FormSection>
+
+					<FormSection>
 						<template #label>{{ i18n.ts.files }}</template>
 
 						<div class="_gaps_m">
@@ -207,6 +217,7 @@ const perRemoteUserUserTimelineCacheMax = ref<number>(0);
 const perUserHomeTimelineCacheMax = ref<number>(0);
 const perUserListTimelineCacheMax = ref<number>(0);
 const notesPerOneAd = ref<number>(0);
+const enableSubscriptions = ref<boolean>(false);
 
 async function init(): Promise<void> {
 	const meta = await misskeyApi('admin/meta');
@@ -231,6 +242,7 @@ async function init(): Promise<void> {
 	perUserHomeTimelineCacheMax.value = meta.perUserHomeTimelineCacheMax;
 	perUserListTimelineCacheMax.value = meta.perUserListTimelineCacheMax;
 	notesPerOneAd.value = meta.notesPerOneAd;
+	enableSubscriptions.value = meta.enableSubscriptions;
 }
 
 async function save(): void {
@@ -256,6 +268,7 @@ async function save(): void {
 		perUserHomeTimelineCacheMax: perUserHomeTimelineCacheMax.value,
 		perUserListTimelineCacheMax: perUserListTimelineCacheMax.value,
 		notesPerOneAd: notesPerOneAd.value,
+		enableSubscriptions: enableSubscriptions.value,
 	});
 
 	fetchInstance();

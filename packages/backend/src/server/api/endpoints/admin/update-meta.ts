@@ -176,6 +176,7 @@ export const paramDef = {
 		enableReceivePrerelease: { type: 'boolean' },
 		skipVersion: { type: 'boolean' },
 		skipCherryPickVersion: { type: 'string', nullable: true },
+		enableSubscriptions: { type: 'boolean' },
 	},
 	required: [],
 } as const;
@@ -706,6 +707,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.skipCherryPickVersion !== undefined) {
 				set.skipCherryPickVersion = ps.skipCherryPickVersion;
+			}
+
+			if (ps.enableSubscriptions !== undefined) {
+				set.enableSubscriptions = ps.enableSubscriptions;
 			}
 
 			const before = await this.metaService.fetch(true);

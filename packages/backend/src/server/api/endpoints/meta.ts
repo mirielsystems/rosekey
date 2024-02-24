@@ -418,6 +418,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				policies: { ...DEFAULT_POLICIES, ...instance.policies },
 
 				mediaProxy: this.config.mediaProxy,
+				enableSubscriptions: instance.enableSubscriptions,
 
 				...(ps.detail ? {
 					cacheRemoteFiles: instance.cacheRemoteFiles,
