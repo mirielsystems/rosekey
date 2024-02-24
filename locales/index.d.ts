@@ -7107,6 +7107,7 @@ export interface Locale extends ILocale {
         "canceled": string;
         "unpaid": string;
         "none": string;
+        "current": string;
     };
     "_role": {
         /**
