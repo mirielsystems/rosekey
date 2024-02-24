@@ -133,6 +133,7 @@ class MessagingChannel extends Channel {
 export class MessagingChannelService {
 	public readonly shouldShare = MessagingChannel.shouldShare;
 	public readonly requireCredential = MessagingChannel.requireCredential;
+	public readonly kind: string = 'messaging'; // kind の型を string に変更し、適切な値に設定する
 
 	constructor(
 		@Inject(DI.usersRepository)
@@ -146,8 +147,7 @@ export class MessagingChannelService {
 
 		private userEntityService: UserEntityService,
 		private messagingService: MessagingService,
-	) {
-	}
+	) {}
 
 	@bindThis
 	public create(id: string, connection: Channel['connection']): MessagingChannel {
