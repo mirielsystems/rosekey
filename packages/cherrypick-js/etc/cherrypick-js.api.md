@@ -1133,18 +1133,6 @@ export type Endpoints = Overwrite<Endpoints_2, {
             };
         };
     };
-    'signup': {
-        req: SignupRequest;
-        res: SignupResponse;
-    };
-    'signup-pending': {
-        req: SignupPendingRequest;
-        res: SignupPendingResponse;
-    };
-    'signin': {
-        req: SigninRequest;
-        res: SigninResponse;
-    };
 }>;
 
 // @public (undocumented)

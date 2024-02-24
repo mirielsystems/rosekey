@@ -56,20 +56,5 @@ export type Endpoints = Overwrite<
 				};
 			};
 		},
-		// api.jsonには載せないものなのでここで定義
-		'signup': {
-			req: SignupRequest;
-			res: SignupResponse;
-		},
-		// api.jsonには載せないものなのでここで定義
-		'signup-pending': {
-			req: SignupPendingRequest;
-			res: SignupPendingResponse;
-		},
-		// api.jsonには載せないものなのでここで定義
-		'signin': {
-			req: SigninRequest;
-			res: SigninResponse;
-		},
 	}
 >

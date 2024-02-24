@@ -9550,10 +9550,6 @@ export interface Locale extends ILocale {
          */
         "youCanIncludeHashtags": string;
         /**
-         * 年齢を隠す
-         */
-        "hideAge": string;
-        /**
          * 追加情報
          */
         "metadata": string;
