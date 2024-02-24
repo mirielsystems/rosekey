@@ -2517,6 +2517,7 @@ _profile:
   username: "ユーザー名"
   description: "自己紹介"
   youCanIncludeHashtags: "ハッシュタグを含めることができます。"
+  hideAge: "年齢を隠す"
   metadata: "追加情報"
   metadataEdit: "追加情報を編集"
   metadataDescription: "プロフィールに表として追加情報を表示することができます。"
