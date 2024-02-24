@@ -14,9 +14,9 @@ import type * as misskey from 'cherrypick-js';
 describe('Note', () => {
 	let Notes: any;
 
-	let alice: misskey.entities.MeSignup;
-	let bob: misskey.entities.MeSignup;
-	let tom: misskey.entities.MeSignup;
+	let alice: misskey.entities.SignupResponse;
+	let bob: misskey.entities.SignupResponse;
+	let tom: misskey.entities.SignupResponse;
 
 	beforeAll(async () => {
 		const connection = await initTestDb(true);

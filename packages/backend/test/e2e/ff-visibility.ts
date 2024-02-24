@@ -10,8 +10,8 @@ import { api, signup, simpleGet } from '../utils.js';
 import type * as misskey from 'cherrypick-js';
 
 describe('FF visibility', () => {
-	let alice: misskey.entities.MeSignup;
-	let bob: misskey.entities.MeSignup;
+	let alice: misskey.entities.SignupResponse;
+	let bob: misskey.entities.SignupResponse;
 
 	beforeAll(async () => {
 		alice = await signup({ username: 'alice' });

@@ -22,7 +22,7 @@ import type {
 import type * as misskey from 'cherrypick-js';
 
 describe('2要素認証', () => {
-	let alice: misskey.entities.MeSignup;
+	let alice: misskey.entities.SignupResponse;
 
 	const config = loadConfig();
 	const password = 'test';
