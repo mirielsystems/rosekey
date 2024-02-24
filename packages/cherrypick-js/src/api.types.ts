@@ -1,14 +1,6 @@
 import { Endpoints as Gen } from './autogen/endpoint.js';
 import { UserDetailed } from './autogen/models.js';
 import { UsersShowRequest } from './autogen/entities.js';
-import {
-	SigninRequest,
-	SigninResponse,
-	SignupPendingRequest,
-	SignupPendingResponse,
-	SignupRequest,
-	SignupResponse,
-} from './entities.js';
 
 type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<
 	T,
