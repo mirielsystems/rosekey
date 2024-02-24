@@ -116,18 +116,9 @@ const preventDrag = (ev: TouchEvent) => {
 	ev.stopPropagation();
 };
 
-const top = (ev: MouseEvent) => {
-	const pos = getScrollPosition(el.value as HTMLElement);
-	if (el.value && pos !== 0) {
+const top = () => {
+	if (el.value) {
 		scrollToTop(el.value as HTMLElement, { behavior: 'smooth' });
-	} else if (pos === 0) {
-		os.popupMenu([{
-			text: i18n.ts.reload,
-			icon: 'ti ti-refresh',
-			action: () => {
-				location.reload();
-			},
-		}], ev.currentTarget ?? ev.target);
 	}
 };
 
