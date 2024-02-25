@@ -95,6 +95,7 @@ import { ReversiGameChannelService } from './api/stream/channels/reversi-game.js
 		UserListChannelService,
 		OpenApiServerService,
 		StripeWebhookServerService,
+		OAuth2ProviderService,
 	],	exports: [
 		ServerService,
 	],
