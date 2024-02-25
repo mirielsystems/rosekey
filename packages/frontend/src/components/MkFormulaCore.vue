@@ -1,11 +1,11 @@
 <template>
-	<div v-if="block" v-html="compiledFormula"></div>
-	<span v-else v-html="compiledFormula"></span>
+<div v-if="block" v-html="compiledFormula"></div>
+<span v-else v-html="compiledFormula"></span>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import katex from "katex";
+import { defineComponent } from 'vue';
+import katex from 'katex';
 
 export default defineComponent({
 	props: {

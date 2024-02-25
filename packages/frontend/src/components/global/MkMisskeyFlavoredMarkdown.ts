@@ -13,7 +13,7 @@ import MkLink from '@/components/MkLink.vue';
 import MkMention from '@/components/MkMention.vue';
 import MkEmoji from '@/components/global/MkEmoji.vue';
 import MkCustomEmoji from '@/components/global/MkCustomEmoji.vue';
-import MkFormula from "@/components/MkFormula.vue";
+import MkFormula from '@/components/MkFormula.vue';
 import MkCode from '@/components/MkCode.vue';
 import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
@@ -447,7 +447,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 				})];
 			}
 
-			case "mathInline": {
+			case 'mathInline': {
 				return [
 					h(MkFormula, {
 						key: Math.random(),
@@ -457,7 +457,7 @@ export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEven
 				];
 			}
 
-			case "mathBlock": {
+			case 'mathBlock': {
 				return [
 					h(MkFormula, {
 						key: Math.random(),

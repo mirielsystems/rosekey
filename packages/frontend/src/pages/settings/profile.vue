@@ -149,7 +149,7 @@ const profile = reactive({
 	description: $i.description,
 	location: $i.location,
 	birthday: $i.birthday,
-	listenbrainz: $i?.listenbrainz,
+	listenbrainz: $i.listenbrainz,
 	lang: $i.lang,
 	isBot: $i.isBot ?? false,
 	isCat: $i.isCat ?? false,
