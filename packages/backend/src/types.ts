@@ -96,6 +96,8 @@ export const moderationLogTypes = [
 	'unsetUserAvatar',
 	'unsetUserBanner',
 	'createSubscriptionPlan',
+	'archiveSubscriptionPlan',
+	'updateSubscriptionPlan',
 ] as const;
 
 export type ModerationLogPayloads = {
