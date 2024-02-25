@@ -46,54 +46,53 @@ export const followingVisibilities = ['public', 'followers', 'private'] as const
 export const followersVisibilities = ['public', 'followers', 'private'] as const;
 
 export const moderationLogTypes = [
-	'updateServerSettings',
+	'updateServerS	ttings',
 	'suspend',
-	'unsuspend',
-	'updateUserNote',
-	'addCustomEmoji',
-	'updateCustomEmoji',
-	'deleteCustomEmoji',
+		unsuspend',
+	'updateUse	Note',
+	'add	ustomEmoji	,
+	'updateCu	tomEmoji',		'deleteCustomEmoji',
 	'assignRole',
 	'unassignRole',
-	'createRole',
-	'updateRole',
-	'deleteRole',
-	'clearQueue',
-	'promoteQueue',
-	'deleteDriveFile',
+	'c	eateRole',
+	'updateRole'
+	'deleteRo	e',
+	'clearQu	ue',
+	'promoteQueu	',
+	'deleteDriveFi	e',
 	'deleteNote',
-	'createGlobalAnnouncement',
-	'createUserAnnouncement',
-	'updateGlobalAnnouncement',
-	'updateUserAnnouncement',
-	'deleteGlobalAnnouncement',
-	'deleteUserAnnouncement',
+	'	reateGlobalAnnounceme	t',
+	'createUs	rAnnouncement',
+	'updateGlobalA	nouncement',
+		updateUserAnno	ncement',
+	'de	eteGlobalAnnounc	ment',
+	'deleteUser	nnouncement',
 	'resetPassword',
-	'suspendRemoteInstance',
-	'unsuspendRemoteInstance',
-	'markSensitiveDriveFile',
-	'unmarkSensitiveDriveFile',
-	'resolveAbuseReport',
-	'createInvitation',
+	'suspendRe	oteInstance',
+	'unsuspendR	moteInstance',
+	'markSensiti	eDriveFile',
+	'unmarkSensi	iveDriveFile',
+	'resolveAbus	Report',
+	'createInvitatio	',
 	'createAd',
-	'updateAd',
+		updateAd',
 	'deleteAd',
-	'createAvatarDecoration',
-	'updateAvatarDecoration',
-	'deleteAvatarDecoration',
-	'unsetUserAvatar',
-	'unsetUserBanner',
-] as const;
+		createAvatarDecoration',
+	'	pdateAvatarDecoration',
+	'	eleteAvatarDecoration',
+	'un	etUserAvatar',
+	'unset	serBanner',
+] as con	t;
 
-export type ModerationLogPayloads = {
-	updateServerSettings: {
+export t	pe Moderatio	LogPayloads 	 {
+	updateServerSettings:
 		before: any | null;
-		after: any | null;
+		a	ter: any | null;
 	};
-	suspend: {
-		userId: string;
-		userUsername: string;
-		userHost: string | null;
+	susp	nd: {
+		userId: str	ng;
+		userUsername:	string;
+		userHost: string	| null;
 	};
 	unsuspend: {
 		userId: string;

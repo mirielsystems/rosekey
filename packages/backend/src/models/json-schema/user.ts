@@ -266,10 +266,10 @@ export const packedUserDetailedNotMeOnlySchema = {
 			example: '2018-03-12',
 		},
 		ListenBrainz: {
-			type: "string",
+			type: 'string',
 			nullable: true,
 			optional: false,
-			example: "Steve",
+			example: 'Steve',
 		},
 		lang: {
 			type: 'string',
