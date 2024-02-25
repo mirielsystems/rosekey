@@ -4,7 +4,7 @@ import { Endpoint } from "@/server/api/endpoint-base.js";
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { ApiError } from '../../error.js';
-import type { UsersRepository, UserProfilesRepository } from '@/models/index.js';
+import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
 import { MetaService } from "@/core/MetaService.js";
 
 export const meta = {
