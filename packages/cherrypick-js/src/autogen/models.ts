@@ -48,3 +48,4 @@ export type Role = components['schemas']['Role'];
 export type RolePolicies = components['schemas']['RolePolicies'];
 export type ReversiGameLite = components['schemas']['ReversiGameLite'];
 export type ReversiGameDetailed = components['schemas']['ReversiGameDetailed'];
+export type SubscriptionPlan = components['schemas']['SubscriptionPlan'];

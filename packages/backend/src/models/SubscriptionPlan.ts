@@ -1,6 +1,6 @@
 import { Column, Entity, Index, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
-import { id } from '../id.js';
-import { Role } from './Role.js';
+import { id } from './util/id.js';
+import { MiRole } from './Role.js';
 
 @Entity('subscription_plan')
 
@@ -34,13 +34,13 @@ export class SubscriptionPlan {
 
 	@Index({ unique: true })
 	@Column(id())
-	public roleId: Role['id'];
+	public roleId: MiRole['id'];
 
-	@ManyToOne(type => Role, {
+	@ManyToOne(type => MiRole, {
 		onDelete: 'CASCADE',
 	})
 	@JoinColumn()
-	public role: Role | null;
+	public role: MiRole | null;
 
 	@Column('boolean', {
 		default: false,
