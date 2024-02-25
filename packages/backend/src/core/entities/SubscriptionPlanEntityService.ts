@@ -1,8 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { DI } from "@/di-symbols.js";
-import { SubscriptionPlan, User } from "@/models/index.js";
+import { SubscriptionPlan, User } from "@/models/_.js";
 import { RoleEntityService } from "@/core/entities/RoleEntityService.js";
-import type { SubscriptionPlansRepository } from "@/models/index.js";
+import type { SubscriptionPlansRepository } from "@/models/_.js";
 import { bindThis } from "@/decorators.js";
 import { Packed } from "@/misc/json-schema.js";
 import { awaitAll } from "@/misc/prelude/await-all.js";
