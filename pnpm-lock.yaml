@@ -893,6 +893,9 @@ importers:
       json5:
         specifier: 2.2.3
         version: 2.2.3
+      katex:
+        specifier: ^0.16.9
+        version: 0.16.9
       matter-js:
         specifier: 0.19.0
         version: 0.19.0
@@ -10083,6 +10086,11 @@ packages:
     engines: {node: '>= 10'}
     dev: false
 
+  /commander@8.3.0:
+    resolution: {integrity: sha512-OkTL9umf+He2DZkUq8f8J9of7yL6RJKI24dVITBmNfZBmri9zYZQrKkuXiKhyfPSu8tUhnVBB1iKXevvnlR4Ww==}
+    engines: {node: '>= 12'}
+    dev: false
+
   /commander@9.5.0:
     resolution: {integrity: sha512-KRs7WVDKg86PWiuAqhDrAQnTXZKraVcCc6vFdL14qrZ/DcWwuRo7VoiYXalXO7S5GKpqYiVEwCbgFDfxNHKJBQ==}
     engines: {node: ^12.20.0 || >=14}
@@ -14561,6 +14569,13 @@ packages:
     dependencies:
       jwa: 2.0.0
       safe-buffer: 5.2.1
+    dev: false
+
+  /katex@0.16.9:
+    resolution: {integrity: sha512-fsSYjWS0EEOwvy81j3vRA8TEAhQhKiqO+FQaKWp0m39qwOzHVBgAUBIXWj1pB+O2W3fIpNa6Y9KSKCVbfPhyAQ==}
+    hasBin: true
+    dependencies:
+      commander: 8.3.0
     dev: false
 
   /keyv@4.5.2:
