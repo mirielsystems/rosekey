@@ -1,37 +1,36 @@
 <template>
-	<MkContainer :foldable="true">
-		<template #header
-			><i
-				class="ti ti-headphones"
-				style="margin-right: 0.5em"
-			></i
-			>Music</template
-		>
+<MkContainer :foldable="true">
+	<template #header>
+		<i
+			class="ti ti-headphones"
+			style="margin-right: 0.5em"
+		></i>Music
+	</template>
 
-		<div style="padding: 8px">
-			<div class="flex">
-				<a :href="listenbrainz.musicbrainzurl">
-					<img class="image" :src="listenbrainz.img" :alt="listenbrainz.title" />
-					<div class="flex flex-col items-start">
-						<p class="text-sm font-bold">Now Playing: {{ listenbrainz.title }}</p>
-						<p class="text-xs font-medium">{{ listenbrainz.artist }}</p>
-					</div>
-				</a>
-				<a :href="listenbrainz.listenbrainzurl">
-					<div class="playicon">
-						<i class="ti ti-player-play-filled"></i>
-					</div>
-				</a>
-			</div>
+	<div style="padding: 8px">
+		<div class="flex">
+			<a :href="listenbrainz.musicbrainzurl">
+				<img class="image" :src="listenbrainz.img" :alt="listenbrainz.title"/>
+				<div class="flex flex-col items-start">
+					<p class="text-sm font-bold">Now Playing: {{ listenbrainz.title }}</p>
+					<p class="text-xs font-medium">{{ listenbrainz.artist }}</p>
+				</div>
+			</a>
+			<a :href="listenbrainz.listenbrainzurl">
+				<div class="playicon">
+					<i class="ti ti-player-play-filled"></i>
+				</div>
+			</a>
 		</div>
-	</MkContainer>
+	</div>
+</MkContainer>
 </template>
 
 <script lang="ts" setup>
 /* eslint-disable no-mixed-spaces-and-tabs */
-import {} from "vue";
-import * as misskey from "misskey-js";
-import MkContainer from "@/components/MkContainer.vue";
+import {} from 'vue';
+import * as misskey from 'cherrypick-js';
+import MkContainer from '@/components/MkContainer.vue';
 const props = withDefaults(
 	defineProps<{
 		user: misskey.entities.User;
@@ -44,12 +43,12 @@ if (props.user.listenbrainz) {
 		const response = await fetch(`https://api.listenbrainz.org/1/metadata/lookup/?artist_name=${artist}&recording_name=${title}`, {
 			method: 'GET',
 			headers: {
-				'Content-Type': 'application/json'
+				'Content-Type': 'application/json',
 			},
 		});
 		const data = await response.json();
 		if (!data.recording_name) {
-		return null;
+			return null;
 		}
 		const titler: string = data.recording_name;
 		const artistr: string = data.artist_credit_name;
@@ -59,35 +58,35 @@ if (props.user.listenbrainz) {
 		return [titler, artistr, img, musicbrainzurl, listenbrainzurl];
 	};
 	const response = await fetch(`https://api.listenbrainz.org/1/user/${props.user.listenbrainz}/playing-now`, {
-        method: 'GET',
-        headers: {
-			'Content-Type': 'application/json'
-        },
-    });
-    const data = await response.json();
+		method: 'GET',
+		headers: {
+			'Content-Type': 'application/json',
+		},
+	});
+	const data = await response.json();
 	if (data.payload.listens && data.payload.listens.length !== 0) {
-      const title: string = data.payload.listens[0].track_metadata.track_name;
-      const artist: string = data.payload.listens[0].track_metadata.artist_name;
-      const lastlisten: string = data.payload.listens[0].playing_now;
-      const img: string = 'https://coverartarchive.org/img/big_logo.svg';
-      await getLMData(title, artist).then((data) => {
-        if (!data) {
-          listenbrainz.title = title;
+		const title: string = data.payload.listens[0].track_metadata.track_name;
+		const artist: string = data.payload.listens[0].track_metadata.artist_name;
+		const lastlisten: string = data.payload.listens[0].playing_now;
+		const img = 'https://coverartarchive.org/img/big_logo.svg';
+		await getLMData(title, artist).then((data) => {
+			if (!data) {
+				listenbrainz.title = title;
 		  listenbrainz.img = img;
 		  listenbrainz.artist = artist;
 		  listenbrainz.lastlisten = lastlisten;
 		  return;
-        } else {
-          listenbrainz.title = data[0];
+			} else {
+				listenbrainz.title = data[0];
 		  listenbrainz.img = data[2];
 		  listenbrainz.artist = data[1];
 		  listenbrainz.lastlisten = lastlisten;
 		  listenbrainz.musicbrainzurl = data[3];
 		  listenbrainz.listenbrainzurl = data[4];
-          return;
-        }
-      });
-    }
+				return;
+			}
+		});
+	}
 }
 </script>
 
