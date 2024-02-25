@@ -1542,6 +1542,9 @@ export interface Locale extends ILocale {
      * サブスクリプション
      */
     "subscription": string;
+    /**
+     * サブスクリプションの状態
+     */
     "subscriptionStatus": string;
     /**
      * 場所
@@ -7092,21 +7095,69 @@ export interface Locale extends ILocale {
         };
     };
     "_subscription": {
+        /**
+         * 価格
+         */
         "price": string;
+        /**
+         * 通貨
+         */
         "currency": string;
+        /**
+         * Stripeの価格ID
+         */
         "stripePriceId": string;
+        /**
+         * 購入
+         */
         "subscribe": string;
+        /**
+         * 管理
+         */
         "manage": string;
+        /**
+         * プランを変更
+         */
         "changePlan": string;
+        /**
+         * プランを変更しますか？
+         */
         "confirmChangePlan": string;
+        /**
+         * 未完了
+         */
         "incomplete": string;
+        /**
+         * 期限切れ
+         */
         "incomplete_expired": string;
+        /**
+         * トライアル中
+         */
         "trialing": string;
+        /**
+         * 有効
+         */
         "active": string;
+        /**
+         * 支払い期限切れ
+         */
         "pastDue": string;
+        /**
+         * キャンセル済み
+         */
         "canceled": string;
+        /**
+         * 未払い
+         */
         "unpaid": string;
+        /**
+         * なし
+         */
         "none": string;
+        /**
+         * 現在のプラン
+         */
         "current": string;
     };
     "_role": {
