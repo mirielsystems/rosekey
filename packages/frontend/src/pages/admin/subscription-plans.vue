@@ -54,6 +54,7 @@ import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFolder from '@/components/MkFolder.vue';
+import {misskeyApi} from "@/scripts/misskey-api.js";
 
 const subscriptionPlans = ref<any[]>([]);
 
@@ -76,7 +77,7 @@ function archive(subscriptionPlan) {
 		text: i18n.t('channelArchiveConfirmTitle', { name: subscriptionPlan.name }),
 	}).then(({ canceled }) => {
 		if (canceled) return;
-		os.api('admin/subscription-plans/archive', { planId: subscriptionPlan.id });
+		misskeyApi('admin/subscription-plans/archive', { planId: subscriptionPlan.id });
 		load();
 	});
 }
@@ -93,7 +94,7 @@ async function save(subscriptionPlan) {
 		});
 		load();
 	} else {
-		os.apiWithDialog('admin/subscription-plans/update', {
+		await os.apiWithDialog('admin/subscription-plans/update', {
 			planId: subscriptionPlan.id,
 			name: subscriptionPlan.name,
 			price: subscriptionPlan.price,
@@ -106,7 +107,7 @@ async function save(subscriptionPlan) {
 }
 
 function load() {
-	os.api('subscription-plans/list').then(_subscriptionPlans => {
+	misskeyApi('subscription-plans/list').then(_subscriptionPlans => {
 		subscriptionPlans.value = _subscriptionPlans;
 	});
 }
