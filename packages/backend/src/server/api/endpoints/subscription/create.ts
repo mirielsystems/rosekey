@@ -5,9 +5,6 @@ import type { UsersRepository, UserProfilesRepository, SubscriptionPlansReposito
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
-import { RoleService } from '@/core/RoleService.js';
-import { GlobalEventService } from '@/core/GlobalEventService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import type { Config } from '@/config.js';
 import { ApiError } from '../../error.js';
 
@@ -74,25 +71,21 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
 		@Inject(DI.subscriptionPlansRepository)
-		private subscriptionPlansRepository: SubscriptionPlansRepository,
-		private roleService: RoleService,
+		private subscriptionPlanRepository: SubscriptionPlansRepository,
 		private metaService: MetaService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const instance = await this.metaService.fetch(true);
-			if (!(instance.enableSubscriptions)) {
-				throw new ApiError(meta.errors.unavailable);
-			}
-			if (!(this.config.stripe && this.config.stripe.secretKey)) {
+			if (!(instance.enableSubscriptions || this.config.stripe?.secretKey)) {
 				throw new ApiError(meta.errors.unavailable);
 			}
 
-			const plan = await this.subscriptionPlansRepository.findOneBy({ id: ps.planId });
+			const plan = await this.subscriptionPlanRepository.findOneBy({ id: ps.planId });
 			if (plan?.isArchived || !plan?.stripePriceId) {
 				throw new ApiError(meta.errors.noSuchPlan);
 			}
 
-			const user = await this.usersRepository.findOneBy({ id: me.id });
+			const user = await this.usersRepository.findOneByOrFail({ id: me.id });
 			let userProfile = await this.userProfilesRepository.findOneBy({ userId: me.id });
 			if (!user || !userProfile) {
 				throw new ApiError(meta.errors.noSuchUser);
@@ -101,7 +94,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.requiredEmail);
 			}
 
-			const stripe = new Stripe(this.config.stripe.secretKey);
+			const stripe = new Stripe(this.config.stripe!.secretKey);
 			if (!userProfile.stripeCustomerId) {
 				const makeCustomer = await stripe.customers.create({
 					email: userProfile.email,
@@ -115,52 +108,24 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			const subscriptionStatus = user.subscriptionStatus;
 			if (subscriptionStatus === 'active') {
 				if (plan.id !== user.subscriptionPlanId) {
-					// サブスクリプションのプランの変更の場合
-					// 決済情報はすでにStripeにあるため、Stripeの画面には遷移しない
+					// Upgrade or downgrade subscription
 					const subscription = await stripe.subscriptions.list({
 						customer: userProfile.stripeCustomerId ?? undefined,
 					});
 					if (subscription.data.length === 0) {
 						throw new ApiError(meta.errors.accessDenied);
 					}
-
-					const oldSubscription = await subscriptionPlansRepository.findOneByOrFail({ id: user.subscriptionPlanId ?? undefined });
-					const subscriptionItem = subscription.data
+					const oldSubscription = await subscriptionPlanRepository.findOneByOrFail({ id: user.subscriptionPlanId ?? undefined });
+					const subscriptionItemId = subscription.data
 						.filter(d => d.id === user.stripeSubscriptionId)[0].items.data
-						.filter(d => d.price.id === oldSubscription.stripePriceId)[0];
+						.filter(d => d.price.id === oldSubscription.stripePriceId)[0].id;
+					const updatedSubscription = await stripe.subscriptionItems.update(subscriptionItemId, { plan: plan.stripePriceId });
 
-					// 同期がとれておらず、サブスクリプションの状態が不正な場合
-					if (!subscriptionItem) {
-						// FIXME: 不正な状態なのでここに入るのがそもそもおかしい
-
-						// サブスクリプションプランのロールが割り当てられている場合、ロールを解除する
-						const roleIds = (await this.subscriptionPlansRepository.find()).map(x => x.roleId);
-						await this.roleService.getUserRoles(user.id).then(async (roles) => {
-							for (const role of roles) {
-								if (roleIds.includes(role.id)) {
-									await this.roleService.unassign(user.id, role.id);
-								}
-							}
-						});
-
-						// サブスクリプションの状態を削除
-						await this.usersRepository.update({ id: userProfile.userId }, {
-							subscriptionStatus: 'none',
-							subscriptionPlanId: null,
-							stripeSubscriptionId: null,
-						});
-
-						return;
-					}
-
-					await stripe.subscriptionItems.update(subscriptionItem.id, { plan: plan.stripePriceId });
-
-					return;
+					return; // fmm... I don't know how to return 204 No Content
 				} else {
 					throw new ApiError(meta.errors.accessDenied);
 				}
 			} else if (subscriptionStatus === 'incomplete' || subscriptionStatus === 'incomplete_expired' || subscriptionStatus === 'past_due' || subscriptionStatus === 'unpaid') {
-				// 決済ができていない場合
 				const session = await stripe.checkout.sessions.create({
 					customer: userProfile.stripeCustomerId ?? undefined,
 					allow_promotion_codes: true,
@@ -173,8 +138,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 						destination: session.url,
 					},
 				};
-			} else {
-				// キャンセル、または新規の場合
+			} else { // null or 'canceled' or 'none'
 				const session = await stripe.checkout.sessions.create({
 					mode: 'subscription',
 					billing_address_collection: 'auto',
