@@ -183,7 +183,11 @@ const routes: RouteDef[] = [{
 	}, {
 		path: '/subscription',
 		name: 'subscription',
-		component: iAmAdmin ? page(() => import('@/pages/admin/subscription-plans.vue')) : page(() => import('@/pages/not-found.vue')),
+		component: page(() => import('@/pages/settings/subscription.vue')),
+	}, {
+		path: '/subscription-plans',
+		name: 'subscription-plans',
+		component: page(() => import('@/pages/admin/subscription-plans.vue')),
 	}, {
 		path: '/other',
 		name: 'other',
