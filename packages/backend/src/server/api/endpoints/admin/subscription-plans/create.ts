@@ -62,7 +62,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			const subscriptionPlan = await this.subscriptionPlansRepository.insert({
-				id: this.idService.genId(),
+				id: this.idService.gen(),
 				name: ps.name,
 				price: ps.price,
 				currency: ps.currency,
@@ -72,7 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				isArchived: false,
 			}).then(x => this.subscriptionPlansRepository.findOneByOrFail(x.identifiers[0]));
 
-			this.moderationLogService.insertModerationLog(me, 'createSubscriptionPlan', {
+			await this.moderationLogService.log(me, 'createSubscriptionPlan', {
 				subscriptionPlanId: subscriptionPlan.id,
 				subscriptionPlan: subscriptionPlan,
 			});
