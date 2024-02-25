@@ -151,6 +151,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkLazy>
 						<XActivity :key="user.id" :user="user"/>
 					</MkLazy>
+					<MkLazy>
+						<XListenBrainz v-if="user.listenbrainz && listenbrainzdata" :key="user.id" :user="user"/>
+					</MkLazy>
 				</template>
 				<div v-if="!disableNotes">
 					<MkLazy>
@@ -162,12 +165,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="!narrow" class="sub _gaps" style="container-type: inline-size;">
 			<XFiles :key="user.id" :user="user"/>
 			<XActivity :key="user.id" :user="user"/>
-			<XListenBrainz
-					v-if="user.listenbrainz && listenbrainzdata"
-					:key="user.id"
-					:user="user"
-					style="margin-top: var(--margin)"
-				/>
+			<XListenBrainz v-if="user.listenbrainz && listenbrainzdata" :key="user.id" :user="user"/>
 		</div>
 	</div>
 </MkSpacer>
