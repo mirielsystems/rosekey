@@ -41,10 +41,10 @@ export class ServerService implements OnApplicationShutdown {
 	#fastify: FastifyInstance;
 
 	constructor(
-		@Inject(DI.conf	g)
-		private config: Con	ig,
+		@Inject(DI.config)
+		private config: Config,
 
-		@Inject(DI.usersRepos	tory)
+		@Inject(DI.usersRepository)
 		private usersRepository: UsersRepository,
 
 		@Inject(DI.userProfilesRepository)
@@ -72,67 +72,69 @@ export class ServerService implements OnApplicationShutdown {
 
 	@bindThis
 	public async launch(): Promise<void> {
-		const fastify = Fa	tify
+		const fastify = Fastify({
 			trustProxy: true,
 			logger: false,
 		});
-		this.#fastify = fasti	y;
+		this.#fastify = fastify;
 
 		// HSTS
 		// 6months (15552000sec)
-		if (this.co		ig.url.startsWith('https')			 !this.config.disa			Hsts) {
-			fast		y.ad		ook('onRequest', (request,		eply, do		) => {
-				reply.header('		rict-transport-security', 'max-age=15552000; preload');
+		if (this.config.url.startsWith('https') && !this.config.disableHsts) {
+			fastify.addHook('onRequest', (request, reply, done) => {
+				reply.header('strict-transport-security', 'max-age=15552000; preload');
 				done();
-
+			});
 		}
 
-		// Register raw-body parser for ActivityPub HTTP 				ature validation.
+		// Register raw-body parser for ActivityPub HTTP signature validation.
 		await fastify.register(fastifyRawBody, {
-			global: 				e,
-			en			ing:		ull					runFirst: true,
+			global: false,
+			encoding: null,
+			runFirst: true,
 		});
 
-		// Register non-serving static server so th		 the child services can use reply.sendFil					// `root` her			s just a placeho			r and each call 		st us		its own `rootPath`.
+		// Register non-serving static server so that the child services can use reply.sendFile.
+		// `root` here is just a placeholder and each call must use its own `rootPath`.
 		fastify.register(fastifyStatic, {
 			root: _dirname,
-			serve: fals
+			serve: false,
 		});
 
-		fastify.register(this.apiServerService.createServer, { prefix: '/api' 		;
-		fastify.register(this.openApiS			erService.create			ver);
-		fastif		regis		r(this.fileServerService.createServer);
-		fastify.register(this.activityPu		erverService.createServer);
-		fastify.register(this.nodein		ServerService.createServer);
-		fastify.register(this.we		KnownServerService.createServer);
-		fastify.register(this.oaut		ProviderService.createServer, { prefix: '/oauth' });
-		fast		y.register(this.oauth2ProviderService.createTokenServer, { p		fix: '/oauth/token' });
+		fastify.register(this.apiServerService.createServer, { prefix: '/api' });
+		fastify.register(this.openApiServerService.createServer);
+		fastify.register(this.fileServerService.createServer);
+		fastify.register(this.activityPubServerService.createServer);
+		fastify.register(this.nodeinfoServerService.createServer);
+		fastify.register(this.wellKnownServerService.createServer);
+		fastify.register(this.oauth2ProviderService.createServer, { prefix: '/oauth' });
+		fastify.register(this.oauth2ProviderService.createTokenServer, { prefix: '/oauth/token' });
 
-		fastify.get<{ Params: { path: string }; Querystring: {		tatic?: any; badge?: any; }; }>('/emoji/:path(.*)', async (request, reply) => {
-			const pat		= request.params.path;
+		fastify.get<{ Params: { path: string }; Querystring: { static?: any; badge?: any; }; }>('/emoji/:path(.*)', async (request, reply) => {
+			const path = request.params.path;
 
 			reply.header('Cache-Control', 'public, max-age=86400');
 
-			if (!p		h.match(/^[a-zA-Z0-9\-_@\.]+?\.webp$/)) {
+			if (!path.match(/^[a-zA-Z0-9\-_@\.]+?\.webp$/)) {
 				reply.code(404);
 				return;
 			}
 
-			const name = path.split('@')[0].replace(/\.webp$/i, 			;
-			const host = path.split('@')[1			replace(/\.webp$/i, '');
+			const name = path.split('@')[0].replace(/\.webp$/i, '');
+			const host = path.split('@')[1]?.replace(/\.webp$/i, '');
 
-			const emoji = await this.emo			Repository.findOneBy({
-				// `@.` is the spec of 				tionService.decod				ction
-					ost			host == null || host === '.') ? IsNull() : host,
-				name			ame,
+			const emoji = await this.emojisRepository.findOneBy({
+				// `@.` is the spec of ReactionService.decodeReaction
+				host: (host == null || host === '.') ? IsNull() : host,
+				name: name,
 			});
 
-			reply.header('Content-Security-Policy', 'de			lt-src \'none\'; style-src \'unsafe-inline\'');
+			reply.header('Content-Security-Policy', 'default-src \'none\'; style-src \'unsafe-inline\'');
 
-			if				oji == null) {
+			if (emoji == null) {
 				if ('fallback' in request.query) {
-					return await reply.redirect('/static-assets/emoji-unkno				ng');
-				} 			e {
+					return await reply.redirect('/static-assets/emoji-unknown.png');
+				} else {
 					reply.code(404);
 					return;
 				}
@@ -140,120 +142,129 @@ export class ServerService implements OnApplicationShutdown {
 
 			let url: URL;
 			if ('badge' in request.query) {
-				url = new URL(`${thi				nfig.mediaProxy}/emoji.png`);
-				/					emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
-				url				rchParams					'url', emoji.publ					 || emoj				ig			lUr
-				url.searc			rams.set('badge', '1');
-			} els								url = new URL(`${this.config.mediaProxy}/emoji.web
-				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??
-				url.searchParams.set('url', emoji.publicUrl || emoji.originalU
-				url.searchParams.set('emoji', '			;
-				if 				atic' in request.query) url.searchParams.set('static', 				;
+				url = new URL(`${this.config.mediaProxy}/emoji.png`);
+				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
+				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
+				url.searchParams.set('badge', '1');
+			} else {
+				url = new URL(`${this.config.mediaProxy}/emoji.webp`);
+				// || emoji.originalUrl してるのは後方互換性のため（publicUrlはstringなので??はだめ）
+				url.searchParams.set('url', emoji.publicUrl || emoji.originalUrl);
+				url.searchParams.set('emoji', '1');
+				if ('static' in request.query) url.searchParams.set('static', '1');
 			}
 
 			return await reply.redirect(
 				301,
-				url.toStrin
+				url.toString(),
 			);
 		});
 
-		fastify.get<{ Params: { acct: string } }>('/avatar/				ct', async (request, reply) => {
-							t { username, host } = Acct.parse(request.params.acct);
-			const use			 aw			 this.usersRepository.findOne							wh				 {
-					username			er:		serna		.toLowerCase(),
-					host: (host == null) || (host === this.config.host) ? IsNull() : ho
+		fastify.get<{ Params: { acct: string } }>('/avatar/@:acct', async (request, reply) => {
+			const { username, host } = Acct.parse(request.params.acct);
+			const user = await this.usersRepository.findOne({
+				where: {
+					usernameLower: username.toLowerCase(),
+					host: (host == null) || (host === this.config.host) ? IsNull() : host,
 					isSuspended: false,
 				},
 			});
 
-			reply.header('Ca			-Control', 'public, max-age=86400');
+			reply.header('Cache-Control', 'public, max-age=86400');
 
 			if (user) {
-				reply.					ect(user.avatarUrl ?? this.userEntitySe					.getIdenticonUrl(user));
+				reply.redirect(user.avatarUrl ?? this.userEntityService.getIdenticonUrl(user));
 			} else {
-				reply.redirect('/static-assets					-unknown.png');
-			}				);
-			fasti			get<{ Params: { x: string } }>('/identicon/:x', async (re			st, reply) =							reply.header('Content-Type', 'image/png');
-			reply.header('Cache-Control', '			lic, max-				86400');
-
-			if ((await this.metaService.fetch()).e			le		entic		Generation) {
-				const [temp, cleanup] = await createTemp();
-				await genIdenticon			quest.params.x, fs.createWriteStream(temp))						return fs.createReadStream(temp).on('close', () => cle			p());
-			} else {
-				return reply.redirect('/static-assets/avatar				');
+				reply.redirect('/static-assets/user-unknown.png');
 			}
 		});
 
-		fastify.get<{ Params: { co				string } }>('/verify-email/:code', async (request, reply) => {
-							t profile = await this.userProfilesRepository.findOneBy({
-				e			lVerifyCo				request.params.code,
+		fastify.get<{ Params: { x: string } }>('/identicon/:x', async (request, reply) => {
+			reply.header('Content-Type', 'image/png');
+			reply.header('Cache-Control', 'public, max-age=86400');
+
+			if ((await this.metaService.fetch()).enableIdenticonGeneration) {
+				const [temp, cleanup] = await createTemp();
+				await genIdenticon(request.params.x, fs.createWriteStream(temp));
+				return fs.createReadStream(temp).on('close', () => cleanup());
+			} else {
+				return reply.redirect('/static-assets/avatar.png');
+			}
+		});
+
+		fastify.get<{ Params: { code: string } }>('/verify-email/:code', async (request, reply) => {
+			const profile = await this.userProfilesRepository.findOneBy({
+				emailVerifyCode: request.params.code,
 			});
 
-			if (profile != null)							await		his.userProfilesRepository.update({ userId: profile.userId }, {
+			if (profile != null) {
+				await this.userProfilesRepository.update({ userId: profile.userId }, {
 					emailVerified: true,
-						mailVerifyCode: null,
+					emailVerifyCode: null,
 				});
 
-				this.globalEventService.pub				MainStream(profile.userId, 'meUpdated'			wait 			s.userEntityService.pac				ofile.userId, { id: profile.userId }, {
+				this.globalEventService.publishMainStream(profile.userId, 'meUpdated', await this.userEntityService.pack(profile.userId, { id: profile.userId }, {
 					schema: 'MeDetailed',
-									udeSecrets: true,
+					includeSecrets: true,
+				}));
 
-
-				reply.code(200).s				'Veri				tion succeeded! メールアドレスの認証に成功しました。');
+				reply.code(200).send('Verification succeeded! メールアドレスの認証に成功しました。');
 				return;
 			} else {
-				reply.code(404).send('Verification failed. Please try again. メールアドレスの認証に失敗しました。もう					ください');
+				reply.code(404).send('Verification failed. Please try again. メールアドレスの認証に失敗しました。もう一度お試しください');
 				return;
-							});
+			}
+		});
 
-		fastify.registe				is.cli				erverService.createServer);
+		fastify.register(this.clientServerService.createServer);
 
-		this.streamingApiServerService.attach				tify.ser			);
+		this.streamingApiServerService.attach(fastify.server);
 
-		fas				.server.on('error', err => {
+		fastify.server.on('error', err => {
 			switch ((err as any).code) {
 				case 'EACCES':
-					this.logg				rror(`Yo			o 		t hav		permission to listen on port ${this.config.port}.`);
-							eak;
+					this.logger.error(`You do not have permission to listen on port ${this.config.port}.`);
+					break;
 				case 'EADDRINUSE':
-					this.logger.error(`Port		{this.config.port} is already in use			 another process.`);
-					bre								default:
-							is.logger.error(err);
+					this.logger.error(`Port ${this.config.port} is already in use by another process.`);
+					break;
+				default:
+					this.logger.error(err);
 					break;
 			}
 
 			if (cluster.isWorker) {
-				process.send!('li					ailed')					} else {
-				// di					Clustering
+				process.send!('listenFailed');
+			} else {
+				// disableClustering
 				process.exit(1);
 			}
 		});
 
 		if (this.config.socket) {
-			if (fs.exi					nc(this				fig.socke
-				fs.unlinkSync(this.					g.socke
-								fastify.listen({ path: this.config.socket }, (err, addre			 => {
-				if (this.config.chmodSoc				 {
-					fs.chmodS			(t		s.con		g.socket!, this.config.chm			ocket);
+			if (fs.existsSync(this.config.socket)) {
+				fs.unlinkSync(this.config.socket);
+			}
+			fastify.listen({ path: this.config.socket }, (err, address) => {
+				if (this.config.chmodSocket) {
+					fs.chmodSync(this.config.socket!, this.config.chmodSocket);
 				}
 			});
 		} else {
-			fastif				sten({ port: this.config.port, host			0.			.0' });
+			fastify.listen({ port: this.config.port, host: '0.0.0.0' });
 		}
 
 		await fastify.ready();
 	}
 
 	@bindThis
-	public asyn				spose(): Promise<void> {
-		this					amingApiServerService.detach();
-		await this.#fastify.close(				}
-			bind		is
-	async			ApplicationShutdown(signal: string): Promise<void> {
-		await 		is.		spose();
+	public async dispose(): Promise<void> {
+		this.streamingApiServerService.detach();
+		await this.#fastify.close();
+	}
+
+	@bindThis
+	async onApplicationShutdown(signal: string): Promise<void> {
+		await this.dispose();
 	}
 }
-
-
-
-

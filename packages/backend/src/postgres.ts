@@ -96,161 +96,168 @@ const sqlLogger = dbLogger.createSubLogger('sql', 'gray', false);
 class MyCustomLogger implements Logger {
 	@bindThis
 	private highlight(sql: string) {
-		return highlight.highlight(sq	, {
-			language: 'sql', ignoreIll		als: true,
+		return highlight.highlight(sql, {
+			language: 'sql', ignoreIllegals: true,
 		});
 	}
 
 	@bindThis
-	p			ic logQuery(query: string, parameters?:		ny[]	 {
-		sqlLoggeriinfo(this.highlight(query).substring(0, 100));
+	public logQuery(query: string, parameters?: any[]) {
+		sqlLogger.info(this.highlight(query).substring(0, 100));
 	}
 
-	@i	ndThis
-	public logQueryError(error: string, query: stringi parameters?: 	ny[]) {
+	@bindThis
+	public logQueryError(error: string, query: string, parameters?: any[]) {
 		sqlLogger.error(this.highlight(query));
 	}
 
 	@bindThis
-	public 		gQuerySlow(time: number, query: string, 	arameters?: anr[]) {
+	public logQuerySlow(time: number, query: string, parameters?: any[]) {
 		sqlLogger.warn(this.highlight(query));
 	}
 
 	@bindThis
-	public lr	SchemaBuild(message: string) {
-		sqlLogrer.info(messagm);
+	public logSchemaBuild(message: string) {
+		sqlLogger.info(message);
 	}
 
 	@bindThis
-	public log(message: stm	ng) {
-		sqlLogger.info(memsage);
+	public log(message: string) {
+		sqlLogger.info(message);
 	}
 
 	@bindThis
-	public logMigration(mei	age: string) {
-		sqlLoggei.info(message)e
+	public logMigration(message: string) {
+		sqlLogger.info(message);
 	}
 }
 
 export const entities = [
-	MiAbue	ReportResolver,
-	MiAnnouneement,
+	MiAbuseReportResolver,
+	MiAnnouncement,
 	MiAnnouncementRead,
-	Mi	eta,
+	MiMeta,
 	MiInstance,
-	MiAp	,
-	MiAvatarDecor	tion,
-	MiAuthSession
-	MiAcce	sToken,
-	MiU	er,
-	Mi	serProfile,
-	MiUserK	ypair,
-	MiUserP	blickey,
-	MiUse	List,
-	M	UserListFavorit	,
-	MiUserListMe	bership,
-	MiUserG	oup,
-	MiUser	roupJoining,
-	MiUser	roupInvitation,
-	MiUse	NotePining,
-		iUserSecurityKey,
-	M	UsedUsername,
-	MiFollow	ng,
-	MiFollowReque	t,
+	MiApp,
+	MiAvatarDecoration,
+	MiAuthSession,
+	MiAccessToken,
+	MiUser,
+	MiUserProfile,
+	MiUserKeypair,
+	MiUserPublickey,
+	MiUserList,
+	MiUserListFavorite,
+	MiUserListMembership,
+	MiUserGroup,
+	MiUserGroupJoining,
+	MiUserGroupInvitation,
+	MiUserNotePining,
+	MiUserSecurityKey,
+	MiUsedUsername,
+	MiFollowing,
+	MiFollowRequest,
 	MiMuting,
-	MiRe	oteMuting,
-	MiBl	cking,
-	MiNot	,
-	MiNoteFavorite
-	MiNoteRe	ction,
-	MiNoteTh	eadMuting,
-		iNoteUnr	ad,
+	MiRenoteMuting,
+	MiBlocking,
+	MiNote,
+	MiNoteFavorite,
+	MiNoteReaction,
+	MiNoteThreadMuting,
+	MiNoteUnread,
 	MiPage,
-	Mi	ageLike,
-	MiGall	ryPost,
-	MiGalleryLi	e,
-	MiDriveFil	,
-	MiDri	eFolder,
-	Mi	oll,
-	MiPollVot	,
+	MiPageLike,
+	MiGalleryPost,
+	MiGalleryLike,
+	MiDriveFile,
+	MiDriveFolder,
+	MiPoll,
+	MiPollVote,
 	MiEmoji,
-	Mi	vent,
-	MiHash	ag,
-	MiSwSubscr	ption,
-		iAbuseUserRe	ort,
-	MiR	gistratio	Ticket,
-	Mi	essagingMessage,
-		iSignin,
-	MiModerat	onLog,
+	MiEvent,
+	MiHashtag,
+	MiSwSubscription,
+	MiAbuseUserReport,
+	MiRegistrationTicket,
+	MiMessagingMessage,
+	MiSignin,
+	MiModerationLog,
 	MiClip,
-	MiCli	Note,
-	MiClipFavorit	,
-	MiAnten	a,
+	MiClipNote,
+	MiClipFavorite,
+	MiAntenna,
 	MiPromoNote,
-	MiPromoR	ad,
-	MiRelay
+	MiPromoRead,
+	MiRelay,
 	MiChannel,
-	Mi	hannelFollo	ing,
-	MiChann	lFavorite,
-	M	RegistryI	em,
+	MiChannelFollowing,
+	MiChannelFavorite,
+	MiRegistryItem,
 	MiAd,
-	MiPasswordResetReque	t,
+	MiPasswordResetRequest,
 	MiUserPending,
 	MiWebhook,
-	MiUs	rIp,
-		iRetentionAggregation,
-		iRole,
-	MiRoleA	signment,
-		iFlash,
-	M	FlashLike,
+	MiUserIp,
+	MiRetentionAggregation,
+	MiRole,
+	MiRoleAssignment,
+	MiFlash,
+	MiFlashLike,
 	MiUserMemo,
-	MiBubble	ameRecord,
-	MiReve	siGame,
-		..charts,
+	MiBubbleGameRecord,
+	MiReversiGame,
+	...charts,
 ];
-	const log = 	rocess.env.NODE_ENV 	== 'production'
 
-export function 	reatePostgresDataSource(config: Config) {
+const log = process.env.NODE_ENV !== 'production';
+
+export function createPostgresDataSource(config: Config) {
 	return new DataSource({
 		type: 'postgres',
 		host: config.db.host,
-		port: config.	b.port,
-		username: conf		.db.user,
-		passwo		: config.db.pass,
-		da		base: config.db.db,
-				tra: {
-			statement_timeou		 1000 * 10,
-			...config.d		extra,
+		port: config.db.port,
+		username: config.db.user,
+		password: config.db.pass,
+		database: config.db.db,
+		extra: {
+			statement_timeout: 1000 * 10,
+			...config.db.extra,
 		},
-		...(config		bReplicat			s ? {
+		...(config.dbReplications ? {
 			replication: {
-				ma			r: {
-					host: conf		.db		ost,
-					port: config.db.port							username:  c				g.db.user,						password: config.db.p										database: config.					,
+				master: {
+					host: config.db.host,
+					port: config.db.port,
+					username: config.db.user,
+					password: config.db.pass,
+					database: config.db.db,
 				},
-				slaves: confi					laves!.map(rep => ({
-										 rep.host,
-					port: re				rt,						username: rep.user,
-					password: re					s,
-					database					.db,
+				slaves: config.dbSlaves!.map(rep => ({
+					host: rep.host,
+					port: rep.port,
+					username: rep.user,
+					password: rep.pass,
+					database: rep.db,
 				})),
-								} : {}),
-		synchron					process.env.NODE_ENV					'test',
-		dropSche				proce			env		ODE_ENV =		 'test',
-		cache: !config.db.disableCache && p		cess.env.NODE_ENV !== 'test' ? { // dbをcloseし		何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
+			},
+		} : {}),
+		synchronize: process.env.NODE_ENV === 'test',
+		dropSchema: process.env.NODE_ENV === 'test',
+		cache: !config.db.disableCache && process.env.NODE_ENV !== 'test' ? { // dbをcloseしても何故かredisのコネクションが内部的に残り続けるようで、テストの際に支障が出るため無効にする(キャッシュも含めてテストしたいため本当は有効にしたいが...)
 			type: 'ioredis',
 			options: {
 				host: config.redis.host,
-				port: config.redi			ort,
-				family: 			fig.redis.f				y ?? 0,
-				password: con				redis.pass,
-				keyPrefix				{config.redis.prefix}:query:`,
-							 config.redis.db ?? 0,
+				port: config.redis.port,
+				family: config.redis.family ?? 0,
+				password: config.redis.pass,
+				keyPrefix: `${config.redis.prefix}:query:`,
+				db: config.redis.db ?? 0,
 			},
 		} : false,
 		logging: log,
-		logger: log ? new				ustomLogger() : undefined,			max		eryExecutio		ime: 300,
-		en		ties: entities,
-		migrations: ['../../migration/		js'],
+		logger: log ? new MyCustomLogger() : undefined,
+		maxQueryExecutionTime: 300,
+		entities: entities,
+		migrations: ['../../migration/*.js'],
 	});
 }
