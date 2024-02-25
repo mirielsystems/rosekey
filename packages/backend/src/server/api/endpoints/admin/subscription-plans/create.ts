@@ -1,6 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Endpoint } from "@/server/api/endpoint-base.js";
-import type { SubscriptionPlansRepository, RolesRepository } from "@/models/index.js";
+import type { SubscriptionPlansRepository, RolesRepository } from "@/models/_.js";
 import { DI } from "@/di-symbols.js";
 import { IdService } from "@/core/IdService.js";
 import { SubscriptionPlanEntityService } from '@/core/entities/SubscriptionPlanEntityService.js';
