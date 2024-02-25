@@ -1,7 +1,7 @@
 import ms from 'ms';
 import { Stripe } from 'stripe';
 import { Inject, Injectable } from '@nestjs/common';
-import type { UsersRepository, UserProfilesRepository, SubscriptionPlansRepository } from '@/models/index.js';
+import type { UsersRepository, UserProfilesRepository, SubscriptionPlansRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
