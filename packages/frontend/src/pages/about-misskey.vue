@@ -109,7 +109,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</FormSection>
 				<FormSection>
 					<template #label>Special thanks</template>
-					<div style="display:grid;grid-template-columns:repeat(auto-fill, minmax(130px, 1fr));grid-gap:24px;align-items:center;">
+					<div class="_gaps_s">
 						<FormLink to="https://activitypub.software/TransFem-org/Sharkey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
