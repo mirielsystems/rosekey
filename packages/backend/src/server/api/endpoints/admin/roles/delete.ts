@@ -9,7 +9,7 @@ import type { RolesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '@/server/api/error.js';
 import { RoleService } from '@/core/RoleService.js';
-import type { SubscriptionPlansRepository } from '@/models/index.js';
+import type { SubscriptionPlansRepository } from '@/models/_.js';
 
 export const meta = {
 	tags: ['admin', 'role'],
