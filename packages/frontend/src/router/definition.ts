@@ -185,10 +185,6 @@ const routes: RouteDef[] = [{
 		name: 'subscription',
 		component: page(() => import('@/pages/settings/subscription.vue')),
 	}, {
-		path: '/subscription-plans',
-		name: 'subscription-plans',
-		component: page(() => import('@/pages/admin/subscription-plans.vue')),
-	}, {
 		path: '/other',
 		name: 'other',
 		component: page(() => import('@/pages/settings/other.vue')),
@@ -457,6 +453,10 @@ const routes: RouteDef[] = [{
 		path: '/security',
 		name: 'security',
 		component: page(() => import('@/pages/admin/security.vue')),
+	}, {
+		path: '/subscription-plans',
+		name: 'subscription-plans',
+		component: page(() => import('@/pages/admin/subscription-plans.vue')),
 	}, {
 		path: '/relays',
 		name: 'relays',
