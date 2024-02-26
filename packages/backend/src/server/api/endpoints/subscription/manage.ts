@@ -1,11 +1,11 @@
 import { Stripe } from 'stripe';
 import { Inject, Injectable } from '@nestjs/common';
-import { Endpoint } from "@/server/api/endpoint-base.js";
+import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
+import type { UsersRepository, UserProfilesRepository } from '@/models/_.js';
+import { MetaService } from '@/core/MetaService.js';
 import { ApiError } from '../../error.js';
-import type { UsersRepository, UserProfilesRepository } from "@/models/_.js";
-import { MetaService } from "@/core/MetaService.js";
 
 export const meta = {
 	tags: ['subscription'],
@@ -32,7 +32,7 @@ export const meta = {
 			id: 'ca50e7c1-2589-4360-a338-e729100af0c4',
 		},
 	},
-	} as const;
+} as const;
 
 export const paramDef = {
 	type: 'object',
@@ -58,13 +58,13 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			const user = await this.usersRepository.findOneBy( { id: me.id });
-			let userProfile = await this.userProfilesRepository.findOneBy({ userId: me.id });
+			const userProfile = await this.userProfilesRepository.findOneBy({ userId: me.id });
 			if (!user || !userProfile || !userProfile.stripeCustomerId) {
 				throw new ApiError(meta.errors.noSuchUser);
 			}
 
 			if (user.subscriptionStatus === 'none') {
-				throw new ApiError(meta.errors.noSuchUser)
+				throw new ApiError(meta.errors.noSuchUser);
 			}
 
 			const stripe = new Stripe(this.config.stripe!.secretKey);
