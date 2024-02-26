@@ -96,6 +96,7 @@ export type AdminSuspendUserRequest = operations['admin/suspend-user']['requestB
 export type AdminUnsuspendUserRequest = operations['admin/unsuspend-user']['requestBody']['content']['application/json'];
 export type AdminUpdateMetaRequest = operations['admin/update-meta']['requestBody']['content']['application/json'];
 export type AdminDeleteAccountRequest = operations['admin/delete-account']['requestBody']['content']['application/json'];
+export type AdminDeleteAccountResponse = operations['admin/delete-account']['responses']['200']['content']['application/json'];
 export type AdminUpdateUserNoteRequest = operations['admin/update-user-note']['requestBody']['content']['application/json'];
 export type AdminRolesCreateRequest = operations['admin/roles/create']['requestBody']['content']['application/json'];
 export type AdminRolesCreateResponse = operations['admin/roles/create']['responses']['200']['content']['application/json'];

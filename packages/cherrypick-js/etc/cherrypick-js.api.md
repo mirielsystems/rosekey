@@ -122,6 +122,9 @@ type AdminAvatarDecorationsUpdateRequest = operations['admin/avatar-decorations/
 type AdminDeleteAccountRequest = operations['admin/delete-account']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
+type AdminDeleteAccountResponse = operations['admin/delete-account']['responses']['200']['content']['application/json'];
+
+// @public (undocumented)
 type AdminDeleteAllFilesOfAUserRequest = operations['admin/delete-all-files-of-a-user']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -1265,6 +1268,7 @@ declare namespace entities {
         AdminUnsuspendUserRequest,
         AdminUpdateMetaRequest,
         AdminDeleteAccountRequest,
+        AdminDeleteAccountResponse,
         AdminUpdateUserNoteRequest,
         AdminRolesCreateRequest,
         AdminRolesCreateResponse,
@@ -1817,6 +1821,7 @@ declare namespace entities {
         RoleCondFormulaValueCreated,
         RoleCondFormulaFollowersOrFollowingOrNotes,
         RoleCondFormulaValue,
+        SubscriptionPlan,
         RoleLite,
         Role,
         RolePolicies,

@@ -94,6 +94,7 @@ import type {
 	AdminUnsuspendUserRequest,
 	AdminUpdateMetaRequest,
 	AdminDeleteAccountRequest,
+	AdminDeleteAccountResponse,
 	AdminUpdateUserNoteRequest,
 	AdminRolesCreateRequest,
 	AdminRolesCreateResponse,
@@ -677,7 +678,7 @@ export type Endpoints = {
 	'admin/suspend-user': { req: AdminSuspendUserRequest; res: EmptyResponse };
 	'admin/unsuspend-user': { req: AdminUnsuspendUserRequest; res: EmptyResponse };
 	'admin/update-meta': { req: AdminUpdateMetaRequest; res: EmptyResponse };
-	'admin/delete-account': { req: AdminDeleteAccountRequest; res: EmptyResponse };
+	'admin/delete-account': { req: AdminDeleteAccountRequest; res: AdminDeleteAccountResponse };
 	'admin/update-user-note': { req: AdminUpdateUserNoteRequest; res: EmptyResponse };
 	'admin/roles/create': { req: AdminRolesCreateRequest; res: AdminRolesCreateResponse };
 	'admin/roles/delete': { req: AdminRolesDeleteRequest; res: EmptyResponse };

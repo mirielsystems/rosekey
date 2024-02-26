@@ -920,7 +920,7 @@ declare module '../api.js' {
     /**
      * No description provided.
      * 
-     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
      * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
      */
     request<E extends 'admin/subscription-plans/create', P extends Endpoints[E]['req']>(
@@ -932,7 +932,7 @@ declare module '../api.js' {
     /**
      * No description provided.
      * 
-     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
      * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
      */
     request<E extends 'admin/subscription-plans/update', P extends Endpoints[E]['req']>(
@@ -944,7 +944,7 @@ declare module '../api.js' {
     /**
      * No description provided.
      * 
-     * **Internal Endpoint**: This endpoint is an API for the misskey mainframe and is not intended for use by third parties.
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
      * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
      */
     request<E extends 'admin/subscription-plans/archive', P extends Endpoints[E]['req']>(
