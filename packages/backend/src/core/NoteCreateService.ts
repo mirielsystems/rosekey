@@ -260,12 +260,13 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (data.channel != null) data.localOnly = true;
 
 		const meta = await this.metaService.fetch();
+		const policies = await this.roleService.getUserPolicies(user.id);
 
 		if (data.visibility === 'public' && data.channel == null) {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
+            } else if (policies.canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
@@ -378,6 +379,18 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
 			if ((userEntity?.followersCount ?? 0) === 0) {
 				throw new IdentifiableError('e11b3a16-f543-4885-8eb1-66cad131dbfd', 'Notes including mentions, replies, or renotes from remote users are not allowed until user has at least one local follower.');
+			}
+		}
+
+		if (policies.canInitiateConversation === false) {
+			if (
+				mentionedUsers.some(u => u.id !== user.id)
+				|| (data.reply && data.reply.replyUserId !== user.id)
+				|| (data.visibility === 'specified' && data.visibleUsers?.some(u => u.id !== user.id))
+				|| (this.isQuote(data) && data.renote.userId !== user.id)
+			) {
+				this.logger.error('Request rejected because user has no permission to initiate conversation', { user: user.id, note: data });
+				throw new IdentifiableError('332dd91b-6a00-430a-ac39-620cf60ad34b', 'Notes including mentions, replies, or renotes are not allowed.');
 			}
 		}
 

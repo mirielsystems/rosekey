@@ -7430,6 +7430,10 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * メンション、リプライ、引用の許可
+             */
+            "canInitiateConversation": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
