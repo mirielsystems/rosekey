@@ -3,7 +3,7 @@
 	<div class="_gaps_s">
 		<MkKeyValue>
 			<template #key>{{ i18n.ts.subscriptionStatus }}</template>
-			<template #value>{{ i18n.t(`_subscription.${subscriptionStatus}`) }}</template>
+			<template #value>{{ i18n.ts._subscription[subscriptionStatus] }}</template>
 		</MkKeyValue>
 	</div>
 	<FormPagination ref="list" :pagination="pagination">
