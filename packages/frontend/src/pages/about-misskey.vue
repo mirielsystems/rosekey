@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div ref="containerEl" class="container" :class="{ playing: easterEggEngine != null }">
 						<img src="/client-assets/about-icon.png" alt="" class="icon" draggable="false" @load="iconLoaded" @click="gravity"/>
 						<div class="cherrypick">Rosekey</div>
-						<div class="version" @click="whatIsNewCherryPick">v{{ version }}</div>
+						<div class="version" @click="whatIsNewRosekey">v{{ version }}</div>
 						<div class="version" style="font-size: 11px;" @click="whatIsNewMisskey">v{{ basedMisskeyVersion }} (Based on Misskey)</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
 							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true"/>
@@ -112,8 +112,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<div class="_gaps_s">
 						<FormLink to="https://activitypub.software/TransFem-org/Sharkey" external>
 							<template #icon><i class="ti ti-code"></i></template>
-							{{ i18n.ts._aboutMisskey.source }}
+							Sharkey Source Code
 							<template #suffix>GitLab</template>
+						</FormLink>
+						<FormLink to="https://github.com/TeamNijimiss/misskey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							Njimiss Source Code
+							<template #suffix>GitHub</template>
 						</FormLink>
 					</div>
 				</FormSection>
@@ -151,8 +156,8 @@ const easterEggEmojis = ref<{
 const easterEggEngine = ref<{ stop: () => void } | null>(null);
 const containerEl = shallowRef<HTMLElement>();
 
-const whatIsNewCherryPick = () => {
-	window.open(`https://github.com/kokonect-link/cherrypick/blob/develop/CHANGELOG_CHERRYPICK.md#${version.replace(/\./g, '')}`, '_blank');
+const whatIsNewRosekey = () => {
+	window.open(`https://github.com/freelynetwork/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewMisskey = () => {
