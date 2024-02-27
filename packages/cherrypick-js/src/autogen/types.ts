@@ -760,6 +760,36 @@ export type paths = {
      */
     post: operations['admin/roles/users'];
   };
+  '/admin/subscription-plans/create': {
+    /**
+     * admin/subscription-plans/create
+     * @description No description provided.
+     *
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+     * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+     */
+    post: operations['admin/subscription-plans/create'];
+  };
+  '/admin/subscription-plans/update': {
+    /**
+     * admin/subscription-plans/update
+     * @description No description provided.
+     *
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+     * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+     */
+    post: operations['admin/subscription-plans/update'];
+  };
+  '/admin/subscription-plans/archive': {
+    /**
+     * admin/subscription-plans/archive
+     * @description No description provided.
+     *
+     * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+     * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+     */
+    post: operations['admin/subscription-plans/archive'];
+  };
   '/announcements': {
     /**
      * announcements
@@ -3159,6 +3189,42 @@ export type paths = {
      */
     post: operations['roles/notes'];
   };
+  '/subscription/create': {
+    /**
+     * subscription/create
+     * @description No description provided.
+     *
+     * **Credential required**: *Yes* / **Permission**: *write:account*
+     */
+    post: operations['subscription/create'];
+  };
+  '/subscription/manage': {
+    /**
+     * subscription/manage
+     * @description No description provided.
+     *
+     * **Credential required**: *Yes* / **Permission**: *read:account*
+     */
+    post: operations['subscription/manage'];
+  };
+  '/subscription-plans/list': {
+    /**
+     * subscription-plans/list
+     * @description No description provided.
+     *
+     * **Credential required**: *No*
+     */
+    post: operations['subscription-plans/list'];
+  };
+  '/subscription-plans/show': {
+    /**
+     * subscription-plans/show
+     * @description No description provided.
+     *
+     * **Credential required**: *No*
+     */
+    post: operations['subscription-plans/show'];
+  };
   '/request-reset-password': {
     /**
      * request-reset-password
@@ -3905,6 +3971,8 @@ export type components = {
       location: string | null;
       /** @example 2018-03-12 */
       birthday: string | null;
+      /** @example Steve */
+      ListenBrainz: string | null;
       /** @example ja-JP */
       lang: string | null;
       fields: {
@@ -3962,6 +4030,10 @@ export type components = {
       preventAiLearning: boolean;
       isExplorable: boolean;
       isDeleted: boolean;
+      /** @enum {string} */
+      subscriptionStatus: 'incomplete' | 'incomplete_expired' | 'trialing' | 'active' | 'past_due' | 'paused' | 'canceled' | 'unpaid' | 'none';
+      /** Format: id */
+      subscriptionPlanId: string | null;
       /** @enum {string} */
       twoFactorBackupCodesStock: 'full' | 'partial' | 'none';
       hideOnlineStatus: boolean;
@@ -4134,6 +4206,8 @@ export type components = {
           /** Format: date-time */
           lastUsed: string;
         }[];
+      stripeCustomerId?: string | null;
+      stripeSubscriptionId: string | null;
     };
     UserDetailedNotMe: components['schemas']['UserLite'] & components['schemas']['UserDetailedNotMeOnly'];
     MeDetailed: components['schemas']['UserLite'] & components['schemas']['UserDetailedNotMeOnly'] & components['schemas']['MeDetailedOnly'];
@@ -4920,6 +4994,31 @@ export type components = {
       value: number;
     };
     RoleCondFormulaValue: components['schemas']['RoleCondFormulaLogics'] | components['schemas']['RoleCondFormulaValueNot'] | components['schemas']['RoleCondFormulaValueIsLocalOrRemote'] | components['schemas']['RoleCondFormulaValueCreated'] | components['schemas']['RoleCondFormulaFollowersOrFollowingOrNotes'];
+    SubscriptionPlan: {
+      /**
+       * Format: id
+       * @example xxxxxxxxxx
+       */
+      id: string;
+      /** @example New Plan */
+      name: string;
+      /** @example 1000 */
+      price: number;
+      /** @example usd */
+      currency: string;
+      /** @example New Plan */
+      description: string | null;
+      /** @example price_xxxxxxxxxx */
+      stripePriceId: string;
+      /**
+       * Format: id
+       * @example xxxxxxxxxx
+       */
+      roleId: string;
+      role: components['schemas']['RoleLite'];
+      /** @example false */
+      isArchived: boolean;
+    };
     RoleLite: {
       /**
        * Format: id
@@ -5200,6 +5299,7 @@ export type operations = {
             summalyProxy: string | null;
             themeColor: string | null;
             tosUrl: string | null;
+            commerceDisclosureUrl: string | null;
             uri: string;
             version: string;
             doNotSendNotificationEmailsForAbuseReport: boolean;
@@ -9574,6 +9674,7 @@ export type operations = {
           perUserHomeTimelineCacheMax?: number;
           perUserListTimelineCacheMax?: number;
           notesPerOneAd?: number;
+          commerceDisclosureUrl?: string | null;
           silencedHosts?: string[] | null;
           doNotSendNotificationEmailsForAbuseReport?: boolean;
           emailToReceiveAbuseReport?: string | null;
@@ -9636,9 +9737,11 @@ export type operations = {
       };
     };
     responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': unknown;
+        };
       };
       /** @description Client error */
       400: {
@@ -10207,6 +10310,178 @@ export type operations = {
               expiresAt: string | null;
             })[];
         };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * admin/subscription-plans/create
+   * @description No description provided.
+   *
+   * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+   * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+   */
+  'admin/subscription-plans/create': {
+    requestBody: {
+      content: {
+        'application/json': {
+          name: string;
+          price: number;
+          currency: string;
+          description?: string;
+          stripePriceId: string;
+          /** Format: misskey:id */
+          roleId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['SubscriptionPlan'];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * admin/subscription-plans/update
+   * @description No description provided.
+   *
+   * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+   * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+   */
+  'admin/subscription-plans/update': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          planId: string;
+          name?: string;
+          price?: number;
+          currency?: string;
+          description?: string;
+          /** Format: misskey:id */
+          roleId?: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * admin/subscription-plans/archive
+   * @description No description provided.
+   *
+   * **Internal Endpoint**: This endpoint is an API for the cherrypick mainframe and is not intended for use by third parties.
+   * **Credential required**: *Yes* / **Permission**: *write:admin:subscription-plans*
+   */
+  'admin/subscription-plans/archive': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          planId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
       };
       /** @description Client error */
       400: {
@@ -19469,6 +19744,7 @@ export type operations = {
           description?: string | null;
           location?: string | null;
           birthday?: string | null;
+          listenbrainz?: string | null;
           /** @enum {string|null} */
           lang?: null | 'ach' | 'ady' | 'af' | 'af-NA' | 'af-ZA' | 'ak' | 'ar' | 'ar-AR' | 'ar-MA' | 'ar-SA' | 'ay-BO' | 'az' | 'az-AZ' | 'be-BY' | 'bg' | 'bg-BG' | 'bn' | 'bn-IN' | 'bn-BD' | 'br' | 'bs-BA' | 'ca' | 'ca-ES' | 'cak' | 'ck-US' | 'cs' | 'cs-CZ' | 'cy' | 'cy-GB' | 'da' | 'da-DK' | 'de' | 'de-AT' | 'de-DE' | 'de-CH' | 'dsb' | 'el' | 'el-GR' | 'en' | 'en-GB' | 'en-AU' | 'en-CA' | 'en-IE' | 'en-IN' | 'en-PI' | 'en-SG' | 'en-UD' | 'en-US' | 'en-ZA' | 'en@pirate' | 'eo' | 'eo-EO' | 'es' | 'es-AR' | 'es-419' | 'es-CL' | 'es-CO' | 'es-EC' | 'es-ES' | 'es-LA' | 'es-NI' | 'es-MX' | 'es-US' | 'es-VE' | 'et' | 'et-EE' | 'eu' | 'eu-ES' | 'fa' | 'fa-IR' | 'fb-LT' | 'ff' | 'fi' | 'fi-FI' | 'fo' | 'fo-FO' | 'fr' | 'fr-CA' | 'fr-FR' | 'fr-BE' | 'fr-CH' | 'fy-NL' | 'ga' | 'ga-IE' | 'gd' | 'gl' | 'gl-ES' | 'gn-PY' | 'gu-IN' | 'gv' | 'gx-GR' | 'he' | 'he-IL' | 'hi' | 'hi-IN' | 'hr' | 'hr-HR' | 'hsb' | 'ht' | 'hu' | 'hu-HU' | 'hy' | 'hy-AM' | 'id' | 'id-ID' | 'is' | 'is-IS' | 'it' | 'it-IT' | 'ja' | 'ja-JP' | 'jv-ID' | 'ka-GE' | 'kk-KZ' | 'km' | 'kl' | 'km-KH' | 'kab' | 'kn' | 'kn-IN' | 'ko' | 'ko-KR' | 'ku-TR' | 'kw' | 'la' | 'la-VA' | 'lb' | 'li-NL' | 'lt' | 'lt-LT' | 'lv' | 'lv-LV' | 'mai' | 'mg-MG' | 'mk' | 'mk-MK' | 'ml' | 'ml-IN' | 'mn-MN' | 'mr' | 'mr-IN' | 'ms' | 'ms-MY' | 'mt' | 'mt-MT' | 'my' | 'no' | 'nb' | 'nb-NO' | 'ne' | 'ne-NP' | 'nl' | 'nl-BE' | 'nl-NL' | 'nn-NO' | 'oc' | 'or-IN' | 'pa' | 'pa-IN' | 'pl' | 'pl-PL' | 'ps-AF' | 'pt' | 'pt-BR' | 'pt-PT' | 'qu-PE' | 'rm-CH' | 'ro' | 'ro-RO' | 'ru' | 'ru-RU' | 'sa-IN' | 'se-NO' | 'sh' | 'si-LK' | 'sk' | 'sk-SK' | 'sl' | 'sl-SI' | 'so-SO' | 'sq' | 'sq-AL' | 'sr' | 'sr-RS' | 'su' | 'sv' | 'sv-SE' | 'sw' | 'sw-KE' | 'ta' | 'ta-IN' | 'te' | 'te-IN' | 'tg' | 'tg-TJ' | 'th' | 'th-TH' | 'fil' | 'tlh' | 'tr' | 'tr-TR' | 'tt-RU' | 'uk' | 'uk-UA' | 'ur' | 'ur-PK' | 'uz' | 'uz-UZ' | 'vi' | 'vi-VN' | 'xh-ZA' | 'yi' | 'yi-DE' | 'zh' | 'zh-Hans' | 'zh-Hant' | 'zh-CN' | 'zh-HK' | 'zh-SG' | 'zh-TW' | 'zu-ZA';
           /** Format: misskey:id */
@@ -20718,6 +20994,7 @@ export type operations = {
             impressumUrl: string | null;
             logoImageUrl: string | null;
             privacyPolicyUrl: string | null;
+            commerceDisclosureUrl: string | null;
             serverRules: string[];
             themeColor: string | null;
             policies: components['schemas']['RolePolicies'];
@@ -24863,6 +25140,208 @@ export type operations = {
       200: {
         content: {
           'application/json': components['schemas']['Note'][];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * subscription/create
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *write:account*
+   */
+  'subscription/create': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          planId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description To many requests */
+      429: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * subscription/manage
+   * @description No description provided.
+   *
+   * **Credential required**: *Yes* / **Permission**: *read:account*
+   */
+  'subscription/manage': {
+    responses: {
+      /** @description OK (without any results) */
+      204: {
+        content: never;
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * subscription-plans/list
+   * @description No description provided.
+   *
+   * **Credential required**: *No*
+   */
+  'subscription-plans/list': {
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['SubscriptionPlan'][];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
+   * subscription-plans/show
+   * @description No description provided.
+   *
+   * **Credential required**: *No*
+   */
+  'subscription-plans/show': {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          planId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['SubscriptionPlan'];
         };
       };
       /** @description Client error */

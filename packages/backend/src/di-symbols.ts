@@ -61,6 +61,7 @@ export const DI = {
 	accessTokensRepository: Symbol('accessTokensRepository'),
 	signinsRepository: Symbol('signinsRepository'),
 	messagingMessagesRepository: Symbol('messagingMessagesRepository'),
+	subscriptionPlansRepository: Symbol('subscriptionPlansRepository'),
 	pagesRepository: Symbol('pagesRepository'),
 	pageLikesRepository: Symbol('pageLikesRepository'),
 	galleryPostsRepository: Symbol('galleryPostsRepository'),
