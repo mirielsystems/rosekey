@@ -83,7 +83,7 @@ export const meta = {
 			feedbackUrl: {
 				type: 'string',
 				optional: false, nullable: true,
-				default: 'hhttps://github.com/freelynetwork/rosekey/issues/new',
+				default: 'https://github.com/freelynetwork/rosekey/issues/new',
 			},
 			defaultDarkTheme: {
 				type: 'string',
