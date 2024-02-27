@@ -78,12 +78,12 @@ export const meta = {
 			repositoryUrl: {
 				type: 'string',
 				optional: false, nullable: true,
-				default: 'https://github.com/kokonect-link/cherrypick',
+				default: 'https://github.com/freelynetwork/rosekey',
 			},
 			feedbackUrl: {
 				type: 'string',
 				optional: false, nullable: true,
-				default: 'https://github.com/kokonect-link/cherrypick/issues/new',
+				default: 'hhttps://github.com/freelynetwork/rosekey/issues/new',
 			},
 			defaultDarkTheme: {
 				type: 'string',
