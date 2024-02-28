@@ -4053,7 +4053,7 @@ export type components = {
       notificationRecieveConfig: {
         note?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4062,7 +4062,7 @@ export type components = {
         }]>;
         follow?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4071,7 +4071,7 @@ export type components = {
         }]>;
         mention?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4080,7 +4080,7 @@ export type components = {
         }]>;
         reply?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4089,7 +4089,7 @@ export type components = {
         }]>;
         renote?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4098,7 +4098,7 @@ export type components = {
         }]>;
         quote?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4107,7 +4107,7 @@ export type components = {
         }]>;
         reaction?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4116,7 +4116,7 @@ export type components = {
         }]>;
         pollEnded?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4125,7 +4125,7 @@ export type components = {
         }]>;
         receiveFollowRequest?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4134,7 +4134,7 @@ export type components = {
         }]>;
         followRequestAccepted?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4152,7 +4152,7 @@ export type components = {
         }]>;
         roleAssigned?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4161,7 +4161,7 @@ export type components = {
         }]>;
         achievementEarned?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4170,7 +4170,7 @@ export type components = {
         }]>;
         app?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -4179,7 +4179,7 @@ export type components = {
         }]>;
         test?: OneOf<[{
           /** @enum {string} */
-          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+          type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
         }, {
           /** @enum {string} */
           type: 'list';
@@ -9190,7 +9190,7 @@ export type operations = {
             notificationRecieveConfig: {
               note?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9199,7 +9199,7 @@ export type operations = {
               }]>;
               follow?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9208,7 +9208,7 @@ export type operations = {
               }]>;
               mention?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9217,7 +9217,7 @@ export type operations = {
               }]>;
               reply?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9226,7 +9226,7 @@ export type operations = {
               }]>;
               renote?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9235,7 +9235,7 @@ export type operations = {
               }]>;
               quote?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9244,7 +9244,7 @@ export type operations = {
               }]>;
               reaction?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9253,7 +9253,7 @@ export type operations = {
               }]>;
               pollEnded?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9262,7 +9262,7 @@ export type operations = {
               }]>;
               receiveFollowRequest?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9271,7 +9271,7 @@ export type operations = {
               }]>;
               followRequestAccepted?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9280,7 +9280,7 @@ export type operations = {
               }]>;
               roleAssigned?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9289,7 +9289,7 @@ export type operations = {
               }]>;
               achievementEarned?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9298,7 +9298,7 @@ export type operations = {
               }]>;
               app?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -9307,7 +9307,7 @@ export type operations = {
               }]>;
               test?: OneOf<[{
                 /** @enum {string} */
-                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+                type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
               }, {
                 /** @enum {string} */
                 type: 'list';
@@ -19791,7 +19791,7 @@ export type operations = {
           notificationRecieveConfig?: {
             note?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19800,7 +19800,7 @@ export type operations = {
             }]>;
             follow?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19809,7 +19809,7 @@ export type operations = {
             }]>;
             mention?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19818,7 +19818,7 @@ export type operations = {
             }]>;
             reply?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19827,7 +19827,7 @@ export type operations = {
             }]>;
             renote?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19836,7 +19836,7 @@ export type operations = {
             }]>;
             quote?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19845,7 +19845,7 @@ export type operations = {
             }]>;
             reaction?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19854,7 +19854,7 @@ export type operations = {
             }]>;
             pollEnded?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19863,7 +19863,7 @@ export type operations = {
             }]>;
             receiveFollowRequest?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19872,7 +19872,7 @@ export type operations = {
             }]>;
             followRequestAccepted?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19881,7 +19881,7 @@ export type operations = {
             }]>;
             roleAssigned?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19890,7 +19890,7 @@ export type operations = {
             }]>;
             achievementEarned?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19899,7 +19899,7 @@ export type operations = {
             }]>;
             app?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';
@@ -19908,7 +19908,7 @@ export type operations = {
             }]>;
             test?: OneOf<[{
               /** @enum {string} */
-              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'never';
+              type: 'all' | 'following' | 'follower' | 'mutualFollow' | 'followingOrFollower' | 'never';
             }, {
               /** @enum {string} */
               type: 'list';

@@ -5120,6 +5120,10 @@ export interface Locale extends ILocale {
      */
     "mutualFollow": string;
     /**
+     * フォロー中またはフォロワー
+     */
+    "followingOrFollower": string;
+    /**
      * ファイル付きのみ
      */
     "fileAttachedOnly": string;
