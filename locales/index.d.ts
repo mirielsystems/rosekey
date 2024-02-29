@@ -7450,6 +7450,10 @@ export interface Locale extends ILocale {
              */
             "canEditNote": string;
             /**
+             * ノート内の最大メンション数
+             */
+            "mentionMax": string;
+            /**
              * サーバー招待コードの発行
              */
             "canInvite": string;

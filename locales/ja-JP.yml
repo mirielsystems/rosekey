@@ -1940,6 +1940,7 @@ _role:
     canDeleteContent: "コンテンツの削除"
     canUpdateAvatar: "アイコンの変更"
     canUpdateBanner: "バナーの変更"
+    mentionMax: "ノート内の最大メンション数"
     canInvite: "サーバー招待コードの発行"
     inviteLimit: "招待コードの作成可能数"
     inviteLimitCycle: "招待コードの発行間隔"
