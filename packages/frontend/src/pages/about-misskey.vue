@@ -26,10 +26,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 					{{ i18n.ts._aboutMisskey.about }}<br><a href="https://misskey-hub.net/docs/about-misskey/" target="_blank" class="_link">{{ i18n.ts.learnMore }}</a>
 				</div>
 				<div v-if="$i != null" style="text-align: center;">
-					<MkButton primary rounded inline @click="iLoveCherryPick">I <Mfm text="$[jelly ❤]"/> #CherryPick</MkButton>
+					<MkButton primary rounded inline @click="iLoveCherryPick">I <Mfm text="$[jelly ❤]"/> #Rosekey</MkButton>
 				</div>
 				<FormSection>
-					<template #label>Rosekey</template>
 					<div class="_gaps_s">
 						<FormLink to="https://github.com/freelynetwork/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
@@ -41,6 +40,22 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
+                        <a href="https://github.com/16439s" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/146170742?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@16439s
+								<span :class="$style.contributorClient">
+									<span :class="$style.rosekey">Rosekey</span>
+								</span>
+							</span>
+						</a>
+						<a href="https://github.com/1STEP621" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/86859447?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@1STEP621
+								<span :class="$style.contributorClient">
+									<span :class="$style.rosekey">Rosekey＆</span><span :class="$style.misskey">Misskey</span>
+								</span>
+							</span>
+						</a>
 						<a href="https://github.com/noridev" target="_blank" :class="$style.contributor">
 							<img src="https://avatars.githubusercontent.com/u/11006910?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@noridev
@@ -189,7 +204,7 @@ function gravity() {
 
 function iLoveCherryPick() {
 	os.post({
-		initialText: 'I $[jelly ❤] #Rosekey',
+		initialText: 'I $[jelly ❤] #rosekey',
 		instant: true,
 	});
 }
@@ -365,6 +380,11 @@ definePageMetadata(() => ({
 	> .misskey {
 		color: #86b300;
 	}
+
+	> .rosekey {
+		color: #8054B9;
+	}
+
 
 	> .cherry {
 		color: var(--cherry);
