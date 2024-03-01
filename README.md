@@ -24,7 +24,7 @@
 
 ---
 
-[![codecov](https://codecov.io/gh/kokonect-link/cherrypick/branch/develop/graph/badge.svg?token=3BRDXE34O0)](https://codecov.io/gh/kokonect-link/cherrypick)
+[![Crowdin](https://badges.crowdin.net/rosekey/localized.svg)](https://crowdin.com/project/rosekey)
 
 </div>
 
