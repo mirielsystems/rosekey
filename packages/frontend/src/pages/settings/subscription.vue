@@ -17,7 +17,7 @@
 			<div class="_gaps">
 				<div v-for="plan in items" :key="plan.id" class="_panel" :class="$style.plan">
 					<div :class="$style.planBody">
-						<div :class="$style.planName">{{ plan.name }}</div>
+						<div :class="$style.planName">{{ plan.name + (plan.id === currentPlan ? (' (' + i18n.ts._subscription.current + ')') : '') }}</div>
 						<div>{{ plan.description }}</div>
 						<MkKeyValue oneline>
 							<template #key>{{ i18n.ts._subscription.price }}</template>
@@ -81,7 +81,11 @@ function change(plan) {
 		os.apiWithDialog('subscription/create', {
 			planId: plan.id,
 		});
-	}); // TODO: 変更したことを通知するポップアップを表示してリロードする
+	}).then(() => {
+		setTimeout(() => {
+			location.reload();
+		}, 1000);
+	});
 }
 
 const headerActions = computed(() => []);

@@ -1849,6 +1849,7 @@ _achievements:
       flavor: "これくらいの　おべんとばこに　🤯　🤯　ちょっとつめて"
 
 _subscription:
+  current: "現在のプラン"
   price: "価格"
   currency: "通貨"
   stripePriceId: "Stripeの価格ID"

@@ -7126,6 +7126,10 @@ export interface Locale extends ILocale {
     };
     "_subscription": {
         /**
+         * 現在のプラン
+         */
+        "current": string;
+        /**
          * 価格
          */
         "price": string;
