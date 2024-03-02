@@ -1,10 +1,10 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { Injectable } from '@nestjs/common';
-import * as mfm from '@sharkey/sfm-js';
+import * as mfm from '@transfem-org/sfm-js';
 import { MfmService } from '@/core/MfmService.js';
 import type { MiNote } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
@@ -25,8 +25,21 @@ export class ApMfmService {
 	}
 
 	@bindThis
-	public getNoteHtml(note: MiNote): string | null {
-		if (!note.text) return '';
-		return this.mfmService.toHtml(mfm.parse(note.text), note.mentionedRemoteUsers ? JSON.parse(note.mentionedRemoteUsers) : []);
+	public getNoteHtml(note: MiNote, apAppend?: string) {
+		let noMisskeyContent = false;
+		const srcMfm = (note.text ?? '') + (apAppend ?? '');
+
+		const parsed = mfm.parse(srcMfm);
+
+		if (!apAppend && parsed?.every(n => ['text', 'unicodeEmoji', 'emojiCode', 'mention', 'hashtag', 'url'].includes(n.type))) {
+			noMisskeyContent = true;
+		}
+
+		const content = this.mfmService.toHtml(parsed, note.mentionedRemoteUsers ? JSON.parse(note.mentionedRemoteUsers) : []);
+
+		return {
+			content,
+			noMisskeyContent,
+		};
 	}
 }

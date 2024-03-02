@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkCwButton v-model="showContent" :text="note.text" :files="note.files" :poll="note.poll"/>
 				</p>
 				<div v-show="note.cw == null || showContent">
-					<MkSubNoteContent :class="$style.text" :note="note" :translating="translating" :translation="translation"/>
+					<MkSubNoteContent :class="$style.text" :note="note" :translating="translating" :translation="translation" :expandAllCws="props.expandAllCws"/>
 				</div>
 			</div>
 			<footer :class="$style.footer">
@@ -91,6 +91,8 @@ import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
 import { notePage } from '@/filters/note.js';
 import * as os from '@/os.js';
+import * as sound from '@/scripts/sound.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import { userPage } from '@/filters/user.js';
@@ -103,6 +105,7 @@ import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { getNoteMenu } from '@/scripts/get-note-menu.js';
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
+import { boostMenuItems, type Visibility } from '@/scripts/boost-quote.js';
 
 const canRenote = computed(() => ['public', 'home'].includes(props.note.visibility) || props.note.userId === $i.id);
 
@@ -138,21 +141,21 @@ const replies = ref<Misskey.entities.Note[]>([]);
 const isRenote = (
 	props.note.renote != null &&
 	props.note.text == null &&
-	props.note.fileIds.length === 0 &&
+	props.note.fileIds && props.note.fileIds.length === 0 &&
 	props.note.poll == null
 );
 
 async function addReplyTo(replyNote: Misskey.entities.Note) {
-		replies.value.unshift(replyNote);
-		appearNote.value.repliesCount += 1;
+	replies.value.unshift(replyNote);
+	appearNote.value.repliesCount += 1;
 }
 
 async function removeReply(id: Misskey.entities.Note['id']) {
-		const replyIdx = replies.value.findIndex(note => note.id === id);
-		if (replyIdx >= 0) {
-			replies.value.splice(replyIdx, 1);
-			appearNote.value.repliesCount -= 1;
-		}
+	const replyIdx = replies.value.findIndex(note => note.id === id);
+	if (replyIdx >= 0) {
+		replies.value.splice(replyIdx, 1);
+		appearNote.value.repliesCount -= 1;
+	}
 }
 
 useNoteCapture({
@@ -165,7 +168,7 @@ useNoteCapture({
 });
 
 if ($i) {
-	os.api('notes/renotes', {
+	misskeyApi('notes/renotes', {
 		noteId: appearNote.value.id,
 		userId: $i.id,
 		limit: 1,
@@ -193,8 +196,9 @@ function reply(viaKeyboard = false): void {
 function react(viaKeyboard = false): void {
 	pleaseLogin();
 	showMovedDialog();
+	sound.playMisskeySfx('reaction');
 	if (props.note.reactionAcceptance === 'likeOnly') {
-		os.api('notes/like', {
+		misskeyApi('notes/like', {
 			noteId: props.note.id,
 			override: defaultLike.value,
 		});
@@ -207,8 +211,8 @@ function react(viaKeyboard = false): void {
 		}
 	} else {
 		blur();
-		reactionPicker.show(reactButton.value, reaction => {
-			os.api('notes/reactions/create', {
+		reactionPicker.show(reactButton.value ?? null, props.note, reaction => {
+			misskeyApi('notes/reactions/create', {
 				noteId: props.note.id,
 				reaction: reaction,
 			});
@@ -224,7 +228,8 @@ function react(viaKeyboard = false): void {
 function like(): void {
 	pleaseLogin();
 	showMovedDialog();
-	os.api('notes/like', {
+	sound.playMisskeySfx('reaction');
+	misskeyApi('notes/like', {
 		noteId: props.note.id,
 		override: defaultLike.value,
 	});
@@ -240,14 +245,14 @@ function like(): void {
 function undoReact(note): void {
 	const oldReaction = note.myReaction;
 	if (!oldReaction) return;
-	os.api('notes/reactions/delete', {
+	misskeyApi('notes/reactions/delete', {
 		noteId: note.id,
 	});
 }
 
 function undoRenote() : void {
 	if (!renoted.value) return;
-	os.api('notes/unrenote', {
+	misskeyApi('notes/unrenote', {
 		noteId: appearNote.value.id,
 	});
 	os.toast(i18n.ts.rmboost);
@@ -269,42 +274,14 @@ watch(() => props.expandAllCws, (expandAllCws) => {
 });
 
 function boostVisibility() {
-	os.popupMenu([
-		{
-			type: 'button',
-			icon: 'ph-globe-hemisphere-west ph-bold ph-lg',
-			text: i18n.ts._visibility['public'],
-			action: () => {
-				renote('public');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-house ph-bold ph-lg',
-			text: i18n.ts._visibility['home'],
-			action: () => {
-				renote('home');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-lock ph-bold ph-lg',
-			text: i18n.ts._visibility['followers'],
-			action: () => {
-				renote('followers');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-planet ph-bold ph-lg',
-			text: i18n.ts._timelines.local,
-			action: () => {
-				renote('local');
-			},
-		}], renoteButton.value);
+	if (!defaultStore.state.showVisibilitySelectorOnBoost) {
+		renote(defaultStore.state.visibilityOnBoost);
+	} else {
+		os.popupMenu(boostMenuItems(appearNote, renote), renoteButton.value);
+	}
 }
 
-function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'local') {
+function renote(visibility: Visibility, localOnly: boolean = false) {
 	pleaseLogin();
 	showMovedDialog();
 
@@ -317,9 +294,9 @@ function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'loc
 			os.popup(MkRippleEffect, { x, y }, {}, 'end');
 		}
 
-		os.api('notes/create', {
-			renoteId: props.note.id,
-			channelId: props.note.channelId,
+		misskeyApi('notes/create', {
+			renoteId: appearNote.value.id,
+			channelId: appearNote.value.channelId,
 		}).then(() => {
 			os.toast(i18n.ts.renoted);
 			renoted.value = true;
@@ -333,10 +310,10 @@ function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'loc
 			os.popup(MkRippleEffect, { x, y }, {}, 'end');
 		}
 
-		os.api('notes/create', {
-			renoteId: props.note.id,
-			localOnly: visibility === 'local' ? true : false,
-			visibility: visibility === 'local' || visibility === 'specified' ? props.note.visibility : visibility,
+		misskeyApi('notes/create', {
+			renoteId: appearNote.value.id,
+			localOnly: localOnly,
+			visibility: visibility,
 		}).then(() => {
 			os.toast(i18n.ts.renoted);
 			renoted.value = true;
@@ -353,7 +330,7 @@ function quote() {
 			renote: appearNote.value,
 			channel: appearNote.value.channel,
 		}).then(() => {
-			os.api('notes/renotes', {
+			misskeyApi('notes/renotes', {
 				noteId: props.note.id,
 				userId: $i.id,
 				limit: 1,
@@ -375,7 +352,7 @@ function quote() {
 		os.post({
 			renote: appearNote.value,
 		}).then(() => {
-			os.api('notes/renotes', {
+			misskeyApi('notes/renotes', {
 				noteId: props.note.id,
 				userId: $i.id,
 				limit: 1,
@@ -404,7 +381,7 @@ function menu(viaKeyboard = false): void {
 }
 
 if (props.detail) {
-	os.api('notes/children', {
+	misskeyApi('notes/children', {
 		noteId: props.note.id,
 		limit: numberOfReplies.value,
 		showQuotes: false,

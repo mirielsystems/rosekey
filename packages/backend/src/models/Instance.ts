@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -149,4 +149,9 @@ export class MiInstance {
 		default: false,
 	})
 	public isNSFW: boolean;
+	
+	@Column('varchar', {
+		length: 16384, default: '',
+	})
+	public moderationNote: string;
 }

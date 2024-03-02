@@ -11,12 +11,16 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { NoteEntityService } from '@/core/entities/NoteEntityService.js';
 import { NoteEditService } from '@/core/NoteEditService.js';
 import { DI } from '@/di-symbols.js';
+import { isPureRenote } from '@/misc/is-pure-renote.js';
+import { IdentifiableError } from '@/misc/identifiable-error.js';
 import { ApiError } from '../../error.js';
 
 export const meta = {
 	tags: ['notes'],
 
 	requireCredential: true,
+
+	prohibitMoved: true,
 
 	limit: {
 		duration: ms('1hour'),
@@ -52,16 +56,40 @@ export const meta = {
 			id: 'fd4cc33e-2a37-48dd-99cc-9b806eb2031a',
 		},
 
+		cannotRenoteDueToVisibility: {
+			message: 'You can not Renote due to target visibility.',
+			code: 'CANNOT_RENOTE_DUE_TO_VISIBILITY',
+			id: 'be9529e9-fe72-4de0-ae43-0b363c4938af',
+		},
+
 		noSuchReplyTarget: {
 			message: 'No such reply target.',
 			code: 'NO_SUCH_REPLY_TARGET',
 			id: '749ee0f6-d3da-459a-bf02-282e2da4292c',
 		},
 
+		cannotReplyToInvisibleNote: {
+			message: 'You cannot reply to an invisible Note.',
+			code: 'CANNOT_REPLY_TO_AN_INVISIBLE_NOTE',
+			id: 'b98980fa-3780-406c-a935-b6d0eeee10d1',
+		},
+
 		cannotReplyToPureRenote: {
 			message: 'You can not reply to a pure Renote.',
 			code: 'CANNOT_REPLY_TO_A_PURE_RENOTE',
 			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce15',
+		},
+
+		maxLength: {
+			message: 'You tried posting a note which is too long.',
+			code: 'MAX_LENGTH',
+			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce16',
+		},
+
+		cannotReplyToSpecifiedVisibilityNoteWithExtendedVisibility: {
+			message: 'You cannot reply to a specified visibility note with extended visibility.',
+			code: 'CANNOT_REPLY_TO_SPECIFIED_VISIBILITY_NOTE_WITH_EXTENDED_VISIBILITY',
+			id: 'ed940410-535c-4d5e-bfa3-af798671e93c',
 		},
 
 		cannotCreateAlreadyExpiredPoll: {
@@ -80,6 +108,12 @@ export const meta = {
 			message: 'You have been blocked by this user.',
 			code: 'YOU_HAVE_BEEN_BLOCKED',
 			id: 'b390d7e1-8a5e-46ed-b625-06271cafd3d3',
+		},
+
+		noSuchFile: {
+			message: 'Some files are not found.',
+			code: 'NO_SUCH_FILE',
+			id: 'b6992544-63e7-67f0-fa7f-32444b1b5306',
 		},
 
 		accountLocked: {
@@ -136,10 +170,16 @@ export const meta = {
 			id: '33510210-8452-094c-6227-4a6c05d99f02',
 		},
 
-		maxLength: {
-			message: 'You tried posting a note which is too long.',
-			code: 'MAX_LENGTH',
-			id: '3ac74a84-8fd5-4bb0-870f-01804f82ce16',
+		containsProhibitedWords: {
+			message: 'Cannot post because it contains prohibited words.',
+			code: 'CONTAINS_PROHIBITED_WORDS',
+			id: 'aa6e01d3-a85c-669d-758a-76aab43af334',
+		},
+
+		containsTooManyMentions: {
+			message: 'Cannot post because it exceeds the allowed number of mentions.',
+			code: 'CONTAINS_TOO_MANY_MENTIONS',
+			id: '4de0363a-3046-481b-9b0f-feff3e211025',
 		},
 	},
 } as const;
@@ -194,7 +234,7 @@ export const paramDef = {
 					uniqueItems: true,
 					minItems: 2,
 					maxItems: 10,
-					items: { type: 'string', minLength: 1, maxLength: 50 },
+					items: { type: 'string', minLength: 1, maxLength: 150 },
 				},
 				multiple: { type: 'boolean' },
 				expiresAt: { type: 'integer', nullable: true },
@@ -203,38 +243,33 @@ export const paramDef = {
 			required: ['choices'],
 		},
 	},
-	anyOf: [
-		{
-			// (re)note with text, files and poll are optional
-			properties: {
-				text: {
-					type: 'string',
-					minLength: 1,
-					nullable: false,
-				},
+	// (re)note with text, files and poll are optional
+	if: {
+		properties: {
+			renoteId: {
+				type: 'null',
 			},
-			required: ['text'],
-		},
-		{
-			// (re)note with files, text and poll are optional
-			required: ['fileIds'],
-		},
-		{
-			// (re)note with files, text and poll are optional
-			required: ['mediaIds'],
-		},
-		{
-			// (re)note with poll, text and files are optional
-			properties: {
-				poll: { type: 'object', nullable: false },
+			fileIds: {
+				type: 'null',
 			},
-			required: ['poll'],
+			mediaIds: {
+				type: 'null',
+			},
+			poll: {
+				type: 'null',
+			},
 		},
-		{
-			// pure renote
-			required: ['renoteId'],
+	},
+	then: {
+		properties: {
+			text: {
+				type: 'string',
+				minLength: 1,
+				pattern: '[^\\s]+',
+			},
 		},
-	],
+		required: ['text'],
+	},
 } as const;
 
 @Injectable()
@@ -285,7 +320,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					.getMany();
 
 				if (files.length !== fileIds.length) {
-					throw new ApiError(meta.errors.noSuchNote);
+					throw new ApiError(meta.errors.noSuchFile);
 				}
 			}
 
@@ -294,14 +329,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (ps.renoteId === ps.editId) {
 				throw new ApiError(meta.errors.cannotQuoteCurrentPost);
 			}
-			
+
 			if (ps.renoteId != null) {
 				// Fetch renote to note
 				renote = await this.notesRepository.findOneBy({ id: ps.renoteId });
 
 				if (renote == null) {
 					throw new ApiError(meta.errors.noSuchRenoteTarget);
-				} else if (renote.renoteId && !renote.text && !renote.fileIds && !renote.hasPoll) {
+				} else if (isPureRenote(renote)) {
 					throw new ApiError(meta.errors.cannotReRenote);
 				}
 
@@ -311,7 +346,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				// Check blocking
 				if (renote.userId !== me.id) {
-					const blockExist = await this.blockingsRepository.exist({
+					const blockExist = await this.blockingsRepository.exists({
 						where: {
 							blockerId: renote.userId,
 							blockeeId: me.id,
@@ -320,6 +355,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					if (blockExist) {
 						throw new ApiError(meta.errors.youHaveBeenBlocked);
 					}
+				}
+
+				if (renote.visibility === 'followers' && renote.userId !== me.id) {
+					// 他人のfollowers noteはreject
+					throw new ApiError(meta.errors.cannotRenoteDueToVisibility);
+				} else if (renote.visibility === 'specified') {
+					// specified / direct noteはreject
+					throw new ApiError(meta.errors.cannotRenoteDueToVisibility);
 				}
 
 				if (renote.channelId && renote.channelId !== ps.channelId) {
@@ -343,13 +386,17 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 				if (reply == null) {
 					throw new ApiError(meta.errors.noSuchReplyTarget);
-				} else if (reply.renoteId && !reply.text && !reply.fileIds && !reply.hasPoll) {
+				} else if (isPureRenote(reply)) {
 					throw new ApiError(meta.errors.cannotReplyToPureRenote);
+				} else if (!await this.noteEntityService.isVisibleForMe(reply, me.id)) {
+					throw new ApiError(meta.errors.cannotReplyToInvisibleNote);
+				} else if (reply.visibility === 'specified' && ps.visibility !== 'specified') {
+					throw new ApiError(meta.errors.cannotReplyToSpecifiedVisibilityNoteWithExtendedVisibility);
 				}
 
 				// Check blocking
 				if (reply.userId !== me.id) {
-					const blockExist = await this.blockingsRepository.exist({
+					const blockExist = await this.blockingsRepository.exists({
 						where: {
 							blockerId: reply.userId,
 							blockeeId: me.id,
@@ -379,32 +426,43 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					throw new ApiError(meta.errors.noSuchChannel);
 				}
 			}
+			try {
+				// 投稿を作成
+				const note = await this.noteEditService.edit(me, ps.editId!, {
+					files: files,
+					poll: ps.poll ? {
+						choices: ps.poll.choices,
+						multiple: ps.poll.multiple ?? false,
+						expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
+					} : undefined,
+					text: ps.text ?? undefined,
+					reply,
+					renote,
+					cw: ps.cw,
+					localOnly: ps.localOnly,
+					reactionAcceptance: ps.reactionAcceptance,
+					visibility: ps.visibility,
+					visibleUsers,
+					channel,
+					apMentions: ps.noExtractMentions ? [] : undefined,
+					apHashtags: ps.noExtractHashtags ? [] : undefined,
+					apEmojis: ps.noExtractEmojis ? [] : undefined,
+				});
 
-			// 投稿を作成
-			const note = await this.noteEditService.edit(me, ps.editId!, {
-				files: files,
-				poll: ps.poll ? {
-					choices: ps.poll.choices,
-					multiple: ps.poll.multiple ?? false,
-					expiresAt: ps.poll.expiresAt ? new Date(ps.poll.expiresAt) : null,
-				} : undefined,
-				text: ps.text ?? undefined,
-				reply,
-				renote,
-				cw: ps.cw,
-				localOnly: ps.localOnly,
-				reactionAcceptance: ps.reactionAcceptance,
-				visibility: ps.visibility,
-				visibleUsers,
-				channel,
-				apMentions: ps.noExtractMentions ? [] : undefined,
-				apHashtags: ps.noExtractHashtags ? [] : undefined,
-				apEmojis: ps.noExtractEmojis ? [] : undefined,
-			});
-
-			return {
-				createdNote: await this.noteEntityService.pack(note, me),
-			};
+				return {
+					createdNote: await this.noteEntityService.pack(note, me),
+				};
+			} catch (e) {
+				// TODO: 他のErrorもここでキャッチしてエラーメッセージを当てるようにしたい
+				if (e instanceof IdentifiableError) {
+					if (e.id === '689ee33f-f97c-479a-ac49-1b9f8140af99') {
+						throw new ApiError(meta.errors.containsProhibitedWords);
+					} else if (e.id === '9f466dab-c856-48cd-9e65-ff90ff750580') {
+						throw new ApiError(meta.errors.containsTooManyMentions);
+					}
+				}
+				throw e;
+			}
 		});
 	}
 }

@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -75,6 +75,11 @@ export class MiMeta {
 		length: 1024, array: true, default: '{}',
 	})
 	public sensitiveWords: string[];
+
+	@Column('varchar', {
+		length: 1024, array: true, default: '{}',
+	})
+	public prohibitedWords: string[];
 
 	@Column('varchar', {
 		length: 1024, array: true, default: '{}',
@@ -199,6 +204,29 @@ export class MiMeta {
 	@Column('boolean', {
 		default: false,
 	})
+	public enableMcaptcha: boolean;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaSitekey: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaSecretKey: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public mcaptchaInstanceUrl: string | null;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public enableRecaptcha: boolean;
 
 	@Column('varchar', {
@@ -229,6 +257,8 @@ export class MiMeta {
 		nullable: true,
 	})
 	public turnstileSecretKey: string | null;
+
+	// chaptcha系を追加した際にはnodeinfoのレスポンスに追加するのを忘れないようにすること
 
 	@Column('enum', {
 		enum: ['none', 'all', 'local', 'remote'],
@@ -330,6 +360,17 @@ export class MiMeta {
 	})
 	public deeplIsPro: boolean;
 
+	@Column('boolean', {
+		default: false,
+	})
+	public deeplFreeMode: boolean;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public deeplFreeInstance: string | null;
+
 	@Column('varchar', {
 		length: 1024,
 		nullable: true,
@@ -338,14 +379,14 @@ export class MiMeta {
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://github.com/misskey-dev/misskey',
+		default: 'https://activitypub.software/TransFem-org/Sharkey/',
 		nullable: false,
 	})
-	public repositoryUrl: string;
+	public repositoryUrl: string | null;
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://github.com/misskey-dev/misskey/issues/new',
+		default: 'https://activitypub.software/TransFem-org/Sharkey/-/issues/new',
 		nullable: true,
 	})
 	public feedbackUrl: string | null;
@@ -361,6 +402,12 @@ export class MiMeta {
 		nullable: true,
 	})
 	public privacyPolicyUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public donationUrl: string | null;
 
 	@Column('varchar', {
 		length: 8192,
@@ -466,6 +513,23 @@ export class MiMeta {
 		nullable: true,
 	})
 	public verifymailAuthKey: string | null;
+
+	@Column('boolean', {
+		default: false,
+	})
+	public enableTruemailApi: boolean;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public truemailInstance: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public truemailAuthKey: string | null;
 
 	@Column('boolean', {
 		default: true,

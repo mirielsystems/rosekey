@@ -14,7 +14,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkCwButton v-model="showContent" :text="note.text" :files="note.files" :poll="note.poll" @click.stop/>
 			</p>
 			<div v-show="note.cw == null || showContent">
-				<MkSubNoteContent :hideFiles="hideFiles" :class="$style.text" :note="note"/>
+				<MkSubNoteContent :hideFiles="hideFiles" :class="$style.text" :note="note" :expandAllCws="props.expandAllCws"/>
 			</div>
 		</div>
 	</div>
@@ -48,6 +48,11 @@ watch(() => props.expandAllCws, (expandAllCws) => {
 	margin: 0;
 	padding: 0;
 	font-size: 0.95em;
+
+	&:hover, &:focus-within {
+		background: var(--panelHighlight);
+		transition: background .2s;
+	}
 }
 
 .avatar {

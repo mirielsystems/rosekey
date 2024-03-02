@@ -4,7 +4,7 @@
  */
 
 import { setImmediate } from 'node:timers/promises';
-import * as mfm from '@sharkey/sfm-js';
+import * as mfm from '@transfem-org/sfm-js';
 import { DataSource, In, IsNull, LessThan } from 'typeorm';
 import * as Redis from 'ioredis';
 import { Inject, Injectable, OnApplicationShutdown } from '@nestjs/common';
@@ -46,8 +46,15 @@ import { MetaService } from '@/core/MetaService.js';
 import { SearchService } from '@/core/SearchService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import { UtilityService } from '@/core/UtilityService.js';
+import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { CacheService } from '@/core/CacheService.js';
+import { isReply } from '@/misc/is-reply.js';
+import { trackPromise } from '@/misc/promise-tracker.js';
+import { isUserRelated } from '@/misc/is-user-related.js';
+import { isNotNull } from '@/misc/is-not-null.js';
+import { IdentifiableError } from '@/misc/identifiable-error.js';
 
-type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
+type NotificationType = 'reply' | 'renote' | 'quote' | 'mention' | 'edited';
 
 class NotificationManager {
 	private notifier: { id: MiUser['id']; };
@@ -206,6 +213,8 @@ export class NoteEditService implements OnApplicationShutdown {
 		private activeUsersChart: ActiveUsersChart,
 		private instanceChart: InstanceChart,
 		private utilityService: UtilityService,
+		private userBlockingService: UserBlockingService,
+		private cacheService: CacheService,
 	) { }
 
 	@bindThis
@@ -222,7 +231,7 @@ export class NoteEditService implements OnApplicationShutdown {
 
 		const oldnote = await this.notesRepository.findOneBy({
 			id: editid,
-		});	
+		});
 
 		if (oldnote == null) {
 			throw new Error('no such note');
@@ -230,6 +239,13 @@ export class NoteEditService implements OnApplicationShutdown {
 
 		if (oldnote.userId !== user.id) {
 			throw new Error('not the author');
+		}
+
+		// we never want to change the replyId, so fetch the original "parent"
+		if (oldnote.replyId) {
+			data.reply = await this.notesRepository.findOneBy({ id: oldnote.replyId });
+		} else {
+			data.reply = undefined;
 		}
 
 		// チャンネル外にリプライしたら対象のスコープに合わせる
@@ -255,16 +271,28 @@ export class NoteEditService implements OnApplicationShutdown {
 		if (data.channel != null) data.localOnly = true;
 		if (data.updatedAt == null) data.updatedAt = new Date();
 
+		const meta = await this.metaService.fetch();
+
 		if (data.visibility === 'public' && data.channel == null) {
-			const sensitiveWords = (await this.metaService.fetch()).sensitiveWords;
-			if (this.isSensitive(data, sensitiveWords)) {
+			const sensitiveWords = meta.sensitiveWords;
+			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
 			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
 
-		const inSilencedInstance = this.utilityService.isSilencedHost((await this.metaService.fetch()).silencedHosts, user.host);
+		const hasProhibitedWords = await this.checkProhibitedWordsContain({
+			cw: data.cw,
+			text: data.text,
+			pollChoices: data.poll?.choices,
+		}, meta.prohibitedWords);
+
+		if (hasProhibitedWords) {
+			throw new IdentifiableError('689ee33f-f97c-479a-ac49-1b9f8140af99', 'Note contains prohibited words');
+		}
+
+		const inSilencedInstance = this.utilityService.isSilencedHost((meta).silencedHosts, user.host);
 
 		if (data.visibility === 'public' && inSilencedInstance && user.host !== null) {
 			data.visibility = 'home';
@@ -296,6 +324,18 @@ export class NoteEditService implements OnApplicationShutdown {
 			}
 		}
 
+		// Check blocking
+		if (data.renote && !this.isQuote(data)) {
+			if (data.renote.userHost === null) {
+				if (data.renote.userId !== user.id) {
+					const blocked = await this.userBlockingService.checkBlocked(data.renote.userId, user.id);
+					if (blocked) {
+						throw new Error('blocked');
+					}
+				}
+			}
+		}
+
 		// 返信対象がpublicではないならhomeにする
 		if (data.reply && data.reply.visibility !== 'public' && data.visibility === 'public') {
 			data.visibility = 'home';
@@ -316,6 +356,9 @@ export class NoteEditService implements OnApplicationShutdown {
 				data.text = data.text.slice(0, DB_MAX_NOTE_TEXT_LENGTH);
 			}
 			data.text = data.text.trim();
+			if (data.text === '') {
+				data.text = null;
+			}
 		} else {
 			data.text = null;
 		}
@@ -361,6 +404,18 @@ export class NoteEditService implements OnApplicationShutdown {
 			}
 		}
 
+		if (user.host && !data.cw) {
+			await this.federatedInstanceService.fetch(user.host).then(async i => {
+				if (i.isNSFW) {
+					data.cw = 'Instance is marked as NSFW';
+				}
+			});
+		}
+
+		if (mentionedUsers.length > 0 && mentionedUsers.length > (await this.roleService.getUserPolicies(user.id)).mentionLimit) {
+			throw new IdentifiableError('9f466dab-c856-48cd-9e65-ff90ff750580', 'Note contains too many mentions');
+		}
+
 		const update: Partial<MiNote> = {};
 		if (data.text !== oldnote.text) {
 			update.text = data.text;
@@ -397,7 +452,7 @@ export class NoteEditService implements OnApplicationShutdown {
 				id: oldnote.id,
 				updatedAt: data.updatedAt ? data.updatedAt : new Date(),
 				fileIds: data.files ? data.files.map(file => file.id) : [],
-				replyId: data.reply ? data.reply.id : null,
+				replyId: oldnote.replyId,
 				renoteId: data.renote ? data.renote.id : null,
 				channelId: data.channel ? data.channel.id : null,
 				threadId: data.reply
@@ -548,7 +603,7 @@ export class NoteEditService implements OnApplicationShutdown {
 			}
 
 			// Pack the note
-			const noteObj = await this.noteEntityService.pack(note, null, { skipHide: true });
+			const noteObj = await this.noteEntityService.pack(note, null, { skipHide: true, withReactionAndUserPairCache: true });
 			if (data.poll != null) {
 				this.globalEventService.publishNoteStream(note.id, 'updated', {
 					cw: note.cw,
@@ -557,7 +612,7 @@ export class NoteEditService implements OnApplicationShutdown {
 			} else {
 				this.globalEventService.publishNoteStream(note.id, 'updated', {
 					cw: note.cw,
-					text: note.text!
+					text: note.text!,
 				});
 			}
 
@@ -574,51 +629,37 @@ export class NoteEditService implements OnApplicationShutdown {
 
 			const nm = new NotificationManager(this.mutingsRepository, this.notificationService, user, note);
 
-			await this.createMentionedEvents(mentionedUsers, note, nm);
+			//await this.createMentionedEvents(mentionedUsers, note, nm);
 
 			// If has in reply to note
 			if (data.reply) {
 				// 通知
 				if (data.reply.userHost === null) {
-					const isThreadMuted = await this.noteThreadMutingsRepository.exist({
+					const isThreadMuted = await this.noteThreadMutingsRepository.exists({
 						where: {
 							userId: data.reply.userId,
 							threadId: data.reply.threadId ?? data.reply.id,
 						},
 					});
 
-					if (!isThreadMuted) {
-						nm.push(data.reply.userId, 'reply');
-						this.globalEventService.publishMainStream(data.reply.userId, 'reply', noteObj);
+					const [
+						userIdsWhoMeMuting,
+					] = data.reply.userId ? await Promise.all([
+						this.cacheService.userMutingsCache.fetch(data.reply.userId),
+					]) : [new Set<string>()];
 
-						const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === data.reply!.userId && x.on.includes('reply'));
+					const muted = isUserRelated(note, userIdsWhoMeMuting);
+
+					if (!isThreadMuted && !muted) {
+						nm.push(data.reply.userId, 'edited');
+						this.globalEventService.publishMainStream(data.reply.userId, 'edited', noteObj);
+
+						const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === data.reply!.userId && x.on.includes('edited'));
 						for (const webhook of webhooks) {
-							this.queueService.webhookDeliver(webhook, 'reply', {
+							this.queueService.webhookDeliver(webhook, 'edited', {
 								note: noteObj,
 							});
 						}
-					}
-				}
-			}
-
-			// If it is renote
-			if (data.renote) {
-				const type = data.text ? 'quote' : 'renote';
-
-				// Notify
-				if (data.renote.userHost === null) {
-					nm.push(data.renote.userId, type);
-				}
-
-				// Publish event
-				if ((user.id !== data.renote.userId) && data.renote.userHost === null) {
-					this.globalEventService.publishMainStream(data.renote.userId, 'renote', noteObj);
-
-					const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === data.renote!.userId && x.on.includes('renote'));
-					for (const webhook of webhooks) {
-						this.queueService.webhookDeliver(webhook, 'renote', {
-							note: noteObj,
-						});
 					}
 				}
 			}
@@ -657,7 +698,7 @@ export class NoteEditService implements OnApplicationShutdown {
 						this.relayService.deliverToRelays(user, noteActivity);
 					}
 
-					dm.execute();
+					trackPromise(dm.execute());
 				})();
 			}
 			//#endregion
@@ -686,41 +727,30 @@ export class NoteEditService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-	private isSensitive(note: Option, sensitiveWord: string[]): boolean {
-		if (sensitiveWord.length > 0) {
-			const text = note.cw ?? note.text ?? '';
-			if (text === '') return false;
-			const matched = sensitiveWord.some(filter => {
-				// represents RegExp
-				const regexp = filter.match(/^\/(.+)\/(.*)$/);
-				// This should never happen due to input sanitisation.
-				if (!regexp) {
-					const words = filter.split(' ');
-					return words.every(keyword => text.includes(keyword));
-				}
-				try {
-					return new RE2(regexp[1], regexp[2]).test(text);
-				} catch (err) {
-					// This should never happen due to input sanitisation.
-					return false;
-				}
-			});
-			if (matched) return true;
-		}
-		return false;
+	private isQuote(note: Option): note is Option & { renote: MiNote } {
+		// sync with misc/is-quote.ts
+		return !!note.renote && (!!note.text || !!note.cw || (!!note.files && !!note.files.length) || !!note.poll);
 	}
 
 	@bindThis
 	private async createMentionedEvents(mentionedUsers: MinimumUser[], note: MiNote, nm: NotificationManager) {
 		for (const u of mentionedUsers.filter(u => this.userEntityService.isLocalUser(u))) {
-			const isThreadMuted = await this.noteThreadMutingsRepository.exist({
+			const isThreadMuted = await this.noteThreadMutingsRepository.exists({
 				where: {
 					userId: u.id,
 					threadId: note.threadId ?? note.id,
 				},
 			});
 
-			if (isThreadMuted) {
+			const [
+				userIdsWhoMeMuting,
+			] = u.id ? await Promise.all([
+				this.cacheService.userMutingsCache.fetch(u.id),
+			]) : [new Set<string>()];
+
+			const muted = isUserRelated(note, userIdsWhoMeMuting);
+
+			if (isThreadMuted || muted) {
 				continue;
 			}
 
@@ -728,17 +758,17 @@ export class NoteEditService implements OnApplicationShutdown {
 				detail: true,
 			});
 
-			this.globalEventService.publishMainStream(u.id, 'mention', detailPackedNote);
+			this.globalEventService.publishMainStream(u.id, 'edited', detailPackedNote);
 
-			const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === u.id && x.on.includes('mention'));
+			const webhooks = (await this.webhookService.getActiveWebhooks()).filter(x => x.userId === u.id && x.on.includes('edited'));
 			for (const webhook of webhooks) {
-				this.queueService.webhookDeliver(webhook, 'mention', {
+				this.queueService.webhookDeliver(webhook, 'edited', {
 					note: detailPackedNote,
 				});
 			}
 
 			// Create notification
-			nm.push(u.id, 'mention');
+			nm.push(u.id, 'edited');
 		}
 	}
 
@@ -748,7 +778,7 @@ export class NoteEditService implements OnApplicationShutdown {
 		const user = await this.usersRepository.findOneBy({ id: note.userId });
 		if (user == null) throw new Error('user not found');
 
-		const content = data.renote && data.text == null && data.poll == null && (data.files == null || data.files.length === 0)
+		const content = data.renote && !this.isQuote(data)
 			? this.apRendererService.renderAnnounce(data.renote.uri ? data.renote.uri : `${this.config.url}/notes/${data.renote.id}`, note)
 			: this.apRendererService.renderUpdate(await this.apRendererService.renderUpNote(note, false), user);
 
@@ -769,7 +799,7 @@ export class NoteEditService implements OnApplicationShutdown {
 		const mentions = extractMentions(tokens);
 		let mentionedUsers = (await Promise.all(mentions.map(m =>
 			this.remoteUserResolveService.resolveUser(m.username, m.host ?? user.host).catch(() => null),
-		))).filter(x => x != null) as MiUser[];
+		))).filter(isNotNull) as MiUser[];
 
 		// Drop duplicate users
 		mentionedUsers = mentionedUsers.filter((u, i, self) =>
@@ -782,6 +812,7 @@ export class NoteEditService implements OnApplicationShutdown {
 	@bindThis
 	private async pushToTl(note: MiNote, user: { id: MiUser['id']; host: MiUser['host']; }) {
 		const meta = await this.metaService.fetch();
+		if (!meta.enableFanoutTimeline) return;
 
 		const r = this.redisForTimelines.pipeline();
 
@@ -825,7 +856,7 @@ export class NoteEditService implements OnApplicationShutdown {
 
 			if (note.visibility === 'followers') {
 				// TODO: 重そうだから何とかしたい Set 使う？
-				userListMemberships = userListMemberships.filter(x => followings.some(f => f.followerId === x.userListUserId));
+				userListMemberships = userListMemberships.filter(x => x.userListUserId === user.id || followings.some(f => f.followerId === x.userListUserId));
 			}
 
 			// TODO: あまりにも数が多いと redisPipeline.exec に失敗する(理由は不明)ため、3万件程度を目安に分割して実行するようにする
@@ -834,7 +865,7 @@ export class NoteEditService implements OnApplicationShutdown {
 				if (note.visibility === 'specified' && !note.visibleUserIds.some(v => v === following.followerId)) continue;
 
 				// 「自分自身への返信 or そのフォロワーへの返信」のどちらでもない場合
-				if (note.replyId && !(note.replyUserId === note.userId || note.replyUserId === following.followerId)) {
+				if (isReply(note, following.followerId)) {
 					if (!following.withReplies) continue;
 				}
 
@@ -848,11 +879,12 @@ export class NoteEditService implements OnApplicationShutdown {
 				// ダイレクトのとき、そのリストが対象外のユーザーの場合
 				if (
 					note.visibility === 'specified' &&
+					note.userId !== userListMembership.userListUserId &&
 					!note.visibleUserIds.some(v => v === userListMembership.userListUserId)
 				) continue;
 
 				// 「自分自身への返信 or そのリストの作成者への返信」のどちらでもない場合
-				if (note.replyId && !(note.replyUserId === note.userId || note.replyUserId === userListMembership.userListUserId)) {
+				if (isReply(note, userListMembership.userListUserId)) {
 					if (!userListMembership.withReplies) continue;
 				}
 
@@ -870,11 +902,14 @@ export class NoteEditService implements OnApplicationShutdown {
 			}
 
 			// 自分自身以外への返信
-			if (note.replyId && note.replyUserId !== note.userId) {
+			if (isReply(note)) {
 				this.fanoutTimelineService.push(`userTimelineWithReplies:${user.id}`, note.id, note.userHost == null ? meta.perLocalUserUserTimelineCacheMax : meta.perRemoteUserUserTimelineCacheMax, r);
 
 				if (note.visibility === 'public' && note.userHost == null) {
 					this.fanoutTimelineService.push('localTimelineWithReplies', note.id, 300, r);
+					if (note.replyUserHost == null) {
+						this.fanoutTimelineService.push(`localTimelineWithReplyTo:${note.replyUserId}`, note.id, 300 / 10, r);
+					}
 				}
 			} else {
 				this.fanoutTimelineService.push(`userTimeline:${user.id}`, note.id, note.userHost == null ? meta.perLocalUserUserTimelineCacheMax : meta.perRemoteUserUserTimelineCacheMax, r);
@@ -936,6 +971,23 @@ export class NoteEditService implements OnApplicationShutdown {
 				isFollowerHibernated: true,
 			});
 		}
+	}
+
+	public async checkProhibitedWordsContain(content: Parameters<UtilityService['concatNoteContentsForKeyWordCheck']>[0], prohibitedWords?: string[]) {
+		if (prohibitedWords == null) {
+			prohibitedWords = (await this.metaService.fetch()).prohibitedWords;
+		}
+
+		if (
+			this.utilityService.isKeyWordIncluded(
+				this.utilityService.concatNoteContentsForKeyWordCheck(content),
+				prohibitedWords,
+			)
+		) {
+			return true;
+		}
+
+		return false;
 	}
 
 	@bindThis

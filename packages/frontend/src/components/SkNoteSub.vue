@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div v-show="!isDeleted" v-if="!muted" ref="el" :class="[$style.root, { [$style.children]: depth > 1 }]">
+<div v-show="!isDeleted" v-if="!muted" ref="el" :class="[$style.root, { [$style.children]: depth > 1, [$style.isReply]: props.isReply, [$style.detailed]: props.detailed }]">
 	<div v-if="!hideLine" :class="$style.line"></div>
 	<div :class="$style.main">
 		<div v-if="note.channel" :class="$style.colorBar" :style="{ background: note.channel.color }"></div>
@@ -24,11 +24,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<MkCwButton v-model="showContent" :text="note.text" :files="note.files" :poll="note.poll"/>
 				</p>
 				<div v-show="note.cw == null || showContent">
-					<MkSubNoteContent :class="$style.text" :note="note" :translating="translating" :translation="translation"/>
+					<MkSubNoteContent :class="$style.text" :note="note" :translating="translating" :translation="translation" :expandAllCws="props.expandAllCws"/>
 				</div>
 			</div>
+			<MkReactionsViewer ref="reactionsViewer" :note="note"/>
 			<footer :class="$style.footer">
-				<MkReactionsViewer ref="reactionsViewer" :note="note"/>
 				<button class="_button" :class="$style.noteFooterButton" @click="reply()">
 					<i class="ph-arrow-u-up-left ph-bold ph-lg"></i>
 					<p v-if="note.repliesCount > 0" :class="$style.noteFooterButtonCount">{{ note.repliesCount }}</p>
@@ -73,7 +73,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</div>
 	</div>
 	<template v-if="depth < numberOfReplies">
-		<SkNoteSub v-for="reply in replies" :key="reply.id" :note="reply" :class="[$style.reply, { [$style.single]: replies.length === 1 }]" :detail="true" :depth="depth + 1" :expandAllCws="props.expandAllCws" :onDeleteCallback="removeReply"/>
+		<SkNoteSub v-for="reply in replies" :key="reply.id" :note="reply" :class="[$style.reply, { [$style.single]: replies.length === 1 }]" :detail="true" :depth="depth + 1" :expandAllCws="props.expandAllCws" :onDeleteCallback="removeReply" :isReply="props.isReply"/>
 	</template>
 	<div v-else :class="$style.more">
 		<MkA class="_link" :to="notePage(note)">{{ i18n.ts.continueThread }} <i class="ph-caret-double-right ph-bold ph-lg"></i></MkA>
@@ -99,6 +99,8 @@ import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
 import { notePage } from '@/filters/note.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
+import * as sound from '@/scripts/sound.js';
 import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import { userPage } from '@/filters/user.js';
@@ -111,6 +113,7 @@ import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { getNoteMenu } from '@/scripts/get-note-menu.js';
 import { useNoteCapture } from '@/scripts/use-note-capture.js';
+import { boostMenuItems, type Visibility } from '@/scripts/boost-quote.js';
 
 const canRenote = computed(() => ['public', 'home'].includes(props.note.visibility) || props.note.userId === $i.id);
 const hideLine = computed(() => { return props.detail ? true : false; });
@@ -123,8 +126,13 @@ const props = withDefaults(defineProps<{
 
 	// how many notes are in between this one and the note being viewed in detail
 	depth?: number;
+
+	isReply?: boolean;
+	detailed?: boolean;
 }>(), {
 	depth: 1,
+	isReply: false,
+	detailed: false,
 });
 
 const el = shallowRef<HTMLElement>();
@@ -147,7 +155,7 @@ const replies = ref<Misskey.entities.Note[]>([]);
 const isRenote = (
 	props.note.renote != null &&
 	props.note.text == null &&
-	props.note.fileIds.length === 0 &&
+	props.note.fileIds && props.note.fileIds.length === 0 &&
 	props.note.poll == null
 );
 
@@ -174,7 +182,7 @@ useNoteCapture({
 });
 
 if ($i) {
-	os.api('notes/renotes', {
+	misskeyApi('notes/renotes', {
 		noteId: appearNote.value.id,
 		userId: $i.id,
 		limit: 1,
@@ -202,8 +210,9 @@ function reply(viaKeyboard = false): void {
 function react(viaKeyboard = false): void {
 	pleaseLogin();
 	showMovedDialog();
+	sound.playMisskeySfx('reaction');
 	if (props.note.reactionAcceptance === 'likeOnly') {
-		os.api('notes/like', {
+		misskeyApi('notes/like', {
 			noteId: props.note.id,
 			override: defaultLike.value,
 		});
@@ -216,8 +225,8 @@ function react(viaKeyboard = false): void {
 		}
 	} else {
 		blur();
-		reactionPicker.show(reactButton.value, reaction => {
-			os.api('notes/reactions/create', {
+		reactionPicker.show(reactButton.value ?? null, props.note, reaction => {
+			misskeyApi('notes/reactions/create', {
 				noteId: props.note.id,
 				reaction: reaction,
 			});
@@ -233,7 +242,8 @@ function react(viaKeyboard = false): void {
 function like(): void {
 	pleaseLogin();
 	showMovedDialog();
-	os.api('notes/like', {
+	sound.playMisskeySfx('reaction');
+	misskeyApi('notes/like', {
 		noteId: props.note.id,
 		override: defaultLike.value,
 	});
@@ -249,14 +259,14 @@ function like(): void {
 function undoReact(note): void {
 	const oldReaction = note.myReaction;
 	if (!oldReaction) return;
-	os.api('notes/reactions/delete', {
+	misskeyApi('notes/reactions/delete', {
 		noteId: note.id,
 	});
 }
 
 function undoRenote() : void {
 	if (!renoted.value) return;
-	os.api('notes/unrenote', {
+	misskeyApi('notes/unrenote', {
 		noteId: appearNote.value.id,
 	});
 	os.toast(i18n.ts.rmboost);
@@ -278,42 +288,14 @@ watch(() => props.expandAllCws, (expandAllCws) => {
 });
 
 function boostVisibility() {
-	os.popupMenu([
-		{
-			type: 'button',
-			icon: 'ph-globe-hemisphere-west ph-bold ph-lg',
-			text: i18n.ts._visibility['public'],
-			action: () => {
-				renote('public');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-house ph-bold ph-lg',
-			text: i18n.ts._visibility['home'],
-			action: () => {
-				renote('home');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-lock ph-bold ph-lg',
-			text: i18n.ts._visibility['followers'],
-			action: () => {
-				renote('followers');
-			},
-		},
-		{
-			type: 'button',
-			icon: 'ph-planet ph-bold ph-lg',
-			text: i18n.ts._timelines.local,
-			action: () => {
-				renote('local');
-			},
-		}], renoteButton.value);
+	if (!defaultStore.state.showVisibilitySelectorOnBoost) {
+		renote(defaultStore.state.visibilityOnBoost);
+	} else {
+		os.popupMenu(boostMenuItems(appearNote, renote), renoteButton.value);
+	}
 }
 
-function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'local') {
+function renote(visibility: Visibility, localOnly: boolean = false) {
 	pleaseLogin();
 	showMovedDialog();
 
@@ -326,9 +308,9 @@ function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'loc
 			os.popup(MkRippleEffect, { x, y }, {}, 'end');
 		}
 
-		os.api('notes/create', {
-			renoteId: props.note.id,
-			channelId: props.note.channelId,
+		misskeyApi('notes/create', {
+			renoteId: appearNote.value.id,
+			channelId: appearNote.value.channelId,
 		}).then(() => {
 			os.toast(i18n.ts.renoted);
 			renoted.value = true;
@@ -342,10 +324,10 @@ function renote(visibility: 'public' | 'home' | 'followers' | 'specified' | 'loc
 			os.popup(MkRippleEffect, { x, y }, {}, 'end');
 		}
 
-		os.api('notes/create', {
-			renoteId: props.note.id,
-			localOnly: visibility === 'local' ? true : false,
-			visibility: visibility === 'local' || visibility === 'specified' ? props.note.visibility : visibility,
+		misskeyApi('notes/create', {
+			renoteId: appearNote.value.id,
+			localOnly: localOnly,
+			visibility: visibility,
 		}).then(() => {
 			os.toast(i18n.ts.renoted);
 			renoted.value = true;
@@ -362,7 +344,7 @@ function quote() {
 			renote: appearNote.value,
 			channel: appearNote.value.channel,
 		}).then(() => {
-			os.api('notes/renotes', {
+			misskeyApi('notes/renotes', {
 				noteId: props.note.id,
 				userId: $i.id,
 				limit: 1,
@@ -384,7 +366,7 @@ function quote() {
 		os.post({
 			renote: appearNote.value,
 		}).then(() => {
-			os.api('notes/renotes', {
+			misskeyApi('notes/renotes', {
 				noteId: props.note.id,
 				userId: $i.id,
 				limit: 1,
@@ -413,7 +395,7 @@ function menu(viaKeyboard = false): void {
 }
 
 if (props.detail) {
-	os.api('notes/children', {
+	misskeyApi('notes/children', {
 		noteId: props.note.id,
 		limit: numberOfReplies.value,
 		showQuotes: false,
@@ -426,35 +408,61 @@ if (props.detail) {
 <style lang="scss" module>
 .root {
 	padding: 28px 32px;
-	font-size: 0.9em;
 	position: relative;
 
+	--reply-indent: calc(.5 * var(--avatar));
+
 	&.children {
-		padding: 10px 0 0 16px;
-		font-size: 1em;
+		padding: 10px 0 0 8px;
+	}
+
+	&.isReply {
+		/* @link https://utopia.fyi/clamp/calculator?a=450,580,26—36 */
+		--avatar: clamp(26px, -8.6154px + 7.6923cqi, 36px);
 	}
 }
 
 .line {
 	position: absolute;
-	height: calc(100% - 58px); // 58px of avatar height (see SkNote)
-	left: 60px;
+	left: calc(32px + .5 * var(--avatar));
 	// using solid instead of dotted, stylelistic choice
-	border-left: 2.5px solid rgb(174, 174, 174);
-	top: 86px; // 28px of .root padding, plus 58px of avatar height (see SkNote)
+	border-left: var(--thread-width) solid var(--thread);
+	top: calc(28px + var(--avatar)); // 28px of .root padding, plus 58px of avatar height (see SkNote)
+	bottom: -28px;
 }
 
 .footer {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
 	position: relative;
 	z-index: 1;
 	margin-top: 0.4em;
-	width: max-content;
-	min-width: min-content;
-	max-width: fit-content;
+	max-width: 400px;
 }
 
 .main {
-	display: flex;
+	position: relative;
+	display:  flex;
+
+	:is(.detailed, .isReply) &::after {
+		content: "";
+		position: absolute;
+		top: -12px;
+		right: -12px;
+		left: -12px;
+		bottom: -12px;
+		background: var(--panelHighlight);
+		border-radius: var(--radius);
+		opacity: 0;
+		transition: opacity .2s, background .2s;
+		z-index: -1;
+	}
+
+	:is(.detailed, .isReply) &:hover::after,
+	:is(.detailed, .isReply) &:focus-within::after {
+		opacity: 1;
+	}
 }
 
 .colorBar {
@@ -471,8 +479,8 @@ if (props.detail) {
 	flex-shrink: 0;
 	display: block;
 	margin: 0 14px 0 0;
-	width: 58px;
-	height: 58px;
+	width: var(--avatar);
+	height: var(--avatar);
 	border-radius: var(--radius-sm);
 }
 
@@ -500,10 +508,6 @@ if (props.detail) {
 	padding-top: 10px;
 	opacity: 0.7;
 
-	&:not(:last-child) {
-		margin-right: 1.5em;
-	}
-
 	&:hover {
 		color: var(--fgHighlighted);
 	}
@@ -521,21 +525,22 @@ if (props.detail) {
 @container (max-width: 580px) {
 	.root {
 		padding: 28px 26px 0;
+		--avatar: 46px;
 	}
 
 	.line {
-		left: 50.5px;
-	}
-
-	.avatar {
-		width: 50px;
-		height: 50px;
+		left: calc(26px + .5 * var(--avatar));
 	}
 }
 
 @container (max-width: 500px) {
 	.root {
 		padding: 23px 25px;
+	}
+
+	.line {
+		top: calc(23px + var(--avatar));
+		left: calc(25px + .5 * var(--avatar));
 	}
 }
 
@@ -581,21 +586,17 @@ if (props.detail) {
 @container (max-width: 480px) {
 	.root {
 		padding: 22px 24px;
+	}
 
-		&.children {
-			padding: 10px 0 0 8px;
-		}
+	.line {
+		top: calc(22px + var(--avatar));
+		left: calc(24px + .5 * var(--avatar));
 	}
 }
 
 @container (max-width: 450px) {
-	.line {
-		left: 46px;
-	}
-
-	.avatar {
-		width: 46px;
-		height: 46px;
+	.root {
+		--avatar: 44px;
 	}
 }
 
@@ -616,19 +617,19 @@ if (props.detail) {
 .threadLine {
 	width: 0;
 	flex-grow: 1;
-	border-left: 2.5px solid rgb(174, 174, 174);
-	margin-left: 29px;
+	border-left: var(--thread-width) solid var(--thread);
+	margin-left: var(--reply-indent);
 }
 
 .reply {
-	margin-left: 29px;
+	margin-left: var(--reply-indent);
 }
 
 .reply:not(:last-child) {
-	border-left: 2.5px solid rgb(174, 174, 174);
+	border-left: var(--thread-width) solid var(--thread);
 
 	&::before {
-		left: -2px;
+		left: calc(-1 * var(--thread-width));
 	}
 }
 
@@ -637,10 +638,10 @@ if (props.detail) {
 	content: '';
 	left: 0px;
 	top: -10px;
-	height: 49px;
+	height: calc(10px + 10px + .5 * var(--avatar));
 	width: 15px;
-	border-left: 2.5px solid rgb(174, 174, 174);
-	border-bottom: 2.5px solid rgb(174, 174, 174);
+	border-left: var(--thread-width) solid var(--thread);
+	border-bottom: var(--thread-width) solid var(--thread);
 	border-bottom-left-radius: 15px;
 }
 
@@ -649,40 +650,9 @@ if (props.detail) {
 	padding-left: 0 !important;
 
 	&::before {
-		left: 29px;
+		left: var(--reply-indent);
 		width: 0;
 		border-bottom: unset;
-	}
-}
-
-@container (max-width: 580px) {
-	.threadLine, .reply {
-		margin-left: 25px;
-	}
-	.reply::before {
-		height: 45px;
-	}
-	.single::before {
-		left: 25px;
-	}
-	.single {
-		margin-left: 0;
-	}
-}
-
-@container (max-width: 450px) {
-	.threadLine, .reply {
-		margin-left: 23px;
-	}
-	.reply::before {
-		height: 43px;
-	}
-	.single::before {
-		left: 23px;
-		width: 9px;
-	}
-	.single {
-		margin-left: 0;
 	}
 }
 </style>

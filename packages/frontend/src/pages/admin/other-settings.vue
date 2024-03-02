@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -61,6 +61,7 @@ import { ref, computed } from 'vue';
 import XHeader from './_header_.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
@@ -74,7 +75,7 @@ const enableChartsForRemoteUser = ref<boolean>(false);
 const enableChartsForFederatedInstances = ref<boolean>(false);
 
 async function init() {
-	const meta = await os.api('admin/meta');
+	const meta = await misskeyApi('admin/meta');
 	enableServerMachineStats.value = meta.enableServerMachineStats;
 	enableAchievements.value = meta.enableAchievements;
 	enableBotTrending.value = meta.enableBotTrending;
@@ -92,7 +93,7 @@ function save() {
 		enableChartsForRemoteUser: enableChartsForRemoteUser.value,
 		enableChartsForFederatedInstances: enableChartsForFederatedInstances.value,
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 
@@ -105,8 +106,8 @@ const headerActions = computed(() => [{
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.other,
 	icon: 'ph-faders ph-bold ph-lg',
-});
+}));
 </script>

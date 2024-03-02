@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 								<MkButton v-else v-tooltip="i18n.ts._gallery.like" class="button" @click="like()"><i class="ph-heart ph-bold ph-lg"></i><span v-if="post.likedCount > 0" class="count">{{ post.likedCount }}</span></MkButton>
 							</div>
 							<div class="other">
-								<button v-if="$i && $i.id === post.user.id" v-tooltip="i18n.ts.edit" v-click-anime class="_button" @click="edit"><i class="ph-pencil ph-bold ph-lg ti-fw"></i></button>
+								<button v-if="$i && $i.id === post.user.id" v-tooltip="i18n.ts.edit" v-click-anime class="_button" @click="edit"><i class="ph-pencil-simple ph-bold ph-lg ti-fw"></i></button>
 								<button v-tooltip="i18n.ts.shareWithNote" v-click-anime class="_button" @click="shareWithNote"><i class="ph-repeat ph-bold ph-lg ti-fw"></i></button>
 								<button v-tooltip="i18n.ts.copyLink" v-click-anime class="_button" @click="copyLink"><i class="ph-share-network ph-bold ph-lg ti-fw"></i></button>
 								<button v-if="isSupportShare()" v-tooltip="i18n.ts.share" v-click-anime class="_button" @click="share"><i class="ph-share-network ph-bold ph-lg ti-fw"></i></button>
@@ -66,18 +66,19 @@ import { computed, watch, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import MkContainer from '@/components/MkContainer.vue';
 import MkPagination from '@/components/MkPagination.vue';
 import MkGalleryPostPreview from '@/components/MkGalleryPostPreview.vue';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import { url } from '@/config.js';
-import { useRouter } from '@/router.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { defaultStore } from '@/store.js';
 import { $i } from '@/account.js';
 import { isSupportShare } from '@/scripts/navigator.js';
 import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { useRouter } from '@/router/supplier.js';
 
 const router = useRouter();
 
@@ -97,7 +98,7 @@ const otherPostsPagination = {
 
 function fetchPost() {
 	post.value = null;
-	os.api('gallery/posts/show', {
+	misskeyApi('gallery/posts/show', {
 		postId: props.postId,
 	}).then(_post => {
 		post.value = _post;
@@ -155,17 +156,19 @@ function edit() {
 watch(() => props.postId, fetchPost, { immediate: true });
 
 const headerActions = computed(() => [{
-	icon: 'ph-pencil ph-bold ph-lg',
+	icon: 'ph-pencil-simple ph-bold ph-lg',
 	text: i18n.ts.edit,
 	handler: edit,
 }]);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata(computed(() => post.value ? {
-	title: post.value.title,
-	avatar: post.value.user,
-} : null));
+definePageMetadata(() => ({
+	title: post.value ? post.value.title : i18n.ts.gallery,
+	...post.value ? {
+		avatar: post.value.user,
+	} : {},
+}));
 </script>
 
 <style lang="scss" scoped>

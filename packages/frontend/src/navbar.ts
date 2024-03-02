@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -117,6 +117,11 @@ export const navbarItemDef = reactive({
 		icon: 'ph-trophy ph-bold ph-lg',
 		show: computed(() => $i != null && instance.enableAchievements),
 		to: '/my/achievements',
+	},
+	games: {
+		title: 'Games',
+		icon: 'ph-game-controller ph-bold ph-lg',
+		to: '/games',
 	},
 	ui: {
 		title: i18n.ts.switchUi,

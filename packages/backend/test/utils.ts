@@ -1,11 +1,11 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import * as assert from 'node:assert';
 import { readFile } from 'node:fs/promises';
-import { isAbsolute, basename } from 'node:path';
+import { basename, isAbsolute } from 'node:path';
 import { randomUUID } from 'node:crypto';
 import { inspect } from 'node:util';
 import WebSocket, { ClientOptions } from 'ws';
@@ -19,7 +19,7 @@ import { entities } from '../src/postgres.js';
 import { loadConfig } from '../src/config.js';
 import type * as misskey from 'misskey-js';
 
-export { server as startServer } from '@/boot/common.js';
+export { server as startServer, jobQueue as startJobQueue } from '@/boot/common.js';
 
 interface UserToken {
 	token: string;
@@ -70,7 +70,11 @@ export const failedApiCall = async <T, >(request: ApiRequest, assertion: {
 	return res.body;
 };
 
-const request = async (path: string, params: any, me?: UserToken): Promise<{ status: number, headers: Headers, body: any }> => {
+const request = async (path: string, params: any, me?: UserToken): Promise<{
+	status: number,
+	headers: Headers,
+	body: any
+}> => {
 	const bodyAuth: Record<string, string> = {};
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
@@ -291,7 +295,11 @@ interface UploadOptions {
  * Upload file
  * @param user User
  */
-export const uploadFile = async (user?: UserToken, { path, name, blob }: UploadOptions = {}): Promise<{ status: number, headers: Headers, body: misskey.Endpoints['drive/files/create']['res'] | null }> => {
+export const uploadFile = async (user?: UserToken, { path, name, blob }: UploadOptions = {}): Promise<{
+	status: number,
+	headers: Headers,
+	body: misskey.Endpoints['drive/files/create']['res'] | null
+}> => {
 	const absPath = path == null
 		? new URL('resources/Lenna.jpg', import.meta.url)
 		: isAbsolute(path.toString())
@@ -327,9 +335,7 @@ export const uploadFile = async (user?: UserToken, { path, name, blob }: UploadO
 	};
 };
 
-export const uploadUrl = async (user: UserToken, url: string) => {
-	let resolve: unknown;
-	const file = new Promise(ok => resolve = ok);
+export const uploadUrl = async (user: UserToken, url: string): Promise<Packed<'DriveFile'>> => {
 	const marker = Math.random().toString();
 
 	const catcher = makeStreamCatcher(
@@ -346,10 +352,10 @@ export const uploadUrl = async (user: UserToken, url: string) => {
 		force: true,
 	}, user);
 
-	return file;
+	return catcher;
 };
 
-export function connectStream(user: UserToken, channel: string, listener: (message: Record<string, any>) => any, params?: any): Promise<WebSocket> {
+export function connectStream<C extends keyof misskey.Channels>(user: UserToken, channel: C, listener: (message: Record<string, any>) => any, params?: misskey.Channels[C]['params']): Promise<WebSocket> {
 	return new Promise((res, rej) => {
 		const url = new URL(`ws://127.0.0.1:${port}/streaming`);
 		const options: ClientOptions = {};
@@ -384,7 +390,7 @@ export function connectStream(user: UserToken, channel: string, listener: (messa
 	});
 }
 
-export const waitFire = async (user: UserToken, channel: string, trgr: () => any, cond: (msg: Record<string, any>) => boolean, params?: any) => {
+export const waitFire = async <C extends keyof misskey.Channels>(user: UserToken, channel: C, trgr: () => any, cond: (msg: Record<string, any>) => boolean, params?: misskey.Channels[C]['params']) => {
 	return new Promise<boolean>(async (res, rej) => {
 		let timer: NodeJS.Timeout | null = null;
 
@@ -429,7 +435,7 @@ export const waitFire = async (user: UserToken, channel: string, trgr: () => any
  */
 export function makeStreamCatcher<T>(
 	user: UserToken,
-	channel: string,
+	channel: keyof misskey.Channels,
 	cond: (message: Record<string, any>) => boolean,
 	extractor: (message: Record<string, any>) => T,
 	timeout = 60 * 1000): Promise<T> {
@@ -479,8 +485,8 @@ export const simpleGet = async (path: string, accept = '*/*', cookie: any = unde
 	}
 
 	const body =
-		jsonTypes.includes(res.headers.get('content-type') ?? '')	? await res.json() :
-		htmlTypes.includes(res.headers.get('content-type') ?? '')	? new JSDOM(await res.text()) :
+		jsonTypes.includes(res.headers.get('content-type') ?? '') ? await res.json() :
+		htmlTypes.includes(res.headers.get('content-type') ?? '') ? new JSDOM(await res.text()) :
 		null;
 
 	return {
@@ -609,4 +615,35 @@ export function sleep(msec: number) {
 			res();
 		}, msec);
 	});
+}
+
+export async function sendEnvUpdateRequest(params: { key: string, value?: string }) {
+	const res = await fetch(
+		`http://localhost:${port + 1000}/env`,
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(params),
+		},
+	);
+
+	if (res.status !== 200) {
+		throw new Error('server env update failed.');
+	}
+}
+
+export async function sendEnvResetRequest() {
+	const res = await fetch(
+		`http://localhost:${port + 1000}/env-reset`,
+		{
+			method: 'POST',
+			body: JSON.stringify({}),
+		},
+	);
+
+	if (res.status !== 200) {
+		throw new Error('server env update failed.');
+	}
 }

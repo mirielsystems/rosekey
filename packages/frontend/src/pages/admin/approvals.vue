@@ -48,10 +48,10 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata(computed(() => ({
+definePageMetadata(() => ({
 	title: i18n.ts.approvals,
 	icon: 'ph-chalkboard-teacher ph-bold ph-lg',
-})));
+}));
 </script>
 
 <style lang="scss" module>

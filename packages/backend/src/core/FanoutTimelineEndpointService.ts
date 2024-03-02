@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -122,6 +122,8 @@ export class FanoutTimelineEndpointService {
 				filter = (note) => {
 					if (isUserRelated(note, userIdsWhoBlockingMe, ps.ignoreAuthorFromBlock)) return false;
 					if (isUserRelated(note, userIdsWhoMeMuting, ps.ignoreAuthorFromMute)) return false;
+					if (note.mentions.some(mention => userIdsWhoMeMuting.has(mention))) return false;
+					if (isPureRenote(note) && note.renote && note.renote.mentions.some(mention => userIdsWhoMeMuting.has(mention))) return false;
 					if (isPureRenote(note) && isUserRelated(note, userIdsWhoMeMutingRenotes, ps.ignoreAuthorFromMute)) return false;
 					if (isInstanceMuted(note, userMutedInstances)) return false;
 

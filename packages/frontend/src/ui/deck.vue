@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -58,7 +58,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<span class="_indicateCounter" :class="$style.itemIndicateValueIcon">{{ $i.unreadNotificationsCount > 99 ? '99+' : $i.unreadNotificationsCount }}</span>
 			</span>
 		</button>
-		<button :class="$style.postButton" class="_button" @click="os.post()"><i :class="$style.navButtonIcon" class="ph-pencil ph-bold ph-lg"></i></button>
+		<button :class="$style.postButton" class="_button" @click="os.post()"><i :class="$style.navButtonIcon" class="ph-pencil-simple ph-bold ph-lg"></i></button>
 	</div>
 
 	<Transition
@@ -103,7 +103,6 @@ import * as os from '@/os.js';
 import { navbarItemDef } from '@/navbar.js';
 import { $i } from '@/account.js';
 import { i18n } from '@/i18n.js';
-import { mainRouter } from '@/router.js';
 import { unisonReload } from '@/scripts/unison-reload.js';
 import { deviceKind } from '@/scripts/device-kind.js';
 import { defaultStore } from '@/store.js';
@@ -117,6 +116,8 @@ import XWidgetsColumn from '@/ui/deck/widgets-column.vue';
 import XMentionsColumn from '@/ui/deck/mentions-column.vue';
 import XDirectColumn from '@/ui/deck/direct-column.vue';
 import XRoleTimelineColumn from '@/ui/deck/role-timeline-column.vue';
+import { mainRouter } from '@/router/main.js';
+import { MenuItem } from '@/types/menu.js';
 const XStatusBars = defineAsyncComponent(() => import('@/ui/_common_/statusbars.vue'));
 const XAnnouncements = defineAsyncComponent(() => import('@/ui/_common_/announcements.vue'));
 
@@ -189,7 +190,7 @@ const addColumn = async (ev) => {
 	const { canceled, result: column } = await os.select({
 		title: i18n.ts._deck.addColumn,
 		items: columns.map(column => ({
-			value: column, text: i18n.t('_deck._columns.' + column),
+			value: column, text: i18n.ts._deck._columns[column],
 		})),
 	});
 	if (canceled) return;
@@ -197,7 +198,7 @@ const addColumn = async (ev) => {
 	addColumnToStore({
 		type: column,
 		id: uuid(),
-		name: i18n.t('_deck._columns.' + column),
+		name: i18n.ts._deck._columns[column],
 		width: 330,
 	});
 };
@@ -221,42 +222,41 @@ document.documentElement.style.scrollBehavior = 'auto';
 loadDeck();
 
 function changeProfile(ev: MouseEvent) {
-	const items = ref([{
+	let items: MenuItem[] = [{
 		text: deckStore.state.profile,
-		active: true.valueOf,
-	}]);
+		active: true,
+		action: () => {},
+	}];
 	getProfiles().then(profiles => {
-		items.value = [{
-			text: deckStore.state.profile,
-			active: true.valueOf,
-		}, ...(profiles.filter(k => k !== deckStore.state.profile).map(k => ({
+		items.push(...(profiles.filter(k => k !== deckStore.state.profile).map(k => ({
 			text: k,
 			action: () => {
 				deckStore.set('profile', k);
 				unisonReload();
 			},
-		}))), { type: 'divider' }, {
+		}))), { type: 'divider' as const }, {
 			text: i18n.ts._deck.newProfile,
 			icon: 'ph-plus ph-bold ph-lg',
 			action: async () => {
 				const { canceled, result: name } = await os.inputText({
 					title: i18n.ts._deck.profile,
-					allowEmpty: false,
+					minLength: 1,
 				});
 				if (canceled) return;
 
 				deckStore.set('profile', name);
 				unisonReload();
 			},
-		}];
+		});
+	}).then(() => {
+		os.popupMenu(items, ev.currentTarget ?? ev.target);
 	});
-	os.popupMenu(items, ev.currentTarget ?? ev.target);
 }
 
 async function deleteProfile() {
 	const { canceled } = await os.confirm({
 		type: 'warning',
-		text: i18n.t('deleteAreYouSure', { x: deckStore.state.profile }),
+		text: i18n.tsx.deleteAreYouSure({ x: deckStore.state.profile }),
 	});
 	if (canceled) return;
 
@@ -325,7 +325,7 @@ body {
 }
 
 .rootIsMobile {
-	padding-bottom: 100px;
+	padding-bottom: 58px;
 }
 
 .main {
@@ -446,20 +446,20 @@ body {
 .navButton {
 	position: relative;
 	padding: 0;
-	aspect-ratio: 1;
+	height: 32px;
 	width: 100%;
 	max-width: 60px;
 	margin: auto;
-	border-radius: var(--radius-full);
-	background: var(--panel);
+	border-radius: var(--radius-lg);
+	background: transparent;
 	color: var(--fg);
 
 	&:hover {
-		background: var(--panelHighlight);
+		color: var(--accent);
 	}
 
 	&:active {
-		background: var(--X2);
+		color: var(--accent);
 	}
 }
 
@@ -470,15 +470,17 @@ body {
 
 	&:hover {
 		background: linear-gradient(90deg, var(--X8), var(--X8));
+		color: var(--fgOnAccent);
 	}
 
 	&:active {
 		background: linear-gradient(90deg, var(--X8), var(--X8));
+		color: var(--fgOnAccent);
 	}
 }
 
 .navButtonIcon {
-	font-size: 18px;
+	font-size: 16px;
 	vertical-align: middle;
 }
 
@@ -488,7 +490,7 @@ body {
 	left: 0;
 	color: var(--indicator);
 	font-size: 16px;
-	animation: blink 1s infinite;
+	animation: global-blink 1s infinite;
 
 	&:has(.itemIndicateValueIcon) {
 		animation: none;

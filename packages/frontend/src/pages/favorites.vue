@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -38,10 +38,10 @@ const pagination = {
 	limit: 10,
 };
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.favorites,
 	icon: 'ph-star ph-bold ph-lg',
-});
+}));
 </script>
 
 <style lang="scss" module>

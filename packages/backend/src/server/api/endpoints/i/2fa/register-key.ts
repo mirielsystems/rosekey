@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -48,7 +48,7 @@ export const meta = {
 				properties: {
 					id: {
 						type: 'string',
-						nullable: true,
+						optional: true,
 					},
 				},
 			},
@@ -104,13 +104,13 @@ export const meta = {
 							items: {
 								type: 'string',
 								enum: [
-									"ble",
-									"cable",
-									"hybrid",
-									"internal",
-									"nfc",
-									"smart-card",
-									"usb",
+									'ble',
+									'cable',
+									'hybrid',
+									'internal',
+									'nfc',
+									'smart-card',
+									'usb',
 								],
 							},
 						},
@@ -124,8 +124,8 @@ export const meta = {
 					authenticatorAttachment: {
 						type: 'string',
 						enum: [
-							"cross-platform",
-							"platform",
+							'cross-platform',
+							'platform',
 						],
 					},
 					requireResidentKey: {
@@ -134,9 +134,9 @@ export const meta = {
 					userVerification: {
 						type: 'string',
 						enum: [
-							"discouraged",
-							"preferred",
-							"required",
+							'discouraged',
+							'preferred',
+							'required',
 						],
 					},
 				},
@@ -145,10 +145,11 @@ export const meta = {
 				type: 'string',
 				nullable: true,
 				enum: [
-					"direct",
-					"enterprise",
-					"indirect",
-					"none",
+					'direct',
+					'enterprise',
+					'indirect',
+					'none',
+					null,
 				],
 			},
 			extensions: {

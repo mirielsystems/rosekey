@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -100,6 +100,7 @@ describe('ActivityPub', () => {
 		perRemoteUserUserTimelineCacheMax: 800,
 		blockedHosts: [] as string[],
 		sensitiveWords: [] as string[],
+		prohibitedWords: [] as string[],
 	} as MiMeta;
 	let meta = metaInitial;
 
@@ -222,7 +223,7 @@ describe('ActivityPub', () => {
 			await personService.createPerson(actor.id, resolver);
 
 			// All notes in `featured` are same-origin, no need to fetch notes again
-			assert.deepStrictEqual(resolver.remoteGetTrials(), [actor.id, actor.featured]);
+			assert.deepStrictEqual(resolver.remoteGetTrials(), [actor.id, `${actor.id}/outbox`, actor.featured]);
 
 			// Created notes without resolving anything
 			for (const item of featured.items as IPost[]) {
@@ -255,7 +256,7 @@ describe('ActivityPub', () => {
 			// actor2Note is from a different server and needs to be fetched again
 			assert.deepStrictEqual(
 				resolver.remoteGetTrials(),
-				[actor1.id, actor1.featured, actor2Note.id, actor2.id],
+				[actor1.id, `${actor1.id}/outbox`, actor1.featured, actor2Note.id, actor2.id, `${actor2.id}/outbox` ],
 			);
 
 			const note = await noteService.fetchNote(actor2Note.id);

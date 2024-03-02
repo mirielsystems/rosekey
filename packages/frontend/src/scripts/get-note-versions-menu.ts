@@ -2,6 +2,7 @@ import { Ref, defineAsyncComponent } from 'vue';
 import * as Misskey from 'misskey-js';
 import { i18n } from '@/i18n.js';
 import * as os from '@/os.js';
+import { misskeyApi } from './misskey-api.js';
 import { MenuItem } from '@/types/menu.js';
 import { dateTimeFormat } from './intl-const.js';
 
@@ -30,7 +31,7 @@ export async function getNoteVersionsMenu(props: {
 	}
 
 	const menu: MenuItem[] = [];
-	const statePromise = os.api('notes/versions', {
+	const statePromise = misskeyApi('notes/versions', {
 		noteId: appearNote.id,
 	});
 
@@ -39,9 +40,9 @@ export async function getNoteVersionsMenu(props: {
 			const _time = edit.oldDate == null ? NaN :
 				typeof edit.oldDate === 'number' ? edit.oldDate :
 				(edit.oldDate instanceof Date ? edit.oldDate : new Date(edit.oldDate)).getTime();
-			
+
 			menu.push({
-				icon: 'ph-pencil ph-bold ph-lg',
+				icon: 'ph-pencil-simple ph-bold ph-lg',
 				text: _time ? dateTimeFormat.format(_time) : dateTimeFormat.format(new Date(edit.updatedAt)),
 				action: () => openVersion(edit),
 			});

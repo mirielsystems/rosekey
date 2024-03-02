@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -114,7 +114,7 @@ async function setType() {
 }
 
 const menu = [{
-	icon: 'ph-pencil ph-bold ph-lg',
+	icon: 'ph-pencil-simple ph-bold ph-lg',
 	text: i18n.ts.timeline,
 	action: setType,
 }, {

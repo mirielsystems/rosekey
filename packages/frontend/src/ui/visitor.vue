@@ -1,11 +1,11 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <div class="mk-app">
-	<div v-if="!narrow && !root" class="side">
+	<div v-if="!narrow && !isRoot" class="side">
 		<div class="banner" :style="{ backgroundImage: instance.backgroundImageUrl ? `url(${ instance.backgroundImageUrl })` : 'none' }"></div>
 		<div class="dashboard">
 			<MkVisitorDashboard/>
@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 
 	<div class="main">
-		<div v-if="!root" class="header">
+		<div v-if="!isRoot" class="header">
 			<div v-if="narrow === false" class="wide">
 				<MkA to="/" class="link" activeClass="active"><i class="ph-house ph-bold ph-lg icon"></i> {{ i18n.ts.home }}</MkA>
 				<MkA v-if="isTimelineAvailable" to="/timeline" class="link" activeClass="active"><i class="ph-chat-text ph-bold ph-lg icon"></i> {{ i18n.ts.timeline }}</MkA>
@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</div>
 		<div class="contents">
-			<main v-if="!root" style="container-type: inline-size;">
+			<main v-if="!isRoot" style="container-type: inline-size;">
 				<RouterView/>
 			</main>
 			<main v-else>
@@ -67,31 +67,40 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ComputedRef, onMounted, provide, ref, computed } from 'vue';
+import { onMounted, provide, ref, computed } from 'vue';
 import * as Misskey from 'misskey-js';
 import XCommon from './_common_/common.vue';
 import { instanceName } from '@/config.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { instance } from '@/instance.js';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
 import { ColdDeviceStorage, defaultStore } from '@/store.js';
-import { mainRouter } from '@/router.js';
-import { PageMetadata, provideMetadataReceiver } from '@/scripts/page-metadata.js';
+import { PageMetadata, provideMetadataReceiver, provideReactiveMetadata } from '@/scripts/page-metadata.js';
 import { i18n } from '@/i18n.js';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
+import { mainRouter } from '@/router/main.js';
+
+const isRoot = computed(() => mainRouter.currentRoute.value.name === 'index');
 
 const DESKTOP_THRESHOLD = 1100;
 
-const pageMetadata = ref<null | ComputedRef<PageMetadata>>();
+const pageMetadata = ref<null | PageMetadata>(null);
 
 provide('router', mainRouter);
-provideMetadataReceiver((info) => {
+provideMetadataReceiver((metadataGetter) => {
+	const info = metadataGetter();
 	pageMetadata.value = info;
-	if (pageMetadata.value.value) {
-		document.title = `${pageMetadata.value.value.title} | ${instanceName}`;
+	if (pageMetadata.value) {
+		if (isRoot.value && pageMetadata.value.title === instanceName) {
+			document.title = pageMetadata.value.title;
+		} else {
+			document.title = `${pageMetadata.value.title} | ${instanceName}`;
+		}
 	}
 });
+provideReactiveMetadata(pageMetadata);
 
 const announcements = {
 	endpoint: 'announcements',
@@ -117,9 +126,7 @@ const keymap = computed(() => {
 	};
 });
 
-const root = computed(() => mainRouter.currentRoute.value.name === 'index');
-
-os.api('meta', { detail: true }).then(res => {
+misskeyApi('meta', { detail: true }).then(res => {
 	meta.value = res;
 });
 

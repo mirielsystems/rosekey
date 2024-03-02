@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -38,7 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</dt>
 					<dd :class="$style.fieldvalue">
 						<Mfm :text="field.value" :nyaize="false" :author="user" :colored="false"/>
-						<i v-if="user.verifiedLinks.includes(field.value)" v-tooltip:dialog="i18n.ts.verifiedLink" class="ph-seal-check ph-bold ph-lg" :class="$style.verifiedLink"></i>
+						<i v-if="user.verifiedLinks.includes(field.value)" v-tooltip:dialog="i18n.ts.verifiedLink" class="ph-seal-check ph-bold ph-lg"></i>
 					</dd>
 				</dl>
 			</div>
@@ -72,6 +72,7 @@ import * as Misskey from 'misskey-js';
 import MkFollowButton from '@/components/MkFollowButton.vue';
 import { userPage } from '@/filters/user.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { getUserMenu } from '@/scripts/get-user-menu.js';
 import number from '@/filters/number.js';
 import { i18n } from '@/i18n.js';
@@ -97,6 +98,7 @@ const top = ref(0);
 const left = ref(0);
 
 function showMenu(ev: MouseEvent) {
+	if (user.value == null) return;
 	const { menu, cleanup } = getUserMenu(user.value);
 	os.popupMenu(menu, ev.currentTarget ?? ev.target).finally(cleanup);
 }
@@ -109,7 +111,7 @@ onMounted(() => {
 			Misskey.acct.parse(props.q.substring(1)) :
 			{ userId: props.q };
 
-		os.api('users/show', query).then(res => {
+		misskeyApi('users/show', query).then(res => {
 			if (!props.showing) return;
 			user.value = res;
 		});
@@ -199,8 +201,8 @@ onMounted(() => {
 	right: 0;
 	margin: 0 auto;
 	z-index: 2;
-	width: 58px;
-	height: 58px;
+	width: var(--avatar);
+	height: var(--avatar);
 }
 
 .title {
