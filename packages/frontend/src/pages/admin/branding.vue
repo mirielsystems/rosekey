@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -19,10 +19,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #prefix><i class="ph-link ph-bold ph-lg"></i></template>
 						<template #label>{{ i18n.ts._serverSettings.iconUrl }} (App/192px)</template>
 						<template #caption>
-							<div>{{ i18n.t('_serverSettings.appIconDescription', { host: instance.name ?? host }) }}</div>
+							<div>{{ i18n.tsx._serverSettings.appIconDescription({ host: instance.name ?? host }) }}</div>
 							<div>({{ i18n.ts._serverSettings.appIconUsageExample }})</div>
 							<div>{{ i18n.ts._serverSettings.appIconStyleRecommendation }}</div>
-							<div><strong>{{ i18n.t('_serverSettings.appIconResolutionMustBe', { resolution: '192x192px' }) }}</strong></div>
+							<div><strong>{{ i18n.tsx._serverSettings.appIconResolutionMustBe({ resolution: '192x192px' }) }}</strong></div>
 						</template>
 					</MkInput>
 
@@ -30,10 +30,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #prefix><i class="ph-link ph-bold ph-lg"></i></template>
 						<template #label>{{ i18n.ts._serverSettings.iconUrl }} (App/512px)</template>
 						<template #caption>
-							<div>{{ i18n.t('_serverSettings.appIconDescription', { host: instance.name ?? host }) }}</div>
+							<div>{{ i18n.tsx._serverSettings.appIconDescription({ host: instance.name ?? host }) }}</div>
 							<div>({{ i18n.ts._serverSettings.appIconUsageExample }})</div>
 							<div>{{ i18n.ts._serverSettings.appIconStyleRecommendation }}</div>
-							<div><strong>{{ i18n.t('_serverSettings.appIconResolutionMustBe', { resolution: '512x512px' }) }}</strong></div>
+							<div><strong>{{ i18n.tsx._serverSettings.appIconResolutionMustBe({ resolution: '512x512px' }) }}</strong></div>
 						</template>
 					</MkInput>
 
@@ -49,7 +49,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 
 					<FromSlot>
 						<template #label>{{ i18n.ts.defaultLike }}</template>
-						<MkCustomEmoji v-if="defaultLike.startsWith(':')" style="max-height: 3em; font-size: 1.1em;" :useOriginalSize="false" :class="$style.reaction" :name="defaultLike" :normal="true" :noStyle="true"/>
+						<MkCustomEmoji v-if="defaultLike.startsWith(':')" style="max-height: 3em; font-size: 1.1em;" :useOriginalSize="false" :name="defaultLike" :normal="true" :noStyle="true"/>
 						<MkEmoji v-else :emoji="defaultLike" style="max-height: 3em; font-size: 1.1em;" :normal="true" :noStyle="true"/>
 						<MkButton rounded :small="true" @click="chooseNewLike"><i class="ph-smiley ph-bold ph-lg"></i> Change</MkButton>
 					</FromSlot>
@@ -83,6 +83,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<template #caption>{{ i18n.ts.instanceDefaultThemeDescription }}</template>
 					</MkTextarea>
 
+					<MkInput v-model="repositoryUrl" type="url">
+						<template #prefix><i class="ph-link ph-bold ph-lg"></i></template>
+						<template #label>{{ i18n.ts.repositoryUrl }}</template>
+					</MkInput>
+
+					<MkInput v-model="feedbackUrl" type="url">
+						<template #prefix><i class="ph-link ph-bold ph-lg"></i></template>
+						<template #label>{{ i18n.ts.feedbackUrl }}</template>
+					</MkInput>
+
 					<MkTextarea v-model="manifestJsonOverride">
 						<template #label>{{ i18n.ts._serverSettings.manifestJsonOverride }}</template>
 					</MkTextarea>
@@ -109,6 +119,7 @@ import MkTextarea from '@/components/MkTextarea.vue';
 import FromSlot from '@/components/form/slot.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { instance, fetchInstance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
@@ -128,10 +139,12 @@ const defaultLike = ref<string>('');
 const serverErrorImageUrl = ref<string | null>(null);
 const infoImageUrl = ref<string | null>(null);
 const notFoundImageUrl = ref<string | null>(null);
+const repositoryUrl = ref<string | null>(null);
+const feedbackUrl = ref<string | null>(null);
 const manifestJsonOverride = ref<string>('{}');
 
 async function init() {
-	const meta = await os.api('admin/meta');
+	const meta = await misskeyApi('admin/meta');
 	iconUrl.value = meta.iconUrl;
 	app192IconUrl.value = meta.app192IconUrl;
 	app512IconUrl.value = meta.app512IconUrl;
@@ -144,6 +157,8 @@ async function init() {
 	serverErrorImageUrl.value = meta.serverErrorImageUrl;
 	infoImageUrl.value = meta.infoImageUrl;
 	notFoundImageUrl.value = meta.notFoundImageUrl;
+	repositoryUrl.value = meta.repositoryUrl;
+	feedbackUrl.value = meta.feedbackUrl;
 	manifestJsonOverride.value = meta.manifestJsonOverride === '' ? '{}' : JSON.stringify(JSON.parse(meta.manifestJsonOverride), null, '\t');
 }
 
@@ -157,12 +172,14 @@ function save() {
 		themeColor: themeColor.value === '' ? null : themeColor.value,
 		defaultLightTheme: defaultLightTheme.value === '' ? null : defaultLightTheme.value,
 		defaultDarkTheme: defaultDarkTheme.value === '' ? null : defaultDarkTheme.value,
-		infoImageUrl: infoImageUrl.value,
-		notFoundImageUrl: notFoundImageUrl.value,
-		serverErrorImageUrl: serverErrorImageUrl.value,
+		infoImageUrl: infoImageUrl.value === '' ? null : infoImageUrl.value,
+		notFoundImageUrl: notFoundImageUrl.value === '' ? null : notFoundImageUrl.value,
+		serverErrorImageUrl: serverErrorImageUrl.value === '' ? null : serverErrorImageUrl.value,
+		repositoryUrl: repositoryUrl.value === '' ? null : repositoryUrl.value,
+		feedbackUrl: feedbackUrl.value === '' ? null : feedbackUrl.value,
 		manifestJsonOverride: manifestJsonOverride.value === '' ? '{}' : JSON.stringify(JSON5.parse(manifestJsonOverride.value)),
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 
@@ -181,10 +198,10 @@ function chooseNewLike(ev: MouseEvent) {
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.branding,
 	icon: 'ph-paint-roller ph-bold ph-lg',
-});
+}));
 </script>
 
 <style lang="scss" module>

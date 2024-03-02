@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -41,6 +41,7 @@ export const paramDef = {
 		subscribing: { type: 'boolean', nullable: true },
 		publishing: { type: 'boolean', nullable: true },
 		nsfw: { type: 'boolean', nullable: true },
+		bubble: { type: 'boolean', nullable: true },
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 30 },
 		offset: { type: 'integer', default: 0 },
 		sort: {
@@ -61,6 +62,7 @@ export const paramDef = {
 				'-firstRetrievedAt',
 				'+latestRequestReceivedAt',
 				'-latestRequestReceivedAt',
+				null,
 			],
 		},
 	},
@@ -96,6 +98,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				case '-latestRequestReceivedAt': query.orderBy('instance.latestRequestReceivedAt', 'ASC', 'NULLS FIRST'); break;
 
 				default: query.orderBy('instance.id', 'DESC'); break;
+			}
+
+			if (me == null) {
+				ps.blocked = false;
+				ps.suspended = false;
+				ps.silenced = false;
 			}
 
 			if (typeof ps.blocked === 'boolean') {
@@ -144,6 +152,23 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				} else if (meta.silencedHosts.length > 0) {
 					query.andWhere('instance.host NOT IN (:...silences)', {
 						silences: meta.silencedHosts,
+					});
+				}
+			}
+
+			if (typeof ps.bubble === 'boolean') {
+				const meta = await this.metaService.fetch(true);
+
+				if (ps.bubble) {
+					if (meta.bubbleInstances.length === 0) {
+						return [];
+					}
+					query.andWhere('instance.host IN (:...bubble)', {
+						bubble: meta.bubbleInstances,
+					});
+				} else if (meta.bubbleInstances.length > 0) {
+					query.andWhere('instance.host NOT IN (:...bubble)', {
+						bubble: meta.bubbleInstances,
 					});
 				}
 			}

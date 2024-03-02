@@ -15,7 +15,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div class="misskey">Sharkey</div>
 						<div class="version">v{{ version }}</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
-							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true"/>
+							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true" :fallbackToImage="true"/>
 							<MkEmoji v-else class="emoji" :emoji="emoji.emoji" :normal="true" :noStyle="true"/>
 						</span>
 					</div>
@@ -27,33 +27,66 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<div v-if="$i != null" style="text-align: center;">
 					<MkButton primary rounded inline @click="iLoveMisskey">I <Mfm text="$[jelly ❤]"/> #Sharkey</MkButton>
 				</div>
-				<FormSection>
+				<FormSection v-if="instance.repositoryUrl !== 'https://activitypub.software/TransFem-org/Sharkey/'">
 					<div class="_gaps_s">
-						<FormLink to="https://git.joinsharkey.org/Sharkey/Sharkey" external>
+						<MkInfo>
+							{{ i18n.tsx._aboutMisskey.thisIsModifiedVersion({ name: instance.name }) }}
+						</MkInfo>
+						<FormLink v-if="instance.repositoryUrl" :to="instance.repositoryUrl" external>
 							<template #icon><i class="ph-code ph-bold ph-lg"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
-							<template #suffix>Forgejo</template>
+						</FormLink>
+						<FormLink v-if="instance.providesTarball" :to="`/tarball/sharkey-${version}.tar.gz`" external>
+							<template #icon><i class="ph-download ph-bold ph-lg"></i></template>
+							{{ i18n.ts._aboutMisskey.source }}
+							<template #suffix>Tarball</template>
+						</FormLink>
+						<MkInfo v-if="!instance.repositoryUrl && !instance.providesTarball" warn>
+							{{ i18n.ts.sourceCodeIsNotYetProvided }}
+						</MkInfo>
+					</div>
+				</FormSection>
+				<FormSection>
+					<div class="_gaps_s">
+						<FormLink to="https://activitypub.software/TransFem-org/Sharkey/" external>
+							<template #icon><i class="ph-code ph-bold ph-lg"></i></template>
+							{{ i18n.ts._aboutMisskey.source }} ({{ i18n.ts._aboutMisskey.original_sharkey }})
+							<template #suffix>GitLab</template>
 						</FormLink>
 						<FormLink to="https://ko-fi.com/transfem" external>
 							<template #icon><i class="ph-piggy-bank ph-bold ph-lg"></i></template>
-							{{ i18n.ts._aboutMisskey.donate }}
+							{{ i18n.ts._aboutMisskey.donate_sharkey }}
 							<template #suffix>Ko-Fi</template>
+						</FormLink>
+					</div>
+				</FormSection>
+				<FormSection>
+					<div class="_gaps_s">
+						<FormLink to="https://github.com/misskey-dev/misskey" external>
+							<template #icon><i class="ph-code ph-bold ph-lg"></i></template>
+							{{ i18n.ts._aboutMisskey.source }} ({{ i18n.ts._aboutMisskey.original }})
+							<template #suffix>GitHub</template>
+						</FormLink>
+						<FormLink to="https://www.patreon.com/syuilo" external>
+							<template #icon><i class="ph-piggy-bank ph-bold ph-lg"></i></template>
+							{{ i18n.ts._aboutMisskey.donate }}
+							<template #suffix>Patreon</template>
 						</FormLink>
 					</div>
 				</FormSection>
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors" style="margin-bottom: 8px;">
-						<a href="https://git.joinsharkey.org/Marie" target="_blank" :class="$style.contributor">
-							<img src="https://git.joinsharkey.org/avatar/0d57abf583f5ed6cf37f47055a1e1aa4?size=512" :class="$style.contributorAvatar">
+						<a href="https://activitypub.software/Marie" target="_blank" :class="$style.contributor">
+							<img src="https://activitypub.software/uploads/-/system/user/avatar/2/avatar.png?width=128" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@Marie</span>
 						</a>
-						<a href="https://git.joinsharkey.org/Amelia" target="_blank" :class="$style.contributor">
-							<img src="https://git.joinsharkey.org/avatars/0634b661b89d6e45137074b6ddcd0b9ffc4cf467f2188ec12416ec6f91bb9d42?size=512" :class="$style.contributorAvatar">
+						<a href="https://activitypub.software/Amelia" target="_blank" :class="$style.contributor">
+							<img src="https://activitypub.software/uploads/-/system/user/avatar/1/avatar.png?width=128" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@Amelia</span>
 						</a>
 					</div>
-					<template #caption><MkLink url="https://git.joinsharkey.org/Sharkey/Sharkey/graph">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
+					<template #caption><MkLink url="https://activitypub.software/TransFem-org/Sharkey/-/graphs/develop">{{ i18n.ts._aboutMisskey.allContributors }}</MkLink></template>
 				</FormSection>
 				<FormSection>
 					<template #label>Misskey Contributors</template>
@@ -88,7 +121,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</a>
 					</div>
 				</FormSection>
-				<FormSection>
+				<FormSection v-if="sponsors[0].length > 0">
 					<template #label>Our lovely Sponsors</template>
 					<div :class="$style.contributors">
 						<span
@@ -116,10 +149,13 @@ import FormLink from '@/components/form/link.vue';
 import FormSection from '@/components/form/section.vue';
 import MkButton from '@/components/MkButton.vue';
 import MkLink from '@/components/MkLink.vue';
+import MkInfo from '@/components/MkInfo.vue';
 import { physics } from '@/scripts/physics.js';
 import { i18n } from '@/i18n.js';
+import { instance } from '@/instance.js';
 import { defaultStore } from '@/store.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { claimAchievement, claimedAchievements } from '@/scripts/achievements.js';
 import { $i } from '@/account.js';
@@ -132,7 +168,7 @@ const easterEggEngine = ref(null);
 const sponsors = ref([]);
 const containerEl = shallowRef<HTMLElement>();
 
-await os.api('sponsors', { forceUpdate: true }).then((res) => sponsors.value.push(res.sponsor_data));
+await misskeyApi('sponsors', { forceUpdate: true }).then((res) => sponsors.value.push(res.sponsor_data));
 
 function iconLoaded() {
 	const emojis = defaultStore.state.reactions;
@@ -179,10 +215,10 @@ const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.aboutMisskey,
 	icon: null,
-});
+}));
 </script>
 
 <style lang="scss" scoped>

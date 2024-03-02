@@ -1,11 +1,11 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <XColumn :menu="menu" :naked="true" :column="column" :isStacked="isStacked">
-	<template #header><i class="ph-squares-four ph-bold ph-lg" style="margin-right: 8px;"></i>{{ column.name }}</template>
+	<template #header><i class="ph-stack ph-bold ph-lg" style="margin-right: 8px;"></i>{{ column.name }}</template>
 
 	<div :class="$style.root">
 		<div v-if="!(column.widgets && column.widgets.length > 0) && !edit" :class="$style.intro">{{ i18n.ts._deck.widgetsIntroduction }}</div>
@@ -49,7 +49,7 @@ function func() {
 }
 
 const menu = [{
-	icon: 'ph-pencil ph-bold ph-lg',
+	icon: 'ph-pencil-simple ph-bold ph-lg',
 	text: i18n.ts.editWidgets,
 	action: func,
 }];

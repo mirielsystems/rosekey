@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -19,6 +19,7 @@ import XColumn from './column.vue';
 import { updateColumn, Column } from './deck-store.js';
 import MkTimeline from '@/components/MkTimeline.vue';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 
 const props = defineProps<{
@@ -35,7 +36,7 @@ onMounted(() => {
 });
 
 async function setAntenna() {
-	const antennas = await os.api('antennas/list');
+	const antennas = await misskeyApi('antennas/list');
 	const { canceled, result: antenna } = await os.select({
 		title: i18n.ts.selectAntenna,
 		items: antennas.map(x => ({
@@ -55,7 +56,7 @@ function editAntenna() {
 
 const menu = [
 	{
-		icon: 'ph-pencil ph-bold ph-lg',
+		icon: 'ph-pencil-simple ph-bold ph-lg',
 		text: i18n.ts.selectAntenna,
 		action: setAntenna,
 	},

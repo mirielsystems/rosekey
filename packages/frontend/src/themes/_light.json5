@@ -30,6 +30,7 @@
 		panelHeaderFg: '@fg',
 		panelHeaderDivider: 'rgba(0, 0, 0, 0)',
 		panelBorder: '" solid 1px var(--divider)',
+		thread: ':darken<12<@panel',
 		acrylicPanel: ':alpha<0.5<@panel',
 		windowHeader: ':alpha<0.85<@panel',
 		popup: ':lighten<3<@panel',
@@ -93,5 +94,9 @@
 		X15: ':alpha<0<@panel',
 		X16: ':alpha<0.7<@panel',
 		X17: ':alpha<0.8<@bg',
+	},
+
+	codeHighlighter: {
+		base: 'catppuccin-latte',
 	},
 }

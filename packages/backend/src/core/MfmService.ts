@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -13,7 +13,7 @@ import { intersperse } from '@/misc/prelude/array.js';
 import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import { bindThis } from '@/decorators.js';
 import * as TreeAdapter from '../../node_modules/parse5/dist/tree-adapters/default.js';
-import type * as mfm from '@sharkey/sfm-js';
+import type * as mfm from '@transfem-org/sfm-js';
 
 const treeAdapter = TreeAdapter.defaultTreeAdapter;
 
@@ -419,6 +419,10 @@ export class MfmService {
 			},
 
 			text: (node) => {
+				if (!node.props.text.match(/[\r\n]/)) {
+					return doc.createTextNode(node.props.text);
+				}
+
 				const el = doc.createElement('span');
 				const nodes = node.props.text.split(/\r\n|\r|\n/).map(x => doc.createTextNode(x));
 
@@ -475,7 +479,7 @@ export class MfmService {
 
 		const handlers: {
             [K in mfm.MfmNode['type']]: (node: mfm.NodeType<K>) => any;
-        } = {
+    } = {
 			async bold(node) {
 				const el = doc.createElement('span');
 				el.textContent = '**';
@@ -643,8 +647,8 @@ export class MfmService {
 				await appendChildren(node.children, el);
 				return el;
 			},
-        };
-		
+		};
+
 		await appendChildren(nodes, doc.body);
 
 		if (quoteUri !== null) {

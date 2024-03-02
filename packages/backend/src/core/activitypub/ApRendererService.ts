@@ -1,12 +1,12 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
 import { createPublicKey, randomUUID } from 'node:crypto';
 import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
-import * as mfm from '@sharkey/sfm-js';
+import * as mfm from '@transfem-org/sfm-js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import type { MiPartialLocalUser, MiLocalUser, MiPartialRemoteUser, MiRemoteUser, MiUser } from '@/models/User.js';
@@ -28,10 +28,10 @@ import { bindThis } from '@/decorators.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdService } from '@/core/IdService.js';
+import { MetaService } from '../MetaService.js';
 import { LdSignatureService } from './LdSignatureService.js';
 import { ApMfmService } from './ApMfmService.js';
 import type { IAccept, IActivity, IAdd, IAnnounce, IApDocument, IApEmoji, IApHashtag, IApImage, IApMention, IBlock, ICreate, IDelete, IFlag, IFollow, IKey, ILike, IMove, IObject, IPost, IQuestion, IReject, IRemove, ITombstone, IUndo, IUpdate } from './type.js';
-import { MetaService } from '../MetaService.js';
 
 @Injectable()
 export class ApRendererService {
@@ -335,7 +335,7 @@ export class ApRendererService {
 		const getPromisedFiles = async (ids: string[]): Promise<MiDriveFile[]> => {
 			if (ids.length === 0) return [];
 			const items = await this.driveFilesRepository.findBy({ id: In(ids) });
-			return ids.map(id => items.find(item => item.id === id)).filter((item): item is MiDriveFile => item != null);
+			return ids.map(id => items.find(item => item.id === id)).filter(isNotNull);
 		};
 
 		let inReplyTo;
@@ -345,7 +345,7 @@ export class ApRendererService {
 			inReplyToNote = await this.notesRepository.findOneBy({ id: note.replyId });
 
 			if (inReplyToNote != null) {
-				const inReplyToUserExist = await this.usersRepository.exist({ where: { id: inReplyToNote.userId } });
+				const inReplyToUserExist = await this.usersRepository.exists({ where: { id: inReplyToNote.userId } });
 
 				if (inReplyToUserExist) {
 					if (inReplyToNote.uri) {
@@ -409,17 +409,15 @@ export class ApRendererService {
 			poll = await this.pollsRepository.findOneBy({ noteId: note.id });
 		}
 
-		let apText = text;
+		let apAppend = '';
 
 		if (quote) {
-			apText += `\n\nRE: ${quote}`;
+			apAppend += `\n\nRE: ${quote}`;
 		}
 
 		const summary = note.cw === '' ? String.fromCharCode(0x200B) : note.cw;
 
-		const content = this.apMfmService.getNoteHtml(Object.assign({}, note, {
-			text: apText,
-		}));
+		const { content, noMisskeyContent } = this.apMfmService.getNoteHtml(note, apAppend);
 
 		const emojis = await this.getEmojis(note.emojis);
 		const apemojis = emojis.filter(emoji => !emoji.localOnly).map(emoji => this.renderEmoji(emoji));
@@ -432,9 +430,6 @@ export class ApRendererService {
 
 		const asPoll = poll ? {
 			type: 'Question',
-			content: this.apMfmService.getNoteHtml(Object.assign({}, note, {
-				text: text,
-			})),
 			[poll.expiresAt && poll.expiresAt < new Date() ? 'closed' : 'endTime']: poll.expiresAt,
 			[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
 				type: 'Note',
@@ -452,11 +447,13 @@ export class ApRendererService {
 			attributedTo,
 			summary: summary ?? undefined,
 			content: content ?? undefined,
-			_misskey_content: text,
-			source: {
-				content: text,
-				mediaType: 'text/x.misskeymarkdown',
-			},
+			...(noMisskeyContent ? {} : {
+				_misskey_content: text,
+				source: {
+					content: text,
+					mediaType: 'text/x.misskeymarkdown',
+				},
+			}),
 			_misskey_quote: quote,
 			quoteUrl: quote,
 			quoteUri: quote,
@@ -639,7 +636,7 @@ export class ApRendererService {
 			inReplyToNote = await this.notesRepository.findOneBy({ id: note.replyId });
 
 			if (inReplyToNote != null) {
-				const inReplyToUserExist = await this.usersRepository.exist({ where: { id: inReplyToNote.userId } });
+				const inReplyToUserExist = await this.usersRepository.exists({ where: { id: inReplyToNote.userId } });
 
 				if (inReplyToUserExist) {
 					if (inReplyToNote.uri) {
@@ -703,17 +700,15 @@ export class ApRendererService {
 			poll = await this.pollsRepository.findOneBy({ noteId: note.id });
 		}
 
-		let apText = text;
+		let apAppend = '';
 
 		if (quote) {
-			apText += `\n\nRE: ${quote}`;
+			apAppend += `\n\nRE: ${quote}`;
 		}
 
 		const summary = note.cw === '' ? String.fromCharCode(0x200B) : note.cw;
 
-		const content = this.apMfmService.getNoteHtml(Object.assign({}, note, {
-			text: apText,
-		}));
+		const { content, noMisskeyContent } = this.apMfmService.getNoteHtml(note, apAppend);
 
 		const emojis = await this.getEmojis(note.emojis);
 		const apemojis = emojis.filter(emoji => !emoji.localOnly).map(emoji => this.renderEmoji(emoji));
@@ -726,9 +721,6 @@ export class ApRendererService {
 
 		const asPoll = poll ? {
 			type: 'Question',
-			content: this.apMfmService.getNoteHtml(Object.assign({}, note, {
-				text: text,
-			})),
 			[poll.expiresAt && poll.expiresAt < new Date() ? 'closed' : 'endTime']: poll.expiresAt,
 			[poll.multiple ? 'anyOf' : 'oneOf']: poll.choices.map((text, i) => ({
 				type: 'Note',
@@ -747,11 +739,13 @@ export class ApRendererService {
 			summary: summary ?? undefined,
 			content: content ?? undefined,
 			updated: note.updatedAt?.toISOString(),
-			_misskey_content: text,
-			source: {
-				content: text,
-				mediaType: 'text/x.misskeymarkdown',
-			},
+			...(noMisskeyContent ? {} : {
+				_misskey_content: text,
+				source: {
+					content: text,
+					mediaType: 'text/x.misskeymarkdown',
+				},
+			}),
 			_misskey_quote: quote,
 			quoteUrl: quote,
 			quoteUri: quote,
@@ -796,6 +790,7 @@ export class ApRendererService {
 				'https://www.w3.org/ns/activitystreams',
 				'https://w3id.org/security/v1',
 				{
+					Key: 'sec:Key',
 					// as non-standards
 					manuallyApprovesFollowers: 'as:manuallyApprovesFollowers',
 					sensitive: 'as:sensitive',
@@ -821,12 +816,12 @@ export class ApRendererService {
 					'_misskey_summary': 'misskey:_misskey_summary',
 					'isCat': 'misskey:isCat',
 					// Firefish
-					firefish: "https://joinfirefish.org/ns#",
-					speakAsCat: "firefish:speakAsCat",
+					firefish: 'https://joinfirefish.org/ns#',
+					speakAsCat: 'firefish:speakAsCat',
 					// Sharkey
-					sharkey: "https://joinsharkey.org/ns#",
-					backgroundUrl: "sharkey:backgroundUrl",
-					listenbrainz: "sharkey:listenbrainz",
+					sharkey: 'https://joinsharkey.org/ns#',
+					backgroundUrl: 'sharkey:backgroundUrl',
+					listenbrainz: 'sharkey:listenbrainz',
 					// vcard
 					vcard: 'http://www.w3.org/2006/vcard/ns#',
 				},

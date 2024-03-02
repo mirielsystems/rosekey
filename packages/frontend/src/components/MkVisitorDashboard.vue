@@ -1,12 +1,12 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <div v-if="meta" :class="$style.root">
 	<div :class="[$style.main, $style.panel]">
-		<img :src="instance.iconUrl || instance.faviconUrl || '/apple-touch-icon.png'" alt="" :class="$style.mainIcon"/>
+		<img :src="instance.iconUrl || '/apple-touch-icon.png'" alt="" :class="$style.mainIcon"/>
 		<button class="_button _acrylic" :class="$style.mainMenu" @click="showMenu"><i class="ph-dots-three ph-bold ph-lg"></i></button>
 		<div :class="$style.mainFg">
 			<h1 :class="$style.mainTitle">
@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</h1>
 			<div :class="$style.mainAbout">
 				<!-- eslint-disable-next-line vue/no-v-html -->
-				<div v-html="meta.description || i18n.ts.headlineMisskey"></div>
+				<div v-html="sanitizeHtml(meta.description) || i18n.ts.headlineMisskey"></div>
 			</div>
 			<div v-if="instance.disableRegistration" :class="$style.mainWarn">
 				<MkInfo warn>{{ i18n.ts.invitationRequiredToRegister }}</MkInfo>
@@ -56,6 +56,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { ref } from 'vue';
 import * as Misskey from 'misskey-js';
+import sanitizeHtml from 'sanitize-html';
 import XSigninDialog from '@/components/MkSigninDialog.vue';
 import XSignupDialog from '@/components/MkSignupDialog.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -63,6 +64,7 @@ import MkTimeline from '@/components/MkTimeline.vue';
 import MkInfo from '@/components/MkInfo.vue';
 import { instanceName } from '@/config.js';
 import * as os from '@/os.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { instance } from '@/instance.js';
 import MkNumber from '@/components/MkNumber.vue';
@@ -71,11 +73,11 @@ import XActiveUsersChart from '@/components/MkVisitorDashboard.ActiveUsersChart.
 const meta = ref<Misskey.entities.MetaResponse | null>(null);
 const stats = ref<Misskey.entities.StatsResponse | null>(null);
 
-os.api('meta', { detail: true }).then(_meta => {
+misskeyApi('meta', { detail: true }).then(_meta => {
 	meta.value = _meta;
 });
 
-os.api('stats', {}).then((res) => {
+misskeyApi('stats', {}).then((res) => {
 	stats.value = res;
 });
 
@@ -108,21 +110,27 @@ function showMenu(ev) {
 		text: i18n.ts.impressum,
 		icon: 'ph-newspaper-clipping ph-bold ph-lg',
 		action: () => {
-			window.open(instance.impressumUrl, '_blank', 'noopener');
+			window.open(instance.impressumUrl!, '_blank', 'noopener');
 		},
 	} : undefined, (instance.tosUrl) ? {
 		text: i18n.ts.termsOfService,
 		icon: 'ph-notebook ph-bold ph-lg',
 		action: () => {
-			window.open(instance.tosUrl, '_blank', 'noopener');
+			window.open(instance.tosUrl!, '_blank', 'noopener');
 		},
 	} : undefined, (instance.privacyPolicyUrl) ? {
 		text: i18n.ts.privacyPolicy,
 		icon: 'ph-shield ph-bold ph-lg',
 		action: () => {
-			window.open(instance.privacyPolicyUrl, '_blank', 'noopener');
+			window.open(instance.privacyPolicyUrl!, '_blank', 'noopener');
 		},
-	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl) ? undefined : { type: 'divider' }, {
+	} : undefined, (instance.donationUrl) ? {
+		text: i18n.ts.donation,
+		icon: 'ph-hand-coins ph-bold ph-lg',
+		action: () => {
+			window.open(instance.donationUrl, '_blank', 'noopener');
+		},
+	} : undefined, (!instance.impressumUrl && !instance.tosUrl && !instance.privacyPolicyUrl && !instance.donationUrl) ? undefined : { type: 'divider' }, {
 		text: i18n.ts.help,
 		icon: 'ph-question ph-bold ph-lg',
 		action: () => {

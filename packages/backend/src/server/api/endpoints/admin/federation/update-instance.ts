@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -25,6 +25,7 @@ export const paramDef = {
 		host: { type: 'string' },
 		isSuspended: { type: 'boolean' },
 		isNSFW: { type: 'boolean' },
+		moderationNote: { type: 'string' },
 	},
 	required: ['host'],
 } as const;
@@ -46,29 +47,32 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new Error('instance not found');
 			}
 
-			if (ps.isSuspended != null) {
-				await this.federatedInstanceService.update(instance.id, {
-					isSuspended: ps.isSuspended,
-				});
+			await this.federatedInstanceService.update(instance.id, {
+				isSuspended: ps.isSuspended,
+				isNSFW: ps.isNSFW,
+				moderationNote: ps.moderationNote,
+			});
 
-				if (instance.isSuspended !== ps.isSuspended) {
-					if (ps.isSuspended) {
-						this.moderationLogService.log(me, 'suspendRemoteInstance', {
-							id: instance.id,
-							host: instance.host,
-						});
-					} else {
-						this.moderationLogService.log(me, 'unsuspendRemoteInstance', {
-							id: instance.id,
-							host: instance.host,
-						});
-					}
+			if (ps.isSuspended != null && instance.isSuspended !== ps.isSuspended) {
+				if (ps.isSuspended) {
+					this.moderationLogService.log(me, 'suspendRemoteInstance', {
+						id: instance.id,
+						host: instance.host,
+					});
+				} else {
+					this.moderationLogService.log(me, 'unsuspendRemoteInstance', {
+						id: instance.id,
+						host: instance.host,
+					});
 				}
 			}
 
-			if (ps.isNSFW != null) {
-				await this.federatedInstanceService.update(instance.id, {
-					isNSFW: ps.isNSFW,
+			if (ps.moderationNote != null && instance.moderationNote !== ps.moderationNote) {
+				this.moderationLogService.log(me, 'updateRemoteInstanceNote', {
+					id: instance.id,
+					host: instance.host,
+					before: instance.moderationNote,
+					after: ps.moderationNote,
 				});
 			}
 		});

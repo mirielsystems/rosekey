@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -7,10 +7,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div class="_gaps_m">
 	<MkSelect v-model="type">
 		<option value="all">{{ i18n.ts.all }}</option>
-		<option value="following">{{ i18n.ts.following }}</option>
-		<option value="follower">{{ i18n.ts.followers }}</option>
-		<option value="mutualFollow">{{ i18n.ts.mutualFollow }}</option>
-		<option value="list">{{ i18n.ts.userList }}</option>
+		<option value="following" v-if="hasSender">{{ i18n.ts.following }}</option>
+		<option value="follower" v-if="hasSender">{{ i18n.ts.followers }}</option>
+		<option value="mutualFollow" v-if="hasSender">{{ i18n.ts.mutualFollow }}</option>
+		<option value="followingOrFollower" v-if="hasSender">{{ i18n.ts.followingOrFollower }}</option>
+		<option value="list" v-if="hasSender">{{ i18n.ts.userList }}</option>
 		<option value="never">{{ i18n.ts.none }}</option>
 	</MkSelect>
 
@@ -32,10 +33,13 @@ import MkSelect from '@/components/MkSelect.vue';
 import MkButton from '@/components/MkButton.vue';
 import { i18n } from '@/i18n.js';
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	value: any;
 	userLists: Misskey.entities.UserList[];
-}>();
+	hasSender: boolean;
+}>(), {
+	hasSender: true,
+});
 
 const emit = defineEmits<{
 	(ev: 'update', result: any): void;

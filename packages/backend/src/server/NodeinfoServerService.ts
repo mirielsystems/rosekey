@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -108,6 +108,7 @@ export class NodeinfoServerService {
 					tosUrl: meta.termsOfServiceUrl,
 					privacyPolicyUrl: meta.privacyPolicyUrl,
 					impressumUrl: meta.impressumUrl,
+					donationUrl: meta.donationUrl,
 					repositoryUrl: meta.repositoryUrl,
 					feedbackUrl: meta.feedbackUrl,
 					disableRegistration: meta.disableRegistration,
@@ -117,6 +118,8 @@ export class NodeinfoServerService {
 					emailRequiredForSignup: meta.emailRequiredForSignup,
 					enableHcaptcha: meta.enableHcaptcha,
 					enableRecaptcha: meta.enableRecaptcha,
+					enableMcaptcha: meta.enableMcaptcha,
+					enableTurnstile: meta.enableTurnstile,
 					maxNoteTextLength: this.config.maxNoteLength,
 					enableEmail: meta.enableEmail,
 					enableServiceWorker: meta.enableServiceWorker,

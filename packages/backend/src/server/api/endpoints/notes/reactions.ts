@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -73,6 +73,9 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				const type = ps.type.endsWith(suffix) ? ps.type.slice(0, ps.type.length - suffix.length) + ':' : ps.type;
 				query.andWhere('reaction.reaction = :type', { type });
 			}
+
+			if (me) this.queryService.generateMutedUserQuery(query, me);
+			if (me) this.queryService.generateBlockedUserQuery(query, me);
 
 			const reactions = await query.limit(ps.limit).getMany();
 

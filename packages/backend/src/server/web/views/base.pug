@@ -18,7 +18,7 @@ doctype html
 
 	 Thank you for using Sharkey!
 	 If you are reading this message... how about joining the development?
-	 https://git.joinsharkey.org/Sharkey/Sharkey
+	 https://activitypub.software/TransFem-org/Sharkey
 
 
 html
@@ -74,6 +74,9 @@ html
 			var VERSION = "#{version}";
 			var CLIENT_ENTRY = "#{clientEntry.file}";
 			window.libopenmpt = window.Module;
+
+		script(type='application/json' id='misskey_meta' data-generated-at=now)
+			!= metaJson
 
 		script
 			include ../boot.js

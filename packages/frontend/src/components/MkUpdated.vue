@@ -1,15 +1,15 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<MkModal ref="modal" :zPriority="'middle'" @click="$refs.modal.close()" @closed="$emit('closed')">
+<MkModal ref="modal" :zPriority="'middle'" @click="modal?.close()" @closed="$emit('closed')">
 	<div :class="$style.root">
 		<div :class="$style.title"><MkSparkle>{{ i18n.ts.misskeyUpdated }}</MkSparkle></div>
 		<div :class="$style.version">✨{{ version }}🚀</div>
 		<MkButton full @click="whatIsNew">{{ i18n.ts.whatIsNew }}</MkButton>
-		<MkButton :class="$style.gotIt" primary full @click="$refs.modal.close()">{{ i18n.ts.gotIt }}</MkButton>
+		<MkButton :class="$style.gotIt" primary full @click="modal?.close()">{{ i18n.ts.gotIt }}</MkButton>
 	</div>
 </MkModal>
 </template>
@@ -26,8 +26,8 @@ import { confetti } from '@/scripts/confetti.js';
 const modal = shallowRef<InstanceType<typeof MkModal>>();
 
 const whatIsNew = () => {
-	modal.value.close();
-	window.open(`https://git.joinsharkey.org/Sharkey/Sharkey/releases/tag/${version}`, '_blank');
+	modal.value?.close();
+	window.open(`https://activitypub.software/TransFem-org/Sharkey/-/releases/${version}`, '_blank');
 };
 
 onMounted(() => {

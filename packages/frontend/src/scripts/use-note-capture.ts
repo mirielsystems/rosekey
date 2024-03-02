@@ -1,16 +1,17 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { onUnmounted, Ref } from 'vue';
+import { onUnmounted, Ref, ShallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
 import { useStream } from '@/stream.js';
 import { $i } from '@/account.js';
 import * as os from '@/os.js';
+import { misskeyApi } from './misskey-api.js';
 
 export function useNoteCapture(props: {
-	rootEl: Ref<HTMLElement>;
+	rootEl: ShallowRef<HTMLElement | undefined>;
 	note: Ref<Misskey.entities.Note>;
 	pureNote: Ref<Misskey.entities.Note>;
 	isDeletedRef: Ref<boolean>;
@@ -32,7 +33,7 @@ export function useNoteCapture(props: {
 
 				// notes/show may throw if the current user can't see the note
 				try {
-					const replyNote = await os.api('notes/show', {
+					const replyNote = await misskeyApi('notes/show', {
 						noteId: body.id,
 					});
 
@@ -100,7 +101,7 @@ export function useNoteCapture(props: {
 
 			case 'updated': {
 				try {
-					const editedNote = await os.api('notes/show', {
+					const editedNote = await misskeyApi('notes/show', {
 						noteId: id,
 					});
 					
@@ -121,7 +122,7 @@ export function useNoteCapture(props: {
 	function capture(withHandler = false): void {
 		if (connection) {
 			// TODO: このノートがストリーミング経由で流れてきた場合のみ sr する
-			connection.send(document.body.contains(props.rootEl.value) ? 'sr' : 's', { id: note.value.id });
+			connection.send(document.body.contains(props.rootEl.value ?? null as Node | null) ? 'sr' : 's', { id: note.value.id });
 			if (pureNote.value.id !== note.value.id) connection.send('s', { id: pureNote.value.id });
 			if (withHandler) connection.on('noteUpdated', onStreamNoteUpdated);
 		}

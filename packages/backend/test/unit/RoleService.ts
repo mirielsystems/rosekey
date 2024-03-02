@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -11,7 +11,7 @@ import { Test } from '@nestjs/testing';
 import * as lolex from '@sinonjs/fake-timers';
 import { GlobalModule } from '@/GlobalModule.js';
 import { RoleService } from '@/core/RoleService.js';
-import type { MiRole, RolesRepository, RoleAssignmentsRepository, UsersRepository, MiUser } from '@/models/_.js';
+import type { MiRole, MiUser, RoleAssignmentsRepository, RolesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { MetaService } from '@/core/MetaService.js';
 import { genAidx } from '@/misc/id/aidx.js';
@@ -249,6 +249,34 @@ describe('RoleService', () => {
 			const user2Policies = await roleService.getUserPolicies(user2.id);
 			expect(user1Policies.canManageCustomEmojis).toBe(false);
 			expect(user2Policies.canManageCustomEmojis).toBe(true);
+		});
+
+		test('コンディショナルロール: マニュアルロールにアサイン済み', async () => {
+			const [user1, user2, role1] = await Promise.all([
+				createUser(),
+				createUser(),
+				createRole({
+					name: 'manual role',
+				}),
+			]);
+			const role2 = await createRole({
+				name: 'conditional role',
+				target: 'conditional',
+				condFormula: {
+					// idはバックエンドのロジックに必要ない？
+					id: 'bdc612bd-9d54-4675-ae83-0499c82ea670',
+					type: 'roleAssignedTo',
+					roleId: role1.id,
+				},
+			});
+			await roleService.assign(user2.id, role1.id);
+
+			const [u1role, u2role] = await Promise.all([
+				roleService.getUserRoles(user1.id),
+				roleService.getUserRoles(user2.id),
+			]);
+			expect(u1role.some(r => r.id === role2.id)).toBe(false);
+			expect(u2role.some(r => r.id === role2.id)).toBe(true);
 		});
 
 		test('expired role', async () => {

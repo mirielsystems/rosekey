@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -19,8 +19,8 @@ export const meta = {
 
 	limit: {
 		duration: ms('1hour'),
-		max: 60,
-		minInterval: ms('3sec'),
+		max: 80,
+		minInterval: ms('1sec'),
 	},
 
 	errors: {

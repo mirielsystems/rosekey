@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -107,6 +107,12 @@ export type MiNotification = {
 	type: 'test';
 	id: string;
 	createdAt: string;
+} | {
+	type: 'edited';
+	id: string;
+	createdAt: string;
+	notifierId: MiUser['id'];
+	noteId: MiNote['id'];
 };
 
 export type MiGroupedNotification = MiNotification | {

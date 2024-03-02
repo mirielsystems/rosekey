@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -127,13 +127,16 @@ import FormSlot from '@/components/form/slot.vue';
 import { selectFile } from '@/scripts/select-file.js';
 import * as os from '@/os.js';
 import { i18n } from '@/i18n.js';
-import { $i } from '@/account.js';
+import { signinRequired } from '@/account.js';
 import { langmap } from '@/scripts/langmap.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { claimAchievement } from '@/scripts/achievements.js';
 import { defaultStore } from '@/store.js';
+import { globalEvents } from '@/events.js';
 import MkInfo from '@/components/MkInfo.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
+
+const $i = signinRequired();
 
 const Sortable = defineAsyncComponent(() => import('vuedraggable').then(x => x.default));
 
@@ -152,11 +155,11 @@ const profile = reactive({
 	description: $i.description,
 	location: $i.location,
 	birthday: $i.birthday,
-	listenbrainz: $i?.listenbrainz,
+	listenbrainz: $i.listenbrainz,
 	lang: $i.lang,
-	isBot: $i.isBot,
-	isCat: $i.isCat,
-	speakAsCat: $i.speakAsCat,
+	isBot: $i.isBot ?? false,
+	isCat: $i.isCat ?? false,
+	speakAsCat: $i.speakAsCat ?? false,
 });
 
 watch(() => profile, () => {
@@ -165,7 +168,7 @@ watch(() => profile, () => {
 	deep: true,
 });
 
-const fields = ref($i?.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
+const fields = ref($i.fields.map(field => ({ id: Math.random().toString(), name: field.name, value: field.value })) ?? []);
 const fieldEditMode = ref(false);
 
 function addField() {
@@ -188,6 +191,7 @@ function saveFields() {
 	os.apiWithDialog('i/update', {
 		fields: fields.value.filter(field => field.name !== '' && field.value !== '').map(field => ({ name: field.name, value: field.value })),
 	});
+	globalEvents.emit('requestClearPageCache');
 }
 
 function save() {
@@ -215,6 +219,7 @@ function save() {
 		isCat: !!profile.isCat,
 		speakAsCat: !!profile.speakAsCat,
 	});
+	globalEvents.emit('requestClearPageCache');
 	claimAchievement('profileFilled');
 	if (profile.name === 'syuilo' || profile.name === 'しゅいろ') {
 		claimAchievement('setNameToSyuilo');
@@ -230,7 +235,7 @@ function changeAvatar(ev) {
 
 		const { canceled } = await os.confirm({
 			type: 'question',
-			text: i18n.t('cropImageAsk'),
+			text: i18n.ts.cropImageAsk,
 			okText: i18n.ts.cropYes,
 			cancelText: i18n.ts.cropNo,
 		});
@@ -246,68 +251,153 @@ function changeAvatar(ev) {
 		});
 		$i.avatarId = i.avatarId;
 		$i.avatarUrl = i.avatarUrl;
+		globalEvents.emit('requestClearPageCache');
 		claimAchievement('profileFilled');
 	});
 }
 
 function changeBanner(ev) {
-	selectFile(ev.currentTarget ?? ev.target, i18n.ts.banner).then(async (file) => {
-		let originalOrCropped = file;
+	if ($i.bannerId) {
+		os.popupMenu([{
+			text: i18n.ts._profile.updateBanner,
+			action: async () => {
+				selectFile(ev.currentTarget ?? ev.target, i18n.ts.banner).then(async (file) => {
+					let originalOrCropped = file;
 
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: i18n.t('cropImageAsk'),
-			okText: i18n.ts.cropYes,
-			cancelText: i18n.ts.cropNo,
-		});
+					const { canceled } = await os.confirm({
+						type: 'question',
+						text: i18n.ts.cropImageAsk,
+						okText: i18n.ts.cropYes,
+						cancelText: i18n.ts.cropNo,
+					});
 
-		if (!canceled) {
-			originalOrCropped = await os.cropImage(file, {
-				aspectRatio: 2,
+					if (!canceled) {
+						originalOrCropped = await os.cropImage(file, {
+							aspectRatio: 2,
+						});
+					}
+
+					const i = await os.apiWithDialog('i/update', {
+						bannerId: originalOrCropped.id,
+					});
+					$i.bannerId = i.bannerId;
+					$i.bannerUrl = i.bannerUrl;
+					globalEvents.emit('requestClearPageCache');
+				});
+			},
+		}, {
+			text: i18n.ts._profile.removeBanner,
+			action: async () => {
+				const i = await os.apiWithDialog('i/update', {
+					bannerId: null,
+				});
+				$i.bannerId = i.bannerId;
+				$i.bannerUrl = i.bannerUrl;
+				globalEvents.emit('requestClearPageCache');
+			},
+		}], ev.currentTarget ?? ev.target);
+	} else {
+		selectFile(ev.currentTarget ?? ev.target, i18n.ts.banner).then(async (file) => {
+			let originalOrCropped = file;
+
+			const { canceled } = await os.confirm({
+				type: 'question',
+				text: i18n.ts.cropImageAsk,
+				okText: i18n.ts.cropYes,
+				cancelText: i18n.ts.cropNo,
 			});
-		}
 
-		const i = await os.apiWithDialog('i/update', {
-			bannerId: originalOrCropped.id,
+			if (!canceled) {
+				originalOrCropped = await os.cropImage(file, {
+					aspectRatio: 2,
+				});
+			}
+
+			const i = await os.apiWithDialog('i/update', {
+				bannerId: originalOrCropped.id,
+			});
+			$i.bannerId = i.bannerId;
+			$i.bannerUrl = i.bannerUrl;
+			globalEvents.emit('requestClearPageCache');
 		});
-		$i.bannerId = i.bannerId;
-		$i.bannerUrl = i.bannerUrl;
-	});
+	}
 }
 
 function changeBackground(ev) {
-	selectFile(ev.currentTarget ?? ev.target, i18n.ts.background).then(async (file) => {
-		let originalOrCropped = file;
+	if ($i.backgroundId) {
+		os.popupMenu([{
+			text: i18n.ts._profile.updateBackground,
+			action: async () => {
+				selectFile(ev.currentTarget ?? ev.target, i18n.ts.background).then(async (file) => {
+					let originalOrCropped = file;
 
-		const { canceled } = await os.confirm({
-			type: 'question',
-			text: i18n.t('cropImageAsk'),
-			okText: i18n.ts.cropYes,
-			cancelText: i18n.ts.cropNo,
-		});
+					const { canceled } = await os.confirm({
+						type: 'question',
+						text: i18n.ts.cropImageAsk,
+						okText: i18n.ts.cropYes,
+						cancelText: i18n.ts.cropNo,
+					});
 
-		if (!canceled) {
-			originalOrCropped = await os.cropImage(file, {
-				aspectRatio: 1,
+					if (!canceled) {
+						originalOrCropped = await os.cropImage(file, {
+							aspectRatio: 1,
+						});
+					}
+
+					const i = await os.apiWithDialog('i/update', {
+						backgroundId: originalOrCropped.id,
+					});
+					$i.backgroundId = i.backgroundId;
+					$i.backgroundUrl = i.backgroundUrl;
+					globalEvents.emit('requestClearPageCache');
+				});
+			},
+		}, {
+			text: i18n.ts._profile.removeBackground,
+			action: async () => {
+				const i = await os.apiWithDialog('i/update', {
+					backgroundId: null,
+				});
+				$i.backgroundId = i.backgroundId;
+				$i.backgroundUrl = i.backgroundUrl;
+				globalEvents.emit('requestClearPageCache');
+			},
+		}], ev.currentTarget ?? ev.target);
+	} else {
+		selectFile(ev.currentTarget ?? ev.target, i18n.ts.background).then(async (file) => {
+			let originalOrCropped = file;
+
+			const { canceled } = await os.confirm({
+				type: 'question',
+				text: i18n.ts.cropImageAsk,
+				okText: i18n.ts.cropYes,
+				cancelText: i18n.ts.cropNo,
 			});
-		}
 
-		const i = await os.apiWithDialog('i/update', {
-			backgroundId: originalOrCropped.id,
+			if (!canceled) {
+				originalOrCropped = await os.cropImage(file, {
+					aspectRatio: 1,
+				});
+			}
+
+			const i = await os.apiWithDialog('i/update', {
+				backgroundId: originalOrCropped.id,
+			});
+			$i.backgroundId = i.backgroundId;
+			$i.backgroundUrl = i.backgroundUrl;
+			globalEvents.emit('requestClearPageCache');
 		});
-		$i.backgroundId = i.backgroundId;
-		$i.backgroundUrl = i.backgroundUrl;
-	});
+	}
 }
 
 const headerActions = computed(() => []);
 
 const headerTabs = computed(() => []);
 
-definePageMetadata({
+definePageMetadata(() => ({
 	title: i18n.ts.profile,
 	icon: 'ph-user ph-bold ph-lg',
-});
+}));
 </script>
 
 <style lang="scss" module>

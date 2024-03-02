@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -43,7 +43,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<div v-if="['image/gif', 'image/apng'].includes(image.type)" :class="$style.indicator">GIF</div>
 			<div v-if="image.comment" :class="$style.indicator">ALT</div>
 			<div v-if="image.isSensitive" :class="$style.indicator" style="color: var(--warn);" :title="i18n.ts.sensitive"><i class="ph-eye-closed ph-bold ph-lg"></i></div>
-			<div v-if="!image.comment" :class="$style.indicator" title="Image lacks descriptive text"><i class="ph-pencil ph-bold ph-lg-off"></i></div>
+			<div v-if="!image.comment" :class="$style.indicator" title="Image lacks descriptive text"><i class="ph-pencil-simple ph-bold ph-lg-off"></i></div>
 		</div>
 		<button :class="$style.menu" class="_button" @click.stop="showMenu"><i class="ph-dots-three ph-bold ph-lg" style="vertical-align: middle;"></i></button>
 		<i class="ph-eye-slash ph-bold ph-lg" :class="$style.hide" @click.stop="hide = true"></i>

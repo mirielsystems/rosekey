@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Entity } from 'megalodon';
-import mfm from '@sharkey/sfm-js';
+import mfm from '@transfem-org/sfm-js';
 import { DI } from '@/di-symbols.js';
 import { MfmService } from '@/core/MfmService.js';
 import type { Config } from '@/config.js';
@@ -9,9 +9,9 @@ import type { MiUser } from '@/models/User.js';
 import type { NoteEditRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
-import { GetterService } from '../GetterService.js';
 import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { IdService } from '@/core/IdService.js';
+import { GetterService } from '../GetterService.js';
 
 export enum IdConvertType {
     MastodonId,
@@ -94,10 +94,10 @@ export class MastoConverters {
 			text_url: f.url,
 			meta: {
 				width: f.properties.width,
-				height: f.properties.height
+				height: f.properties.height,
 			},
 			description: f.comment ? f.comment : null,
-			blurhash: f.blurhash ? f.blurhash : null
+			blurhash: f.blurhash ? f.blurhash : null,
 		};
 	}
 
@@ -185,7 +185,7 @@ export class MastoConverters {
 				sensitive: files.then(files => files.length > 0 ? files.some((f) => f.isSensitive) : false),
 				spoiler_text: edit.cw ?? '',
 				poll: null,
-				media_attachments: files.then(files => files.length > 0 ? files.map((f) => this.encodeFile(f)) : [])
+				media_attachments: files.then(files => files.length > 0 ? files.map((f) => this.encodeFile(f)) : []),
 			};
 			lastDate = edit.updatedAt;
 			history.push(awaitAll(item));
@@ -278,7 +278,7 @@ export class MastoConverters {
 			reactions: status.emoji_reactions,
 			emoji_reactions: status.emoji_reactions,
 			bookmarked: false,
-			quote: isQuote ? await this.convertReblog(status.reblog) : null,
+			quote: isQuote ? await this.convertReblog(status.reblog) : false,
 			edited_at: note.updatedAt?.toISOString(),
 		});
 	}

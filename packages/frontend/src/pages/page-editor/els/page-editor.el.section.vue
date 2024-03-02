@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><i class="ph-note ph-bold ph-lg"></i> {{ props.modelValue.title }}</template>
 	<template #func>
 		<button class="_button" @click="rename()">
-			<i class="ph-pencil ph-bold ph-lg"></i>
+			<i class="ph-pencil-simple ph-bold ph-lg"></i>
 		</button>
 	</template>
 

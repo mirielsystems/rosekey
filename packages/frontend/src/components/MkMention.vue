@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -51,6 +51,7 @@ const avatarUrl = computed(() => defaultStore.state.disableShowingAnimatedImages
 	padding: 4px 8px 4px 4px;
 	border-radius: var(--radius-ellipse);
 	color: var(--mention);
+	white-space: nowrap;
 
 	&.isMe {
 		color: var(--mentionMe);

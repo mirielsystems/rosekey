@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -42,6 +42,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 <div v-if="dev" id="devTicker"><span>DEV BUILD</span></div>
 
 <div v-if="$i && $i.isBot" id="botWarn"><span>{{ i18n.ts.loggedInAsBot }}</span></div>
+
+<SkOneko v-if="defaultStore.state.oneko"/>
 </template>
 
 <script lang="ts" setup>
@@ -49,7 +51,8 @@ import { defineAsyncComponent, ref } from 'vue';
 import * as Misskey from 'misskey-js';
 import { swInject } from './sw-inject.js';
 import XNotification from './notification.vue';
-import { popups, pendingApiRequestsCount } from '@/os.js';
+import { popups } from '@/os.js';
+import { pendingApiRequestsCount } from '@/scripts/misskey-api.js';
 import { uploads } from '@/scripts/upload.js';
 import * as sound from '@/scripts/sound.js';
 import { $i } from '@/account.js';
@@ -57,6 +60,8 @@ import { useStream } from '@/stream.js';
 import { i18n } from '@/i18n.js';
 import { defaultStore } from '@/store.js';
 import { globalEvents } from '@/events.js';
+
+const SkOneko = defineAsyncComponent(() => import('@/components/SkOneko.vue'));
 
 const XStreamIndicator = defineAsyncComponent(() => import('./stream-indicator.vue'));
 const XUpload = defineAsyncComponent(() => import('./upload.vue'));
@@ -82,7 +87,7 @@ function onNotification(notification: Misskey.entities.Notification, isClient = 
 		}, 6000);
 	}
 
-	sound.play('notification');
+	sound.playMisskeySfx('notification');
 }
 
 if ($i) {

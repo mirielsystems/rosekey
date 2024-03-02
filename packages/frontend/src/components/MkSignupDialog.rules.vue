@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -24,7 +24,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #suffix><i v-if="agreeServerRules" class="ph-check ph-bold ph-lg" style="color: var(--success)"></i></template>
 
 				<ol class="_gaps_s" :class="$style.rules">
-					<li v-for="item in instance.serverRules" :class="$style.rule"><div :class="$style.ruleText" v-html="item"></div></li>
+					<li v-for="item in instance.serverRules" :class="$style.rule"><div :class="$style.ruleText" v-html="sanitizeHtml(item)"></div></li>
 				</ol>
 
 				<MkSwitch :modelValue="agreeServerRules" style="margin-top: 16px;" @update:modelValue="updateAgreeServerRules">{{ i18n.ts.agree }}</MkSwitch>
@@ -34,8 +34,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ tosPrivacyPolicyLabel }}</template>
 				<template #suffix><i v-if="agreeTosAndPrivacyPolicy" class="ph-check ph-bold ph-lg" style="color: var(--success)"></i></template>
 				<div class="_gaps_s">
-					<div v-if="availableTos"><a :href="instance.tosUrl" class="_link" target="_blank">{{ i18n.ts.termsOfService }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a></div>
-					<div v-if="availablePrivacyPolicy"><a :href="instance.privacyPolicyUrl" class="_link" target="_blank">{{ i18n.ts.privacyPolicy }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a></div>
+					<div v-if="availableTos"><a :href="instance.tosUrl ?? undefined" class="_link" target="_blank">{{ i18n.ts.termsOfService }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a></div>
+					<div v-if="availablePrivacyPolicy"><a :href="instance.privacyPolicyUrl ?? undefined" class="_link" target="_blank">{{ i18n.ts.privacyPolicy }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a></div>
 				</div>
 
 				<MkSwitch :modelValue="agreeTosAndPrivacyPolicy" style="margin-top: 16px;" @update:modelValue="updateAgreeTosAndPrivacyPolicy">{{ i18n.ts.agree }}</MkSwitch>
@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<template #label>{{ i18n.ts.basicNotesBeforeCreateAccount }}</template>
 				<template #suffix><i v-if="agreeNote" class="ph-check ph-bold ph-lg" style="color: var(--success)"></i></template>
 
-				<a href="https://git.joinsharkey.org/Sharkey/JoinSharkey/src/branch/main/IMPORTANT_NOTES.md" class="_link" target="_blank">{{ i18n.ts.basicNotesBeforeCreateAccount }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a>
+				<a href="https://activitypub.software/TransFem-org/Sharkey/-/blob/stable/IMPORTANT_NOTES.md" class="_link" target="_blank">{{ i18n.ts.basicNotesBeforeCreateAccount }} <i class="ph-arrow-square-out ph-bold ph-lg"></i></a>
 
 				<MkSwitch :modelValue="agreeNote" style="margin-top: 16px;" data-cy-signup-rules-notes-agree @update:modelValue="updateAgreeNote">{{ i18n.ts.agree }}</MkSwitch>
 			</MkFolder>
@@ -65,6 +65,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, ref } from 'vue';
 import { instance } from '@/instance.js';
 import { i18n } from '@/i18n.js';
+import sanitizeHtml from 'sanitize-html';
 import MkButton from '@/components/MkButton.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
@@ -105,7 +106,7 @@ async function updateAgreeServerRules(v: boolean) {
 		const confirm = await os.confirm({
 			type: 'question',
 			title: i18n.ts.doYouAgree,
-			text: i18n.t('iHaveReadXCarefullyAndAgree', { x: i18n.ts.serverRules }),
+			text: i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.serverRules }),
 		});
 		if (confirm.canceled) return;
 		agreeServerRules.value = true;
@@ -119,7 +120,7 @@ async function updateAgreeTosAndPrivacyPolicy(v: boolean) {
 		const confirm = await os.confirm({
 			type: 'question',
 			title: i18n.ts.doYouAgree,
-			text: i18n.t('iHaveReadXCarefullyAndAgree', {
+			text: i18n.tsx.iHaveReadXCarefullyAndAgree({
 				x: tosPrivacyPolicyLabel.value,
 			}),
 		});
@@ -135,7 +136,7 @@ async function updateAgreeNote(v: boolean) {
 		const confirm = await os.confirm({
 			type: 'question',
 			title: i18n.ts.doYouAgree,
-			text: i18n.t('iHaveReadXCarefullyAndAgree', { x: i18n.ts.basicNotesBeforeCreateAccount }),
+			text: i18n.tsx.iHaveReadXCarefullyAndAgree({ x: i18n.ts.basicNotesBeforeCreateAccount }),
 		});
 		if (confirm.canceled) return;
 		agreeNote.value = true;

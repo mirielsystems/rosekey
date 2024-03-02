@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -81,19 +81,23 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			const instance = await this.metaService.fetch();
 
-			if (instance.deeplAuthKey == null) {
+			if (instance.deeplAuthKey == null && !instance.deeplFreeMode) {
 				return 204; // TODO: 良い感じのエラー返す
+			}
+
+			if (instance.deeplFreeMode && !instance.deeplFreeInstance) {
+				return 204;
 			}
 
 			let targetLang = ps.targetLang;
 			if (targetLang.includes('-')) targetLang = targetLang.split('-')[0];
 
 			const params = new URLSearchParams();
-			params.append('auth_key', instance.deeplAuthKey);
+			if (instance.deeplAuthKey) params.append('auth_key', instance.deeplAuthKey);
 			params.append('text', note.text);
 			params.append('target_lang', targetLang);
 
-			const endpoint = instance.deeplIsPro ? 'https://api.deepl.com/v2/translate' : 'https://api-free.deepl.com/v2/translate';
+			const endpoint = instance.deeplFreeMode && instance.deeplFreeInstance ? instance.deeplFreeInstance : instance.deeplIsPro ? 'https://api.deepl.com/v2/translate' : 'https://api-free.deepl.com/v2/translate';
 
 			const res = await this.httpRequestService.send(endpoint, {
 				method: 'POST',
@@ -103,18 +107,37 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				},
 				body: params.toString(),
 			});
+			if (instance.deeplAuthKey) {
+				const json = (await res.json()) as {
+					translations: {
+						detected_source_language: string;
+						text: string;
+					}[];
+				};
 
-			const json = (await res.json()) as {
-				translations: {
-					detected_source_language: string;
-					text: string;
-				}[];
-			};
+				return {
+					sourceLang: json.translations[0].detected_source_language,
+					text: json.translations[0].text,
+				};
+			} else {
+				const json = (await res.json()) as {
+					code: number,
+					message: string,
+					data: string,
+					source_lang: string,
+					target_lang: string,
+					alternatives: string[],
+				};
 
-			return {
-				sourceLang: json.translations[0].detected_source_language,
-				text: json.translations[0].text,
-			};
+				const languageNames = new Intl.DisplayNames(['en'], {
+					type: 'language',
+				});
+
+				return {
+					sourceLang: languageNames.of(json.source_lang),
+					text: json.data,
+				};
+			}
 		});
 	}
 }

@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: syuilo and other misskey contributors
+SPDX-FileCopyrightText: syuilo and misskey-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	@close="close(true)"
 	@closed="emit('closed')"
 >
-	<template v-if="page === 1" #header><i class="ph-pencil ph-bold pg-lg"></i> {{ i18n.ts._initialTutorial._note.title }}</template>
+	<template v-if="page === 1" #header><i class="ph-pencil-simple ph-bold pg-lg"></i> {{ i18n.ts._initialTutorial._note.title }}</template>
 	<template v-else-if="page === 2" #header><i class="ph-smiley ph-bold pg-lg"></i> {{ i18n.ts._initialTutorial._reaction.title }}</template>
 	<template v-else-if="page === 3" #header><i class="ph-house ph-bold pg-lg"></i> {{ i18n.ts._initialTutorial._timeline.title }}</template>
 	<template v-else-if="page === 4" #header><i class="ph-plus ph-bold pg-lg"></i> {{ i18n.ts._initialTutorial._postNote.title }}</template>
@@ -133,7 +133,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 									<a href="https://misskey-hub.net/docs/for-users/" target="_blank" class="_link">{{ i18n.ts.help }}</a>
 								</template>
 							</I18n>
-							<div>{{ i18n.t('_initialAccountSetting.haveFun', { name: instance.name ?? host }) }}</div>
+							<div>{{ i18n.tsx._initialAccountSetting.haveFun({ name: instance.name ?? host }) }}</div>
 							<div class="_buttonsCenter" style="margin-top: 16px;">
 								<MkButton v-if="initialPage !== 4" rounded @click="page--"><i class="ph-arrow-left ph-bold pg-lg"></i> {{ i18n.ts.goBack }}</MkButton>
 								<MkButton rounded primary gradate @click="close(false)">{{ i18n.ts.close }}</MkButton>

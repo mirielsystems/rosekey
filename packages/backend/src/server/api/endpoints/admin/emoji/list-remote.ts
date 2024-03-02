@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -98,11 +98,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			}
 
 			if (ps.query) {
-				q.andWhere('emoji.name like :query', { query: '%' + sqlLikeEscape(ps.query) + '%' });
+				q.andWhere('emoji.name like :query', { query: '%' + sqlLikeEscape(ps.query) + '%' })
+					.orderBy('length(emoji.name)', 'ASC');
 			}
 
 			const emojis = await q
-				.orderBy('emoji.id', 'DESC')
+				.addOrderBy('emoji.id', 'DESC')
 				.limit(ps.limit)
 				.getMany();
 

@@ -77,7 +77,7 @@
 
 <script lang="ts" setup>
 import { inject, onMounted, ref, shallowRef, computed } from 'vue';
-import * as mfm from '@sharkey/sfm-js';
+import * as mfm from '@transfem-org/sfm-js';
 import * as Misskey from 'misskey-js';
 import MkNoteSimple from '@/components/MkNoteSimple.vue';
 import MkMediaList from '@/components/MkMediaList.vue';
@@ -177,8 +177,8 @@ const showTicker = (defaultStore.state.instanceTicker === 'always') || (defaultS
 .noteHeaderAvatar {
 	display: block;
 	flex-shrink: 0;
-	width: 58px;
-	height: 58px;
+	width: var(--avatar);
+	height: var(--avatar);
 }
 
 .noteHeaderBody {
