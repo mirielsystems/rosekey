@@ -8,6 +8,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="900">
 		<div class="_gaps">
+			<MkSwitch v-model="enableSubscription" @update:modelValue="enableSubscriptionChanged">
+				<template #label>{{ i18n.ts.enable }}</template>
+			</MkSwitch>
 			<MkFolder v-for="subscriptionPlan in subscriptionPlans" :key="subscriptionPlan.id ?? subscriptionPlan._id" :defaultOpen="subscriptionPlan.id == null">
 				<template #label>{{ subscriptionPlan.name }}</template>
 				<template #icon>
@@ -56,8 +59,14 @@ import { misskeyApi } from '@/scripts/misskey-api.js';
 import { i18n } from '@/i18n.js';
 import { definePageMetadata } from '@/scripts/page-metadata.js';
 import MkFolder from '@/components/MkFolder.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
 
+const enableSubscription = ref(false);
 const subscriptionPlans = ref<Misskey.entities.SubscriptionPlansListResponse>([]);
+
+function enableSubscriptionChanged() {
+	misskeyApi('admin/update-meta', { enableSubscriptions: enableSubscription.value });
+}
 
 function add() {
 	subscriptionPlans.value.unshift({
@@ -108,6 +117,9 @@ async function save(subscriptionPlan) {
 }
 
 function load() {
+	misskeyApi('admin/meta').then(meta => {
+		enableSubscription.value = meta.enableSubscriptions;
+	});
 	misskeyApi('subscription-plans/list').then(_subscriptionPlans => {
 		subscriptionPlans.value = _subscriptionPlans;
 	});

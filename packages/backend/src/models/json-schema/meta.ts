@@ -60,12 +60,12 @@ export const packedMetaLiteSchema = {
 		repositoryUrl: {
 			type: 'string',
 			optional: false, nullable: true,
-			default: 'https://github.com/kokonect-link/cherrypick',
+			default: 'https://github.com/freelynetwork/rosekey',
 		},
 		feedbackUrl: {
 			type: 'string',
 			optional: false, nullable: true,
-			default: 'https://github.com/kokonect-link/cherrypick/issues/new',
+			default: 'https://github.com/freelynetwork/rosekey/issues/new',
 		},
 		defaultDarkTheme: {
 			type: 'string',
@@ -226,6 +226,14 @@ export const packedMetaLiteSchema = {
 		privacyPolicyUrl: {
 			type: 'string',
 			optional: false, nullable: true,
+		},
+		commerceDisclosureUrl: {
+			type: 'string',
+			optional: false, nullable: true,
+		},
+		enableSubscriptions: {
+			type: 'boolean',
+			optional: false, nullable: false,
 		},
 		serverRules: {
 			type: 'array',

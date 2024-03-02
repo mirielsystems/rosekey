@@ -173,6 +173,7 @@ export const paramDef = {
 		perUserHomeTimelineCacheMax: { type: 'integer' },
 		perUserListTimelineCacheMax: { type: 'integer' },
 		notesPerOneAd: { type: 'integer' },
+		enableSubscriptions: { type: 'boolean' },
 		commerceDisclosureUrl: { type: 'string', nullable: true },
 		silencedHosts: {
 			type: 'array',
@@ -704,6 +705,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.notesPerOneAd !== undefined) {
 				set.notesPerOneAd = ps.notesPerOneAd;
+			}
+
+			if (ps.enableSubscriptions !== undefined) {
+				set.enableSubscriptions = ps.enableSubscriptions;
 			}
 
 			if (ps.commerceDisclosureUrl !== undefined) {

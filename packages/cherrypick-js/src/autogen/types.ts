@@ -5268,6 +5268,8 @@ export type components = {
       impressumUrl: string | null;
       logoImageUrl: string | null;
       privacyPolicyUrl: string | null;
+      commerceDisclosureUrl: string | null;
+      enableSubscriptions: boolean;
       serverRules: string[];
       themeColor: string | null;
       policies: components['schemas']['RolePolicies'];
@@ -5436,6 +5438,7 @@ export type operations = {
             summalyProxy: string | null;
             themeColor: string | null;
             tosUrl: string | null;
+            enableSubscriptions: boolean;
             commerceDisclosureUrl: string | null;
             uri: string;
             version: string;
@@ -9880,6 +9883,7 @@ export type operations = {
           perUserHomeTimelineCacheMax?: number;
           perUserListTimelineCacheMax?: number;
           notesPerOneAd?: number;
+          enableSubscriptions?: boolean;
           commerceDisclosureUrl?: string | null;
           silencedHosts?: string[] | null;
           doNotSendNotificationEmailsForAbuseReport?: boolean;
