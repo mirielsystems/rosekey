@@ -145,9 +145,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<MkFolder>
 			<template #label>{{ i18n.ts.options }}</template>
 			<div class="_gaps_s" style="text-align: left;">
-				<MkSwitch v-model="showBoardLabels">Show labels</MkSwitch>
-				<MkSwitch v-model="showReaction">Show reaction</MkSwitch>
-				<MkSwitch v-model="useAvatarAsStone">useAvatarAsStone</MkSwitch>
+				<MkSwitch v-model="showBoardLabels">{{ i18n.ts._reversi.showBoardLabels }}</MkSwitch>
+				<MkSwitch v-model="showReaction">{{ i18n.ts._reversi.showReaction }}</MkSwitch>
+				<MkSwitch v-model="useAvatarAsStone">{{ i18n.ts._reversi.useAvatarAsStone }}</MkSwitch>
 			</div>
 		</MkFolder>
 
@@ -167,12 +167,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { computed, onActivated, onDeactivated, onMounted, onUnmounted, ref, shallowRef, triggerRef, watch } from 'vue';
 import * as Misskey from 'cherrypick-js';
 import * as Reversi from 'misskey-reversi';
+import XEmojiBalloon from './game.emoji-balloon.vue';
 import type { UnicodeEmojiDef } from '@/scripts/emojilist.js';
 import MkButton from '@/components/MkButton.vue';
 import MkFolder from '@/components/MkFolder.vue';
 import MkSwitch from '@/components/MkSwitch.vue';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
-import XEmojiBalloon from './game.emoji-balloon.vue';
 import { deepClone } from '@/scripts/clone.js';
 import { useInterval } from '@/scripts/use-interval.js';
 import { signinRequired } from '@/account.js';
