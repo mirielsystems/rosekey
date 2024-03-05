@@ -795,7 +795,7 @@ abuseReports: "通報"
 reportAbuse: "通報"
 reportAbuseRenote: "リノートを通報"
 reportAbuseOf: "{name}を通報する"
-fillAbuseReportDescription: "通報理由の詳細を記入してください。対象のノートがある場合はそのURLも記入してください。"
+fillAbuseReportDescription: "通報理由の詳細を記入してください。対象のノートやPageなどがある場合はそのURLも記入してください。"
 abuseReported: "内容が送信されました。ご報告ありがとうございました。"
 reporter: "通報者"
 reporteeOrigin: "通報先"
@@ -2853,6 +2853,9 @@ _moderationLogTypes:
   createSubscriptionPlan: "サブスクリプションプランを作成"
   updateSubscriptionPlan: "サブスクリプションプランを更新"
   archiveSubscriptionPlan: "サブスクリプションプランをアーカイブ"
+  deletePage: "ページを削除"
+  deleteFlash: "Playを削除"
+  deleteGalleryPost: "ギャラリーの投稿を削除"
 
 _fileViewer:
   title: "ファイルの詳細"
