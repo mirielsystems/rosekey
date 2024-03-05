@@ -31,6 +31,7 @@ import { MiDriveFile } from '@/models/DriveFile.js';
 import { MiDriveFolder } from '@/models/DriveFolder.js';
 import { MiEmoji } from '@/models/Emoji.js';
 import { MiEvent } from '@/models/Event.js';
+import { MiEmojiRequest } from '@/models/EmojiRequest.js';
 import { MiFollowing } from '@/models/Following.js';
 import { MiFollowRequest } from '@/models/FollowRequest.js';
 import { MiGalleryLike } from '@/models/GalleryLike.js';
@@ -176,6 +177,7 @@ export const entities = [
 	MiPollVote,
 	MiEmoji,
 	MiEvent,
+	MiEmojiRequest,
 	MiHashtag,
 	MiSubscriptionPlan,
 	MiSwSubscription,

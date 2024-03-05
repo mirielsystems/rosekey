@@ -1411,6 +1411,10 @@ export interface Locale extends ILocale {
      */
     "resetAreYouSure": string;
     /**
+     * 絵文字リクエストしてよろしいでしょうか？
+     */
+    "requestApprovalAreYouSure": string;
+    /**
      * よろしいですか？
      */
     "areYouSure": string;
@@ -3828,6 +3832,10 @@ export interface Locale extends ILocale {
      */
     "emailNotConfiguredWarning": string;
     /**
+     * リスト
+     */
+    "list": string;
+    /**
      * 比率
      */
     "ratio": string;
@@ -4460,6 +4468,10 @@ export interface Locale extends ILocale {
      */
     "manageAvatarDecorations": string;
     /**
+     * 絵文字リクエスト
+     */
+    "requestCustomEmojis": string;
+    /**
      * これ以上作成することはできません。
      */
     "youCannotCreateAnymore": string;
@@ -4655,6 +4667,13 @@ export interface Locale extends ILocale {
      * お気に入り解除しますか？
      */
     "unfavoriteConfirm": string;
+      /**
+     * 絵文字関連
+     */
+    "requestPending": string;
+    "approval": string;
+    "requestingEmojis": string;
+    "emojiNameValidation": string;
     /**
      * 自分のクリップ
      */
@@ -7354,6 +7373,10 @@ export interface Locale extends ILocale {
              * アバターデコレーションの管理
              */
             "canManageAvatarDecorations": string;
+            /**
+             * 絵文字リクエスト
+             */
+            "canRequestCustomEmojis": string;
             /**
              * ドライブ容量
              */

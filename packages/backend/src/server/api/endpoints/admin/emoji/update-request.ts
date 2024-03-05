@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and misskey-project
+ * SPDX-FileCopyrightText: syuilo and other misskey contributors
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -16,7 +16,6 @@ export const meta = {
 
 	requireCredential: true,
 	requireRolePolicy: 'canManageCustomEmojis',
-	kind: 'write:admin:emoji',
 
 	errors: {
 		noSuchEmoji: {
@@ -78,32 +77,33 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				driveFile = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
 				if (driveFile == null) throw new ApiError(meta.errors.noSuchFile);
 			}
-			const emoji = await this.customEmojiService.getEmojiById(ps.id);
+
+			const emoji = await this.customEmojiService.getEmojiRequestById(ps.id);
 			if (emoji != null) {
 				if (ps.name !== emoji.name) {
-					const isDuplicate = await this.customEmojiService.checkDuplicate(ps.name);
+					const isDuplicate = await this.customEmojiService.checkRequestDuplicate(ps.name);
 					if (isDuplicate) throw new ApiError(meta.errors.sameNameEmojiExists);
 				}
 			} else {
 				throw new ApiError(meta.errors.noSuchEmoji);
 			}
-
 			if (!isRequest) {
-				await this.customEmojiService.update(ps.id, {
-					driveFile,
-					name: ps.name,
-					category: ps.category ?? null,
-					aliases: ps.aliases,
-					license: ps.license ?? null,
-					isSensitive: ps.isSensitive,
-					localOnly: ps.localOnly,
-					roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
-				}, me);
-			} else {
 				const file = await this.driveFileEntityService.getFromUrl(emoji.originalUrl);
 				if (file === null) throw new ApiError(meta.errors.noSuchFile);
-				await this.customEmojiService.request({
+				await this.customEmojiService.add({
 					driveFile: file,
+					name: ps.name,
+					category: ps.category ?? null,
+					aliases: ps.aliases ?? [],
+					host: null,
+					license: ps.license ?? null,
+					isSensitive: ps.isSensitive ?? false,
+					localOnly: ps.localOnly ?? false,
+					roleIdsThatCanBeUsedThisEmojiAsReaction: [],
+				}, me);
+				await this.customEmojiService.deleteRequest(ps.id);
+			} else {
+				await this.customEmojiService.updateRequest(ps.id, {
 					name: ps.name,
 					category: ps.category ?? null,
 					aliases: ps.aliases ?? [],
@@ -111,7 +111,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					isSensitive: ps.isSensitive ?? false,
 					localOnly: ps.localOnly ?? false,
 				}, me);
-				await this.customEmojiService.delete(ps.id);
 			}
 		});
 	}
