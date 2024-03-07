@@ -45,7 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { watch, ref } from 'vue';
+import { watch, defineAsyncComponent, ref, computed } from 'vue';
 import * as Misskey from 'cherrypick-js';
 import XEmoji from './emojis.emoji.vue';
 import MkButton from '@/components/MkButton.vue';
@@ -53,15 +53,15 @@ import MkInput from '@/components/MkInput.vue';
 import MkFoldableSection from '@/components/MkFoldableSection.vue';
 import { customEmojis, customEmojiCategories } from '@/custom-emojis.js';
 import { i18n } from '@/i18n.js';
-import * as os from '@/os';
+import * as os from '@/os.js';
 import { $i } from '@/account.js';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { misskeyApiGet } from '@/scripts/misskey-api.js';
 
-let tab = $ref('emojis');
-const headerActions = $computed(() => []);
+let tab = ref('emojis');
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => [{
+const headerTabs = computed(() => [{
 	key: 'emojis',
 	title: i18n.ts.list,
 }, {
@@ -71,7 +71,6 @@ const headerTabs = $computed(() => [{
 
 definePageMetadata(ref({}));
 
-const customEmojiTags = getCustomEmojiTags();
 const q = ref('');
 const searchEmojis = ref<Misskey.entities.EmojiSimple[]>(null);
 const selectedTags = ref(new Set());
