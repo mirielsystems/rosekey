@@ -135,6 +135,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 							Njimiss Source Code
 							<template #suffix>GitHub</template>
 						</FormLink>
+						<FormLink to="https://git.prismisskey.space/mattyatea/misskey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							PrisMisskey Source Code
+							<template #suffix>Gitea</template>
+						</FormLink>
 					</div>
 				</FormSection>
 			</div>

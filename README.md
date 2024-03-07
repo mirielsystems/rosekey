@@ -76,3 +76,6 @@ Thanks to [Crowdin](https://crowdin.com/) for providing the localization platfor
 <a href="https://hub.docker.com/"><img src="https://user-images.githubusercontent.com/20679825/230148221-f8e73a32-a49b-47c3-9029-9a15c3824f92.png" height="30" alt="Docker" /></a>
 
 Thanks to [Docker](https://hub.docker.com/) for providing the container platform that helps us run CherryPick in production.
+
+## Special Thanks
+A repository of special thanks is available in the about-misskey.vue file.
