@@ -4,25 +4,25 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div>
-	<MkStickyContainer>
-		<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
-		<MkSpacer :contentMax="900">
-			<div class="ogwlenmc">
-				<div v-if="tab === 'local'" class="local">
-					<MkCustomEmojiEditLocal/>
+	<div>
+		<MkStickyContainer>
+			<template #header><MkPageHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
+			<MkSpacer :contentMax="900">
+				<div class="ogwlenmc">
+					<div v-if="tab === 'local'" class="local">
+						<MkCustomEmojiEditLocal/>
+					</div>
+					<div v-if="tab === 'request'" class="request">
+						<MkCustomEmojiEditRequest/>
+					</div>
+					<div v-else-if="tab === 'remote'" class="remote">
+						<MkCustomEmojiEditRemote/>
+					</div>
 				</div>
-				<div v-if="tab === 'request'" class="request">
-					<MkCustomEmojiEditRequest/>
-				</div>
-				<div v-else-if="tab === 'remote'" class="remote">
-					<MkCustomEmojiEditRemote/>
-				</div>
-			</div>
-		</MkSpacer>
-	</MkStickyContainer>
-</div>
-</template>
+			</MkSpacer>
+		</MkStickyContainer>
+	</div>
+	</template>	
 
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, ref } from 'vue';
@@ -33,11 +33,12 @@ import { selectFile } from '@/scripts/select-file';
 import * as os from '@/os';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 
 const tab = ref('request');
 
 const add = async (ev: MouseEvent) => {
-	os.popup(defineAsyncComponent(() => import('@/components/MkEmojiEditDialog.vue')), {
+	os.popup(defineAsyncComponent(() => import('../components/MkEmojiEditDialog.vue')), {
 	}, {
 		done: result => {
 			//TODO: emitにして追加を反映
@@ -91,17 +92,17 @@ const menu = (ev: MouseEvent) => {
 	}], ev.currentTarget ?? ev.target);
 };
 
-const headerActions = $computed(() => [{
+const headerActions = computed(() => [{
 	asFullButton: true,
 	icon: 'ti ti-plus',
 	text: i18n.ts.addEmoji,
-	handler: uploadMenu,
+	handler: add,
 }, {
 	icon: 'ti ti-dots',
 	handler: menu,
 }]);
 
-const headerTabs = $computed(() => [{
+const headerTabs = computed(() => [{
 	key: 'request',
 	title: i18n.ts.requestingEmojis,
 }, {
