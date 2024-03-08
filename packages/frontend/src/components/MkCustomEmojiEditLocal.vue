@@ -43,173 +43,172 @@
 </template>
 	
 <script lang="ts" setup>
-	import { computed, defineAsyncComponent, ref, shallowRef } from 'vue';
-	import MkButton from '@/components/MkButton.vue';
-	import MkInput from '@/components/MkInput.vue';
-	import MkPagination from '@/components/MkPagination.vue';
-	import MkSwitch from '@/components/MkSwitch.vue';
-	import * as os from '@/os.js';
-	import { i18n } from '@/i18n.js';
-	
-	const emojisPaginationComponent = shallowRef<InstanceType<typeof MkPagination>>();
-	
-	const query = ref(null);
-	const selectMode = ref(false);
-	const selectedEmojis = ref<string[]>([]);
-	
-	const pagination = {
-		endpoint: 'admin/emoji/list' as const,
-		limit: 30,
-		params: computed(() => ({
-			query: (query.value && query.value !== '') ? query.value : null,
-		})),
-	};
-	
-	const selectAll = () => {
-	
-		if (selectedEmojis.value.length > 0) {
-			selectedEmojis.value = [];
-		} else {
-			selectedEmojis.value = Array.from(emojisPaginationComponent.value.items.values(), item => item.id);
-		}
-	};
-	const setisSensitiveBulk = async () => {
-		const { canceled, result } = await os.switch1({
-			title: 'isSensitive',
-			type: "mksw"
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-issensitive-bulk', {
-			ids: selectedEmojis.value,
-			isSensitive: result
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	const setlocalOnlyBulk = async () => {
-		const { canceled, result } = await os.switch1({
-			title: 'localOnly',
-			type: "mksw"
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-localonly-bulk', {
-			ids: selectedEmojis.value,
-			localOnly: result
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	
-	const toggleSelect = (emoji) => {
-		console.log(selectedEmojis.value)
-		if (selectedEmojis.value.includes(emoji.id)) {
-			selectedEmojis.value = selectedEmojis.value.filter(x => x !== emoji.id);
-		} else {
-			selectedEmojis.value.push(emoji.id);
-		}
-	};
-	
-	const edit = (emoji) => {
-		os.popup(defineAsyncComponent(() => import('@/components/MkEmojiEditDialog.vue')), {
-			emoji: emoji,
-			isRequest: false,
-		}, {
-			done: result => {
-				if (result.updated) {
-					emojisPaginationComponent.value.updateItem(result.updated.id, (oldEmoji: any) => ({
-						...oldEmoji,
-						...result.updated,
-					}));
-					emojisPaginationComponent.value.reload();
-				} else if (result.deleted) {
-					emojisPaginationComponent.value.removeItem((item) => item.id === emoji.id);
-				}
-			},
-		}, 'closed');
-	};
-	
-	const setCategoryBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'Category',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-category-bulk', {
-			ids: selectedEmojis.value,
-			category: result,
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const setLisenceBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'License',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-license-bulk', {
-			ids: selectedEmojis.value,
-			license: result,
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const isSensitiveBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'License',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-issensitive-bulk', {
-			ids: selectedEmojis.value,
-			license: result,
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const addTagBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'Tag',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/add-aliases-bulk', {
-			ids: selectedEmojis.value,
-			aliases: result.split(' '),
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const removeTagBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'Tag',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/remove-aliases-bulk', {
-			ids: selectedEmojis.value,
-			aliases: result.split(' '),
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const setTagBulk = async () => {
-		const { canceled, result } = await os.inputText({
-			title: 'Tag',
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/set-aliases-bulk', {
-			ids: selectedEmojis.value,
-			aliases: result.split(' '),
-		});
-		emojisPaginationComponent.value.reload();
-	};
-	
-	const delBulk = async () => {
-		const { canceled } = await os.confirm({
-			type: 'warning',
-			text: i18n.ts.deleteConfirm,
-		});
-		if (canceled) return;
-		await os.apiWithDialog('admin/emoji/delete-bulk', {
-			ids: selectedEmojis.value,
-		});
-		emojisPaginationComponent.value.reload();
-	};
+import { computed, defineAsyncComponent, ref, shallowRef } from 'vue';
+import MkButton from '@/components/MkButton.vue';
+import MkInput from '@/components/MkInput.vue';
+import MkPagination from '@/components/MkPagination.vue';
+import MkSwitch from '@/components/MkSwitch.vue';
+import * as os from '@/os.js';
+import { i18n } from '@/i18n.js';
+
+const emojisPaginationComponent = shallowRef<InstanceType<typeof MkPagination>>();
+
+const query = ref(null);
+const selectMode = ref(false);
+const selectedEmojis = ref<string[]>([]);
+
+const pagination = {
+    endpoint: 'admin/emoji/list' as const,
+    limit: 30,
+    params: computed(() => ({
+        query: (query.value && query.value !== '') ? query.value : null,
+    })),
+};
+
+const selectAll = () => {
+    if (selectedEmojis.value.length > 0) {
+        selectedEmojis.value = [];
+    } else {
+        selectedEmojis.value = Array.from(emojisPaginationComponent.value.items.values(), item => item.id);
+    }
+};
+const setisSensitiveBulk = async () => {
+    const { canceled, result } = await os.switch1({
+        title: 'isSensitive',
+        type: "mksw"
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-issensitive-bulk', {
+        ids: selectedEmojis.value,
+        isSensitive: result
+    });
+    emojisPaginationComponent.value.reload();
+};
+const setlocalOnlyBulk = async () => {
+    const { canceled, result } = await os.switch1({
+        title: 'localOnly',
+        type: "mksw"
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-localonly-bulk', {
+        ids: selectedEmojis.value,
+        localOnly: result
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+
+const toggleSelect = (emoji) => {
+    console.log(selectedEmojis.value)
+    if (selectedEmojis.value.includes(emoji.id)) {
+        selectedEmojis.value = selectedEmojis.value.filter(x => x !== emoji.id);
+    } else {
+        selectedEmojis.value.push(emoji.id);
+    }
+};
+
+const edit = (emoji) => {
+    os.popup(defineAsyncComponent(() => import('@/components/MkEmojiEditDialog.vue')), {
+        emoji: emoji,
+        isRequest: false,
+    }, {
+        done: result => {
+            if (result.updated) {
+                emojisPaginationComponent.value.updateItem(result.updated.id, (oldEmoji: any) => ({
+                    ...oldEmoji,
+                    ...result.updated,
+                }));
+                emojisPaginationComponent.value.reload();
+            } else if (result.deleted) {
+                emojisPaginationComponent.value.removeItem((item) => item.id === emoji.id);
+            }
+        },
+    }, 'closed');
+};
+
+const setCategoryBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'Category',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-category-bulk', {
+        ids: selectedEmojis.value,
+        category: result,
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const setLisenceBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'License',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-license-bulk', {
+        ids: selectedEmojis.value,
+        license: result,
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const isSensitiveBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'License',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-issensitive-bulk', {
+        ids: selectedEmojis.value,
+        license: result,
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const addTagBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'Tag',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/add-aliases-bulk', {
+        ids: selectedEmojis.value,
+        aliases: result.split(' '),
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const removeTagBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'Tag',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/remove-aliases-bulk', {
+        ids: selectedEmojis.value,
+        aliases: result.split(' '),
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const setTagBulk = async () => {
+    const { canceled, result } = await os.inputText({
+        title: 'Tag',
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/set-aliases-bulk', {
+        ids: selectedEmojis.value,
+        aliases: result.split(' '),
+    });
+    emojisPaginationComponent.value.reload();
+};
+
+const delBulk = async () => {
+    const { canceled } = await os.confirm({
+        type: 'warning',
+        text: i18n.ts.deleteConfirm,
+    });
+    if (canceled) return;
+    await os.apiWithDialog('admin/emoji/delete-bulk', {
+        ids: selectedEmojis.value,
+    });
+    emojisPaginationComponent.value.reload();
+};
 </script>
 
 <style lang="scss" module>
