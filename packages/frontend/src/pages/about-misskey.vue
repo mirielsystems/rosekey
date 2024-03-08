@@ -390,7 +390,6 @@ definePageMetadata(() => ({
 		color: #8054B9;
 	}
 
-
 	> .cherry {
 		color: var(--cherry);
 	}

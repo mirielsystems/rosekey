@@ -29,9 +29,9 @@
 			</template>
 		</template>
 	</MkPagination>
-	</template>
+</template>
 	
-	<script lang="ts" setup>
+<script lang="ts" setup>
 	import { computed, defineAsyncComponent, ref, shallowRef } from 'vue';
 	import MkPagination from '@/components/MkPagination.vue';
 	import * as os from '@/os';
@@ -108,92 +108,92 @@
 			emojisRequestPaginationComponent.value.reload();
 		});
 	}
-	</script>
+</script>
 	
-	<style lang="scss" module>
+<style lang="scss" module>
 	.emoji {
-	  align-items: center;
-	  padding: 11px;
-	  text-align: left;
-	  border: solid 1px var(--panel);
-	  margin: 10px;
+		align-items: center;
+		padding: 11px;
+		text-align: left;
+		border: solid 1px var(--panel);
+		margin: 10px;
 	}
 	.img {
-	  display: grid;
-	  grid-row: 1;
-	  grid-column: 1/ span 2;
-	  grid-template-columns: 50% 50%;
-	  place-content: center;
-	  place-items: center;
+		display: grid;
+		grid-row: 1;
+		grid-column: 1/ span 2;
+		grid-template-columns: 50% 50%;
+		place-content: center;
+		place-items: center;
 	}
 	.imgLight {
-	  display: grid;
-	  grid-column: 1;
-	  background-color: #fff;
-	  margin-bottom: 12px;
-	  img {
-		max-height: 64px;
-		max-width: 100%;
-	  }
+		display: grid;
+		grid-column: 1;
+		background-color: #fff;
+		margin-bottom: 12px;
+		img {
+			max-height: 64px;
+			max-width: 100%;
+		}
 	}
 	.imgDark {
-	  display: grid;
-	  grid-column: 2;
-	  background-color: #000;
-	  margin-bottom: 12px;
-	  img {
-		max-height: 64px;
-		max-width: 100%;
-	  }
+		display: grid;
+		grid-column: 2;
+		background-color: #000;
+		margin-bottom: 12px;
+		img {
+			max-height: 64px;
+			max-width: 100%;
+		}
 	}
 	.info {
-	  display: grid;
-	  grid-row: 2;
-	  grid-template-rows: 30px 30px 30px;
+		display: grid;
+		grid-row: 2;
+		grid-template-rows: 30px 30px 30px;
 	}
 	.name {
-	  grid-row: 1;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
+		grid-row: 1;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 	
 	.category {
-	  grid-row: 2;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
+		grid-row: 2;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 	
 	.aliases {
-	  grid-row: 3;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
+		grid-row: 3;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 	
 	.license {
-	  grid-row: 4;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
+		grid-row: 4;
+		text-overflow: ellipsis;
+		overflow: hidden;
 	}
 	.editbutton {
-	  display: grid;
-	  grid-template-rows: 42px;
-	  margin-top: 6px;
+		display: grid;
+		grid-template-rows: 42px;
+		margin-top: 6px;
 	}
 	.edit {
-	  grid-row: 1;
-	  width: 100%;
-	  margin: 6px 0;
+		grid-row: 1;
+		width: 100%;
+		margin: 6px 0;
 	}
 	
 	.request {
-	  grid-row: 2;
-	  width: 100%;
-	  margin: 6px 0;
+		grid-row: 2;
+		width: 100%;
+		margin: 6px 0;
 	}
 	
 	.delete {
-	  grid-row: 3;
-	  width: 100%;
-	  margin: 6px 0;
+		grid-row: 3;
+		width: 100%;
+		margin: 6px 0;
 	}
-	</style>
+</style>

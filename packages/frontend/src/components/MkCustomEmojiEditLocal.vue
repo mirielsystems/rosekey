@@ -40,9 +40,9 @@
 			</div>
 		</template>
 	</MkPagination>
-	</template>
+</template>
 	
-	<script lang="ts" setup>
+<script lang="ts" setup>
 	import { computed, defineAsyncComponent, ref, shallowRef } from 'vue';
 	import MkButton from '@/components/MkButton.vue';
 	import MkInput from '@/components/MkInput.vue';
@@ -210,54 +210,51 @@
 		});
 		emojisPaginationComponent.value.reload();
 	};
-	</script>
-	
-	<style lang="scss" module>
-	.root {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-		grid-gap: var(--margin);
-	}
-	.emoji {
-	  display: flex;
-	  align-items: center;
-	  padding: 11px;
-	  text-align: left;
-	  border: solid 1px var(--panel);
-	  width: 100%;
-	
-	  &:hover {
+</script>
+
+<style lang="scss" module>
+.root {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+	grid-gap: var(--margin);
+}
+.emoji {
+	display: flex;
+	align-items: center;
+	padding: 11px;
+	text-align: left;
+	border: solid 1px var(--panel);
+	width: 100%;
+
+	&:hover {
 		border-color: var(--inputBorderHover);
-	  }
-	
-	
 	}
-	.selected {
-	  border-color: var(--accent);
-	}
-	.img {
-	  width: 42px;
-	  height: 42px;
-	}
-	.body {
-	  padding: 0 0 0 8px;
-	  white-space: nowrap;
-	  overflow: hidden;
-	}
-	.name {
-	  text-overflow: ellipsis;
-	  overflow: hidden;
-	}
-	
-	.info {
-	  opacity: 0.5;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
-	}
-	.emojirequest {
-		--c: rgb(255 196 0 / 15%);;
-		background-image: linear-gradient(45deg,var(--c) 16.67%,transparent 16.67%,transparent 50%,var(--c) 50%,var(--c) 66.67%,transparent 66.67%,transparent 100%);
-		background-size: 16px 16px;
-	}
-	</style>
-	
+}
+.selected {
+	border-color: var(--accent);
+}
+.img {
+	width: 42px;
+	height: 42px;
+}
+.body {
+	padding: 0 0 0 8px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.name {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.info {
+	opacity: 0.5;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+.emojirequest {
+	--c: rgb(255 196 0 / 15%);
+	background-image: linear-gradient(45deg,var(--c) 16.67%,transparent 16.67%,transparent 50%,var(--c) 50%,var(--c) 66.67%,transparent 66.67%,transparent 100%);
+	background-size: 16px 16px;
+}
+</style>

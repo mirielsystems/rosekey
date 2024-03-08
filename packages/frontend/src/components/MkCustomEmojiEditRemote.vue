@@ -22,9 +22,9 @@
 			</div>
 		</template>
 	</MkPagination>
-	</template>
+</template>
 	
-	<script lang="ts" setup>
+<script lang="ts" setup>
 	import { computed, ref } from 'vue';
 	import MkInput from '@/components/MkInput.vue';
 	import MkPagination from '@/components/MkPagination.vue';
@@ -60,47 +60,46 @@
 			action: () => { im(emoji); },
 		}], ev.currentTarget ?? ev.target);
 	};
-	</script>
+</script>
 	
-	<style lang="scss" module>
-	
-	.root {
-	  display: grid;
-	  grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
-	  grid-gap: 12px;
-	  margin: var(--margin) 0;
-	}
-	
-	.emoji {
-	  display: flex;
-	  align-items: center;
-	  padding: 12px;
-	  text-align: left;
-	
-	  &:hover {
+<style lang="scss" module>
+.root {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+	grid-gap: 12px;
+	margin: var(--margin) 0;
+}
+
+.emoji {
+	display: flex;
+	align-items: center;
+	padding: 12px;
+	text-align: left;
+
+	&:hover {
 		color: var(--accent);
-	  }
 	}
-	
-	.img {
-	  width: 32px;
-	  height: 32px;
-	}
-	
-	.body {
-	  padding: 0 0 0 8px;
-	  white-space: nowrap;
-	  overflow: hidden;
-	}
-	.name {
-	  text-overflow: ellipsis;
-	  overflow: hidden;
-	}
-	
-	.info {
-	  opacity: 0.5;
-	  font-size: 90%;
-	  text-overflow: ellipsis;
-	  overflow: hidden;
-	}
-	</style>	
+}
+
+.img {
+	width: 32px;
+	height: 32px;
+}
+
+.body {
+	padding: 0 0 0 8px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+.name {
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+
+.info {
+	opacity: 0.5;
+	font-size: 90%;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}
+</style>
