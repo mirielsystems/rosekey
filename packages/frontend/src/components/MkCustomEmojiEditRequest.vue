@@ -37,7 +37,7 @@
 	import * as os from '@/os';
 	import { i18n } from '@/i18n';
 	import MkButton from '@/components/MkButton.vue';
-	import {misskeyApi} from "@/scripts/misskey-api.js";
+	import { misskeyApi } from "@/scripts/misskey-api.js";
 	
 	const emojisRequestPaginationComponent = shallowRef<InstanceType<typeof MkPagination>>();
 	

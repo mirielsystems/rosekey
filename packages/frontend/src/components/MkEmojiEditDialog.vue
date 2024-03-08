@@ -173,7 +173,7 @@ async function done() {
 	}
 
 	if (props.emoji) {
-		if (isRequest) {
+		if (isRequest.value) {
 			await os.apiWithDialog('admin/emoji/update-request', {
 				id: props.emoji.id,
 				...params,
@@ -194,7 +194,7 @@ async function done() {
 
 		windowEl.value.close();
 	} else {
-		const created = isRequest
+		const created = isRequest.value
 			? await os.apiWithDialog('admin/emoji/add-request', params)
 			: await os.apiWithDialog('admin/emoji/add', params);
 

@@ -97,9 +97,8 @@ const setlocalOnlyBulk = async () => {
     emojisPaginationComponent.value.reload();
 };
 
-
 const toggleSelect = (emoji) => {
-    console.log(selectedEmojis.value)
+    console.log(selectedEmojis.value);
     if (selectedEmojis.value.includes(emoji.id)) {
         selectedEmojis.value = selectedEmojis.value.filter(x => x !== emoji.id);
     } else {
