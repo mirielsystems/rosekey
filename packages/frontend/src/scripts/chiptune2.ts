@@ -25,7 +25,7 @@ export function ChiptuneJsPlayer (config: object) {
 
 ChiptuneJsPlayer.prototype.initialize = function() {
 	if (libopenmptLoadPromise) return libopenmptLoadPromise;
-	if (libopenmpt) return;
+	if (libopenmpt) return Promise.resolve();
 
 	libopenmptLoadPromise = new Promise(async (resolve, reject) => {
 		try {
