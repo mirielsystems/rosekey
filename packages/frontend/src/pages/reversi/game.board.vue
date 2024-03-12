@@ -503,9 +503,11 @@ const blackUserEl = ref<HTMLElement | null>(null);
 const whiteUserEl = ref<HTMLElement | null>(null);
 const canReact = ref(true);
 let canReactFallbackTimer: number | null = null;
+
 function getKey(emoji: string | Misskey.entities.EmojiSimple | UnicodeEmojiDef): string {
 	return typeof emoji === 'string' ? emoji : 'char' in emoji ? emoji.char : `:${emoji.name}:`;
 }
+
 // 既にでている絵文字をクリックした際の挙動
 function onReactionEmojiClick(emoji: string, ev?: MouseEvent) {
 	const el = ev && (ev.currentTarget ?? ev.target) as HTMLElement | null | undefined;
@@ -521,6 +523,7 @@ function onReactionEmojiClick(emoji: string, ev?: MouseEvent) {
 		_reactionEmojis.value.unshift(key);
 	}
 }
+
 // #region リアクションピッカー
 const reactButton = ref<HTMLElement | null>(null);
 function onReactionPickerClick() {
@@ -532,6 +535,7 @@ function onReactionPickerClick() {
 		}
 	});
 }
+
 // #endregion
 function sendReaction(emojiKey: string) {
 	if (!canReact.value) return;
@@ -548,6 +552,7 @@ function sendReaction(emojiKey: string) {
 		}
 	}, 10000);
 }
+
 function onReacted(payload: Parameters<Misskey.Channels['reversiGame']['events']['reacted']>['0']) {
 	const { userId, reaction } = payload;
 
