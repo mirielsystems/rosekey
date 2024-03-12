@@ -2853,6 +2853,9 @@ _reversi:
   opponentHasSettingsChanged: "The opponent has changed their settings."
   allowIrregularRules: "Irregular rules (completely free)"
   disallowIrregularRules: "No irregular rules"
+  showBoardLabels: "盤面に行・列番号を表示"
+  showReaction: "相手のリアクションを表示"
+  useAvatarAsStone: "石をアイコンにする"
 _offlineScreen:
   title: "Offline - cannot connect to the server"
   header: "Unable to connect to the server"
