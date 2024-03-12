@@ -2853,6 +2853,9 @@ _reversi:
   opponentHasSettingsChanged: "The opponent has changed their settings."
   allowIrregularRules: "Irregular rules (completely free)"
   disallowIrregularRules: "No irregular rules"
+  showBoardLabels: "Display row and column numbers on the board."
+  showReaction: "Display opponent's reaction."
+  useAvatarAsStone: "Represent stones with icons."
 _offlineScreen:
   title: "Offline - cannot connect to the server"
   header: "Unable to connect to the server"
