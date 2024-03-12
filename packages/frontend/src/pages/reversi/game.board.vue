@@ -184,7 +184,6 @@ import * as os from '@/os.js';
 import { defaultStore } from '@/store.js';
 import { reactionPicker } from '@/scripts/reaction-picker.js';
 import { confetti } from '@/scripts/confetti.js';
-import { defaultStore } from '@/store.js';
 import { getStaticImageUrl } from '@/scripts/media-proxy.js';
 
 const $i = signinRequired();
