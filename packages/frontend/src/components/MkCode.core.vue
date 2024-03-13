@@ -77,7 +77,7 @@ watch(() => props.lang, (to) => {
   counter-increment: step 0;
 }
 
-.codeBlockRoot :global(.shiki) > code > .line::before {
+.codeBlockRoot :global(.shiki) > code > span::before {
   content: counter(step);
   counter-increment: step;
   width: 1rem;
