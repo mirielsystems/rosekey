@@ -7,8 +7,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import { In } from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
 import { DI } from '@/di-symbols.js';
+import * as mfm from 'mfm-js';
 import type { Packed } from '@/misc/json-schema.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
+import { nyaize } from '@/misc/nyaize.js';
 import type { MiUser } from '@/models/User.js';
 import type { MiNote } from '@/models/Note.js';
 import type { MiNoteReaction } from '@/models/NoteReaction.js';
@@ -402,6 +404,7 @@ export class NoteEntityService implements OnModuleInit {
 
 		if (packed.user.speakAsCat && packed.text) {
 			const tokens = packed.text ? mfm.parse(packed.text) : [];
+
 			function nyaizeNode(node: mfm.MfmNode) {
 				if (node.type === 'quote') return;
 				if (node.type === 'text') {
@@ -413,6 +416,7 @@ export class NoteEntityService implements OnModuleInit {
 					}
 				}
 			}
+
 			for (const node of tokens) {
 				nyaizeNode(node);
 			}
