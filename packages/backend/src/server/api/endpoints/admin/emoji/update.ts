@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
@@ -57,7 +56,6 @@ export const paramDef = {
 		roleIdsThatCanBeUsedThisEmojiAsReaction: { type: 'array', items: {
 			type: 'string',
 		} },
-		Request: { type: 'boolean' },
 	},
 	required: ['id', 'name', 'aliases'],
 } as const;
@@ -69,11 +67,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private driveFilesRepository: DriveFilesRepository,
 
 		private customEmojiService: CustomEmojiService,
-		private driveFileEntityService: DriveFileEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let driveFile;
-			const isRequest = !!ps.Request;
+
 			if (ps.fileId) {
 				driveFile = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
 				if (driveFile == null) throw new ApiError(meta.errors.noSuchFile);
@@ -88,31 +85,16 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.noSuchEmoji);
 			}
 
-			if (!isRequest) {
-				await this.customEmojiService.update(ps.id, {
-					driveFile,
-					name: ps.name,
-					category: ps.category ?? null,
-					aliases: ps.aliases,
-					license: ps.license ?? null,
-					isSensitive: ps.isSensitive,
-					localOnly: ps.localOnly,
-					roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
-				}, me);
-			} else {
-				const file = await this.driveFileEntityService.getFromUrl(emoji.originalUrl);
-				if (file === null) throw new ApiError(meta.errors.noSuchFile);
-				await this.customEmojiService.request({
-					driveFile: file,
-					name: ps.name,
-					category: ps.category ?? null,
-					aliases: ps.aliases ?? [],
-					license: ps.license ?? null,
-					isSensitive: ps.isSensitive ?? false,
-					localOnly: ps.localOnly ?? false,
-				}, me);
-				await this.customEmojiService.delete(ps.id);
-			}
+			await this.customEmojiService.update(ps.id, {
+				driveFile,
+				name: ps.name,
+				category: ps.category ?? null,
+				aliases: ps.aliases,
+				license: ps.license ?? null,
+				isSensitive: ps.isSensitive,
+				localOnly: ps.localOnly,
+				roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
+			}, me);
 		});
 	}
 }
