@@ -16,15 +16,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<span>{{ i18n.ts.silencedInstances }}</span>
 				<template #caption>{{ i18n.ts.silencedInstancesDescription }}</template>
 			</MkTextarea>
-			<div v-else-if="tab === 'whitelist'">
-				<MkSwitch v-model="enableAllowedHostsInWhiteList">
-					<template #label>{{ i18n.ts.enableAllowedHostsInWhiteList }}</template>
-				</MkSwitch>
-				<MkTextarea v-model="allowedHosts">
-					<span>{{ i18n.ts.allowedInstances }}</span>
-					<template #caption>{{ i18n.ts.allowedInstancesDescription }}</template>
-				</MkTextarea>
-			</div>
 			<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
 		</FormSuspense>
 	</MkSpacer>
@@ -35,7 +26,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 import { ref, computed } from 'vue';
 import XHeader from './_header_.vue';
 import MkButton from '@/components/MkButton.vue';
-import MkSwitch from '@/components/MkSwitch.vue';
 import MkTextarea from '@/components/MkTextarea.vue';
 import FormSuspense from '@/components/form/suspense.vue';
 import * as os from '@/os.js';
@@ -46,24 +36,19 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 
 const blockedHosts = ref<string>('');
 const silencedHosts = ref<string>('');
-const enableAllowedHostsInWhiteList = ref<boolean>(false);
-const allowedHosts = ref<string>('');
 const tab = ref('block');
 
 async function init() {
 	const meta = await misskeyApi('admin/meta');
 	blockedHosts.value = meta.blockedHosts.join('\n');
 	silencedHosts.value = meta.silencedHosts.join('\n');
-	enableAllowedHostsInWhiteList.value = meta.enableAllowedHostsInWhiteList;
-	allowedHosts.value = meta.allowedHosts.join('\n');
 }
 
 function save() {
 	os.apiWithDialog('admin/update-meta', {
 		blockedHosts: blockedHosts.value.split('\n') || [],
 		silencedHosts: silencedHosts.value.split('\n') || [],
-		enableAllowedHostsInWhiteList: enableAllowedHostsInWhiteList.value,
-		allowedHosts: allowedHosts.value.split('\n') || [],
+
 	}).then(() => {
 		fetchInstance();
 	});
@@ -79,10 +64,6 @@ const headerTabs = computed(() => [{
 	key: 'silence',
 	title: i18n.ts.silence,
 	icon: 'ti ti-eye-off',
-}, {
-	key: 'whitelist',
-	title: i18n.ts.whiteList,
-	icon: 'ti ti-check',
 }]);
 
 definePageMetadata(() => ({

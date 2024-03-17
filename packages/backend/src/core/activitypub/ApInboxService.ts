@@ -305,12 +305,8 @@ export class ApInboxService {
 			return;
 		}
 
-		const meta = await this.metaService.fetch();
-		// アナウンス先を許可してなかったら中断
-		if (meta.enableAllowedHostsInWhiteList) {
-			if (!this.utilityService.isAllowedHost(meta.allowedHosts, this.utilityService.extractDbHost(uri))) return;
-		}
 		// アナウンス先をブロックしてたら中断
+		const meta = await this.metaService.fetch();
 		if (this.utilityService.isBlockedHost(meta.blockedHosts, this.utilityService.extractDbHost(uri))) return;
 
 		const relays = await this.relayService.getAcceptedRelays();

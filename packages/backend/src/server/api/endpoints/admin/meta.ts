@@ -153,18 +153,6 @@ export const meta = {
 					type: 'string',
 				},
 			},
-			allowedHosts: {
-				type: 'array',
-				optional: true, nullable: false,
-				items: {
-					type: 'string',
-					optional: false, nullable: false,
-				},
-			},
-			enableAllowedHostsInWhiteList: {
-				type: 'boolean',
-				optional: false, nullable: false,
-			},
 			sensitiveWords: {
 				type: 'array',
 				optional: false, nullable: false,
@@ -618,8 +606,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				hiddenTags: instance.hiddenTags,
 				blockedHosts: instance.blockedHosts,
 				silencedHosts: instance.silencedHosts,
-				allowedHosts: instance.allowedHosts,
-				enableAllowedHostsInWhiteList: instance.enableAllowedHostsInWhiteList,
 				sensitiveWords: instance.sensitiveWords,
 				prohibitedWords: instance.prohibitedWords,
 				preservedUsernames: instance.preservedUsernames,
