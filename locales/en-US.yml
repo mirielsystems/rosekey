@@ -1829,6 +1829,7 @@ _achievements:
       description: "Two of the biggest objects in the bubble game at the same time"
       flavor: "You can fill a lunch box like this 🤯 🤯 a bit."
 _subscription:
+  current: "現在のプラン"
   price: "Price"
   currency: "Currency"
   stripePriceId: "Stripe Price ID"
