@@ -38,10 +38,11 @@ describe('XHome', () => {
         assert.exists(anchor, 'anchor to the remote exists');
         assert.strictEqual(anchor?.href, 'https://example.com/@user/profile');
 
-        if (anchor?.parentElement) {
+        // Null チェックを追加
+        if (anchor && anchor.parentElement) {
             assert.ok(anchor.parentElement.classList.contains('warn'), 'the parent is a warning');
         } else {
-            assert.fail('parent element is null');
+            assert.fail('anchor or parent element not found');
         }
     });
 
