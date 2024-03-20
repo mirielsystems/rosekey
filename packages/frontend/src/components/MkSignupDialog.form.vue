@@ -62,6 +62,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span v-if="passwordRetypeState == 'not-match'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.passwordNotMatched }}</span>
 				</template>
 			</MkInput>
+			<MkInput v-if="instance.approvalRequiredForSignup" v-model="reason" type="text" :spellcheck="false" required data-cy-signup-reason>
+				<template #label>{{ i18n.ts.registerReason }} <div v-tooltip:dialog="i18n.ts._signup.reasonInfo" class="_button _help"><i class="ti ti-help-circle"></i></div></template>
+				<template #prefix><i class="ti ti-chalkboard"></i></template>
+			</MkInput>
 			<MkCaptcha v-if="instance.enableHcaptcha" ref="hcaptcha" v-model="hCaptchaResponse" :class="$style.captcha" provider="hcaptcha" :sitekey="instance.hcaptchaSiteKey"/>
 			<MkCaptcha v-if="instance.enableMcaptcha" ref="mcaptcha" v-model="mCaptchaResponse" :class="$style.captcha" provider="mcaptcha" :sitekey="instance.mcaptchaSiteKey" :instanceUrl="instance.mcaptchaInstanceUrl"/>
 			<MkCaptcha v-if="instance.enableRecaptcha" ref="recaptcha" v-model="reCaptchaResponse" :class="$style.captcha" provider="recaptcha" :sitekey="instance.recaptchaSiteKey"/>
@@ -104,6 +108,7 @@ const emit = defineEmits<{
 	(ev: 'signup', user: Misskey.entities.SigninResponse): void;
 	(ev: 'signupEmailPending'): void;
 	(ev: 'back'): void;
+	(ev: 'approvalPending'): void;
 }>();
 
 const host = toUnicode(config.host);
@@ -116,6 +121,7 @@ const username = ref<string>('');
 const password = ref<string>('');
 const retypedPassword = ref<string>('');
 const invitationCode = ref<string>('');
+const reason = ref<string>('');
 const email = ref('');
 const usernameState = ref<null | 'wait' | 'ok' | 'unavailable' | 'error' | 'invalid-format' | 'min-range' | 'max-range'>(null);
 const emailState = ref<null | 'wait' | 'ok' | 'unavailable:used' | 'unavailable:format' | 'unavailable:disposable' | 'unavailable:banned' | 'unavailable:mx' | 'unavailable:smtp' | 'unavailable' | 'error'>(null);
@@ -284,6 +290,13 @@ async function onSubmit(): Promise<void> {
 					text: i18n.tsx._signup.emailSent({ email: email.value }),
 				});
 				emit('signupEmailPending');
+			} else if (instance.approvalRequiredForSignup) {
+			os.alert({
+				type: 'success',
+				title: i18n.ts._signup.almostThere,
+				text: i18n.ts._signup.approvalPending,
+			});
+			emit('approvalPending');
 			} else {
 				const res = await misskeyApi('signin', {
 					username: username.value,

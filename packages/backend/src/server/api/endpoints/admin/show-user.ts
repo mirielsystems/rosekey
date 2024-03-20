@@ -228,6 +228,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				emailVerified: profile.emailVerified,
 				stripeCustomerId: profile.stripeCustomerId,
 				stripeSubscriptionId: user.stripeSubscriptionId,
+				approved: user.approved,
+				signupReason: user.signupReason,
 				autoAcceptFollowed: profile.autoAcceptFollowed,
 				noCrawle: profile.noCrawle,
 				preventAiLearning: profile.preventAiLearning,

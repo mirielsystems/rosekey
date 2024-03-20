@@ -474,6 +474,7 @@ export class UserEntityService implements OnModuleInit {
 					targetUserId: user.id,
 				}).then(row => row?.memo ?? null),
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,
+				approved: iAmModerator ? user.approved : undefined,
 			} : {}),
 
 			...(isDetailed && isMe ? {
@@ -525,6 +526,7 @@ export class UserEntityService implements OnModuleInit {
 			...(opts.includeSecrets ? {
 				email: profile!.email,
 				emailVerified: profile!.emailVerified,
+				signupReason: user.signupReason,
 				securityKeysList: profile!.twoFactorEnabled
 					? this.userSecurityKeysRepository.find({
 						where: {
