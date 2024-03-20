@@ -39,54 +39,72 @@ const props = withDefaults(
 );
 const listenbrainz = { title: '', artist: '', lastlisten: '', img: '', musicbrainzurl: '', listenbrainzurl: '' };
 if (props.user.listenbrainz) {
-	const getLMData = async (title: string, artist: string) => {
-		const response = await fetch(`https://api.listenbrainz.org/1/metadata/lookup/?artist_name=${artist}&recording_name=${title}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-		});
-		const data = await response.json();
-		if (!data.recording_name) {
-			return null;
-		}
-		const titler: string = data.recording_name;
-		const artistr: string = data.artist_credit_name;
-		const img: string = data.release_mbid ? `https://coverartarchive.org/release/${data.release_mbid}/front-250` : 'https://coverartarchive.org/img/big_logo.svg';
-		const musicbrainzurl: string = data.recording_mbid ? `https://musicbrainz.org/recording/${data.recording_mbid}` : '#';
-		const listenbrainzurl: string = data.recording_mbid ? `https://listenbrainz.org/player?recording_mbids=${data.recording_mbid}` : '#';
-		return [titler, artistr, img, musicbrainzurl, listenbrainzurl];
-	};
-	const response = await fetch(`https://api.listenbrainz.org/1/user/${props.user.listenbrainz}/playing-now`, {
-		method: 'GET',
-		headers: {
-			'Content-Type': 'application/json',
-		},
-	});
-	const data = await response.json();
-	if (data.payload.listens && data.payload.listens.length !== 0) {
-		const title: string = data.payload.listens[0].track_metadata.track_name;
-		const artist: string = data.payload.listens[0].track_metadata.artist_name;
-		const lastlisten: string = data.payload.listens[0].playing_now;
-		const img = 'https://coverartarchive.org/img/big_logo.svg';
-		await getLMData(title, artist).then((data) => {
-			if (!data) {
-				listenbrainz.title = title;
-		  listenbrainz.img = img;
-		  listenbrainz.artist = artist;
-		  listenbrainz.lastlisten = lastlisten;
-		  return;
-			} else {
-				listenbrainz.title = data[0];
-		  listenbrainz.img = data[2];
-		  listenbrainz.artist = data[1];
-		  listenbrainz.lastlisten = lastlisten;
-		  listenbrainz.musicbrainzurl = data[3];
-		  listenbrainz.listenbrainzurl = data[4];
-				return;
-			}
-		});
-	}
+    const getLMData = async (title: string, artist: string) => {
+        try {
+            const response: unknown = await Promise.race([
+                fetch(`https://api.listenbrainz.org/1/metadata/lookup/?artist_name=${artist}&recording_name=${title}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('timeout')), 15000) // 15秒後にタイムアウト
+                )
+            ]);
+            const data = await (response as Response).json();
+            if (!data.recording_name) {
+                return null;
+            }
+            const titler: string = data.recording_name;
+            const artistr: string = data.artist_credit_name;
+            const img: string = data.release_mbid ? `https://coverartarchive.org/release/${data.release_mbid}/front-250` : 'https://coverartarchive.org/img/big_logo.svg';
+            const musicbrainzurl: string = data.recording_mbid ? `https://musicbrainz.org/recording/${data.recording_mbid}` : '#';
+            const listenbrainzurl: string = data.recording_mbid ? `https://listenbrainz.org/player?recording_mbids=${data.recording_mbid}` : '#';
+            return [titler, artistr, img, musicbrainzurl, listenbrainzurl];
+        } catch (error) {
+            console.error('Error fetching LM data:', error);
+            return null;
+        }
+    };
+
+    (async () => {
+        try {
+            const response: unknown = await Promise.race([
+                fetch(`https://api.listenbrainz.org/1/user/${props.user.listenbrainz}/playing-now`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                }),
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error('timeout')), 15000) // 15秒後にタイムアウト
+                )
+            ]);
+            const data = await (response as Response).json();
+            if (data.payload.listens && data.payload.listens.length !== 0) {
+                const title: string = data.payload.listens[0].track_metadata.track_name;
+                const artist: string = data.payload.listens[0].track_metadata.artist_name;
+                const lastlisten: string = data.payload.listens[0].playing_now;
+                const img = 'https://coverartarchive.org/img/big_logo.svg';
+                const lmData = await getLMData(title, artist);
+                if (!lmData) {
+                    console.log('LM data not available');
+                    return; // 15秒以内にデータが取得できなかった場合は処理を終了
+                }
+                listenbrainz.title = lmData[0];
+                listenbrainz.img = lmData[2];
+                listenbrainz.artist = lmData[1];
+                listenbrainz.lastlisten = lastlisten;
+                listenbrainz.musicbrainzurl = lmData[3];
+                listenbrainz.listenbrainzurl = lmData[4];
+            } else {
+                console.log('No now playing data available');
+            }
+        } catch (error) {
+            console.error('Error fetching now playing data:', error);
+        }
+    })();
 }
 </script>
 
