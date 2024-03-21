@@ -526,6 +526,7 @@ function onReactionEmojiClick(emoji: string, ev?: MouseEvent) {
 
 // #region リアクションピッカー
 const reactButton = ref<HTMLElement | null>(null);
+
 function onReactionPickerClick() {
 	reactionPicker.show(reactButton.value ?? null, reaction => {
 		const key = getKey(reaction);

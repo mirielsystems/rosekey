@@ -53,7 +53,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private roleService: RoleService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			if (!await subscriptionPlansRepository.exists( {
+			const role = await this.rolesRepository.findOneBy({ id: ps.roleId });
+			if (role == null) {
+				throw new ApiError(meta.errors.noSuchRole);
+			}
+
+			if (await subscriptionPlansRepository.exists( {
 				where: {
 					roleId: ps.roleId,
 				},
@@ -61,10 +66,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				throw new ApiError(meta.errors.inUseRole);
 			}
 
-			const role = await this.rolesRepository.findOneBy({ id: ps.roleId });
-			if (role == null) {
-				throw new ApiError(meta.errors.noSuchRole);
-			}
 			await this.roleService.delete(role, me);
 		});
 	}
