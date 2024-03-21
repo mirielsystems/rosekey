@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and misskey-project and sharkey-project and 16439s
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export class AddLbToUser1691264431000 {
 	name = "AddLbToUser1691264431000";
 
