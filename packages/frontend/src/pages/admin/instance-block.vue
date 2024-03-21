@@ -65,7 +65,7 @@ function save() {
 		enableAllowedHostsInWhiteList: enableAllowedHostsInWhiteList.value,
 		allowedHosts: allowedHosts.value.split('\n') || [],
 	}).then(() => {
-		fetchInstance();
+		fetchInstance(true);
 	});
 }
 
