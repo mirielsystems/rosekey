@@ -6,7 +6,10 @@
 
     <div style="padding: 8px">
       <div class="flex">
-        <template v-if="listenbrainz.title">
+        <template v-if="loading">
+          <p>Loading...</p>
+        </template>
+        <template v-else-if="listenbrainz.title">
           <a :href="listenbrainz.musicbrainzurl">
             <img v-if="listenbrainz.img" class="image" :src="listenbrainz.img" :alt="listenbrainz.title"/>
             <div class="flex flex-col items-start">
@@ -28,24 +31,26 @@
   </MkContainer>
 </template>
   
-  <script lang="ts" setup>
-  import { ref, onMounted, onBeforeUnmount } from 'vue';
-  import * as misskey from 'cherrypick-js';
-  import MkContainer from '@/components/MkContainer.vue';
-  
-  const props = withDefaults(
-    defineProps<{
-      user: misskey.entities.User;
-    }>(),
-    {},
-  );
-  
-  const listenbrainz = ref({ title: '', artist: '', lastlisten: '', img: '', musicbrainzurl: '', listenbrainzurl: '' });
-  
-  let intervalId: NodeJS.Timeout | null = null;
-  
-  const getNowPlayingData = async () => {
+<script lang="ts" setup>
+import { ref, onMounted, onBeforeUnmount } from 'vue';
+import * as misskey from 'cherrypick-js';
+import MkContainer from '@/components/MkContainer.vue';
+
+const props = withDefaults(
+  defineProps<{
+    user: misskey.entities.User;
+  }>(),
+  {},
+);
+
+const listenbrainz = ref({ title: '', artist: '', lastlisten: '', img: '', musicbrainzurl: '', listenbrainzurl: '' });
+const loading = ref(false);
+
+let intervalId: NodeJS.Timeout | null = null;
+
+const getNowPlayingData = async () => {
   if (props.user.listenbrainz) {
+    loading.value = true; // データ取得中の状態に設定
     try {
       const response = await fetch(`https://api.listenbrainz.org/1/user/${props.user.listenbrainz}/playing-now`, {
         method: 'GET',
@@ -72,6 +77,8 @@
       if (error instanceof Error) {
         console.error(error.message);
       }
+    } finally {
+      loading.value = false; // データ取得が完了したので、ローディング状態を解除
     }
   }
 };
@@ -104,29 +111,29 @@ const getLMData = async (title: string, artist: string) => {
     }
   }
 };
-  
-  const resetListenbrainz = () => {
-    listenbrainz.value.title = '';
-    listenbrainz.value.artist = '';
-    listenbrainz.value.lastlisten = '';
-    listenbrainz.value.img = '';
-    listenbrainz.value.musicbrainzurl = '';
-    listenbrainz.value.listenbrainzurl = '';
-  };
-  
-  onMounted(() => {
-    // Call immediately
-    getNowPlayingData();
-    // Polling interval
-    intervalId = setInterval(getNowPlayingData, 15000);
-  });
-  
-  onBeforeUnmount(() => {
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
-  });
-  </script>
+
+const resetListenbrainz = () => {
+  listenbrainz.value.title = '';
+  listenbrainz.value.artist = '';
+  listenbrainz.value.lastlisten = '';
+  listenbrainz.value.img = '';
+  listenbrainz.value.musicbrainzurl = '';
+  listenbrainz.value.listenbrainzurl = '';
+};
+
+onMounted(() => {
+  // Call immediately
+  getNowPlayingData();
+  // Polling interval
+  intervalId = setInterval(getNowPlayingData, 15000);
+});
+
+onBeforeUnmount(() => {
+  if (intervalId) {
+    clearInterval(intervalId);
+  }
+});
+</script>
 
 <style lang="scss" scoped>
 .flex {
