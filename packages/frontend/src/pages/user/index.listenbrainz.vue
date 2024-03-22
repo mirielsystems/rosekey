@@ -1,35 +1,32 @@
 <template>
-    <MkContainer :foldable="true">
-      <template #header>
-        <i
-          class="ti ti-headphones"
-          style="margin-right: 0.5em"
-        ></i>Music
-      </template>
-  
-      <div style="padding: 8px">
-        <div class="flex">
-          <template v-if="listenbrainz.title">
-            <a :href="listenbrainz.musicbrainzurl">
-              <img class="image" :src="listenbrainz.img" :alt="listenbrainz.title"/>
-              <div class="flex flex-col items-start">
-                <p class="text-sm font-bold">Now Playing: {{ listenbrainz.title }}</p>
-                <p class="text-xs font-medium">{{ listenbrainz.artist }}</p>
-              </div>
-            </a>
-            <a :href="listenbrainz.listenbrainzurl">
-              <div class="playicon">
-                <i class="ti ti-player-play-filled"></i>
-              </div>
-            </a>
-          </template>
-          <template v-else>
-            <p>Data not available</p>
-          </template>
-        </div>
+  <MkContainer :foldable="true">
+    <template #header>
+      <i class="ti ti-headphones" style="margin-right: 0.5em"></i>Music
+    </template>
+
+    <div style="padding: 8px">
+      <div class="flex">
+        <template v-if="listenbrainz.title">
+          <a :href="listenbrainz.musicbrainzurl">
+            <img v-if="listenbrainz.img" class="image" :src="listenbrainz.img" :alt="listenbrainz.title"/>
+            <div class="flex flex-col items-start">
+              <p class="text-sm font-bold">Now Playing: {{ listenbrainz.title }}</p>
+              <p class="text-xs font-medium">{{ listenbrainz.artist }}</p>
+            </div>
+          </a>
+          <a :href="listenbrainz.listenbrainzurl" v-if="listenbrainz.img">
+            <div class="playicon">
+              <i class="ti ti-player-play-filled"></i>
+            </div>
+          </a>
+        </template>
+        <template v-else>
+          <p>Data not available</p>
+        </template>
       </div>
-    </MkContainer>
-  </template>
+    </div>
+  </MkContainer>
+</template>
   
   <script lang="ts" setup>
   import { ref, onMounted, onBeforeUnmount } from 'vue';
