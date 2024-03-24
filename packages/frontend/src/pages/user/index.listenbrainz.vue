@@ -22,6 +22,7 @@
               <i class="ti ti-player-play-filled"></i>
             </div>
           </a>
+          <button class="share-button" @click="sendMusicNote" :disabled="loading || sending">{{ buttonLabel }}</button>
         </template>
         <template v-else>
           <p>Data not available</p>
@@ -32,9 +33,10 @@
 </template>
   
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
+import { ref, onMounted, onBeforeUnmount, computed, watch } from 'vue';
 import * as misskey from 'cherrypick-js';
 import MkContainer from '@/components/MkContainer.vue';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 
 const props = withDefaults(
   defineProps<{
@@ -45,6 +47,9 @@ const props = withDefaults(
 
 const listenbrainz = ref({ title: '', artist: '', lastlisten: '', img: '', musicbrainzurl: '', listenbrainzurl: '' });
 const loading = ref(false);
+const sending = ref(false);
+const sentSuccessfully = ref(false);
+const sendFailed = ref(false);
 
 let intervalId: NodeJS.Timeout | null = null;
 
@@ -131,6 +136,35 @@ onMounted(() => {
 onBeforeUnmount(() => {
   if (intervalId) {
     clearInterval(intervalId);
+  }
+});
+
+const sendMusicNote = () => {
+  sending.value = true;
+  misskeyApi('notes/create', {
+    text: `${listenbrainz.value.title} を再生中\nアーティスト名: ${listenbrainz.value.artist}\nURL: ${listenbrainz.value.listenbrainzurl}`
+  }).then(message => {
+    sentSuccessfully.value = true;
+    setTimeout(() => {
+      sentSuccessfully.value = false;
+    }, 3000); // 3秒後に送信完了状態を解除
+  }).catch(err => {
+    console.error(err);
+    sendFailed.value = true; // 送信失敗のフラグを設定
+  }).finally(() => {
+    sending.value = false;
+  });
+};
+
+const buttonLabel = computed(() => {
+  return sending.value ? '送信中...' : sentSuccessfully.value ? '送信完了' : sendFailed.value ? '送信失敗' : '音楽を共有';
+});
+
+// sending.valueが変更された場合にsentSuccessfully.valueをリセットする
+watch(sending, (newValue) => {
+  if (!newValue) {
+    sentSuccessfully.value = false;
+    sendFailed.value = false;
   }
 });
 </script>
