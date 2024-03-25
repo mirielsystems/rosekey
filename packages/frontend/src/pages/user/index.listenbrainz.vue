@@ -214,4 +214,17 @@ watch(sending, (newValue) => {
 	font-size: 1.7rem;
 	padding-left: 3rem;
 }
+.share-button {
+  background-color: #007bff;
+  color: #fff;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.share-button:hover {
+  background-color: #0056b3;
+}
 </style>
