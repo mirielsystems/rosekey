@@ -515,6 +515,10 @@ export const meta = {
 				type: 'string',
 				optional: false, nullable: true,
 			},
+			enableSubscriptions: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			commerceDisclosureUrl: {
 				type: 'string',
 				optional: false, nullable: true,
@@ -704,6 +708,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				enableReceivePrerelease: instance.enableReceivePrerelease,
 				skipVersion: instance.skipVersion,
 				skipCherryPickVersion: instance.skipCherryPickVersion,
+				enableSubscriptions: instance.enableSubscriptions,
 				commerceDisclosureUrl: instance.commerceDisclosureUrl,
 			};
 		});
