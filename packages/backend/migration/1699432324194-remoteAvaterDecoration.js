@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 16439s and syuilo and misskey-project...etc
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export class RemoteAvaterDecoration1699432324194 {
 		name = 'RemoteAvaterDecoration1699432324194'
 

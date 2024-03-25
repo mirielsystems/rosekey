@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 16439s and syuilo and misskey-project...etc
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export class AddCommerceDisclosure1706969555324 {
     name = 'AddCommerceDisclosure1706969555324'
 

@@ -1,3 +1,8 @@
+/*
+ * SPDX-FileCopyrightText: 16439s
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 export class UpdateMisskeyIoContentUrls1708085179990 {
     name = 'UpdateMisskeyIoContentUrls1708085179990';
 
