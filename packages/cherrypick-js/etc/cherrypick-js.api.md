@@ -125,7 +125,7 @@ type AdminAvatarDecorationsUpdateRequest = operations['admin___avatar-decoration
 type AdminDeleteAccountRequest = operations['admin___delete-account']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
-type AdminDeleteAccountResponse = operations['admin/delete-account']['responses']['200']['content']['application/json'];
+type AdminDeleteAccountResponse = operations['admin___delete-account']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
 type AdminDeleteAllFilesOfAUserRequest = operations['admin___delete-all-files-of-a-user']['requestBody']['content']['application/json'];
@@ -1515,7 +1515,6 @@ declare namespace entities {
         IGalleryPostsResponse,
         IImportBlockingRequest,
         IImportFollowingRequest,
-        IImportNotesRequest,
         IImportMutingRequest,
         IImportUserListsRequest,
         IImportAntennasRequest,
@@ -2197,9 +2196,6 @@ type IImportBlockingRequest = operations['i___import-blocking']['requestBody']['
 
 // @public (undocumented)
 type IImportFollowingRequest = operations['i___import-following']['requestBody']['content']['application/json'];
-
-// @public (undocumented)
-type IImportNotesRequest = operations['i/import-notes']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
 type IImportMutingRequest = operations['i___import-muting']['requestBody']['content']['application/json'];
