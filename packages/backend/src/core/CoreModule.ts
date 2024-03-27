@@ -95,7 +95,6 @@ import { ClipEntityService } from './entities/ClipEntityService.js';
 import { DriveFileEntityService } from './entities/DriveFileEntityService.js';
 import { DriveFolderEntityService } from './entities/DriveFolderEntityService.js';
 import { EmojiEntityService } from './entities/EmojiEntityService.js';
-import { EmojiRequestsEntityService } from './entities/EmojiRequestsEntityService.js';
 import { FollowingEntityService } from './entities/FollowingEntityService.js';
 import { FollowRequestEntityService } from './entities/FollowRequestEntityService.js';
 import { GalleryLikeEntityService } from './entities/GalleryLikeEntityService.js';
@@ -123,6 +122,7 @@ import { FlashEntityService } from './entities/FlashEntityService.js';
 import { FlashLikeEntityService } from './entities/FlashLikeEntityService.js';
 import { RoleEntityService } from './entities/RoleEntityService.js';
 import { ReversiGameEntityService } from './entities/ReversiGameEntityService.js';
+import { MetaEntityService } from './entities/MetaEntityService.js';
 
 import { ApAudienceService } from './activitypub/ApAudienceService.js';
 import { ApDbResolverService } from './activitypub/ApDbResolverService.js';
@@ -241,7 +241,6 @@ const $ClipEntityService: Provider = { provide: 'ClipEntityService', useExisting
 const $DriveFileEntityService: Provider = { provide: 'DriveFileEntityService', useExisting: DriveFileEntityService };
 const $DriveFolderEntityService: Provider = { provide: 'DriveFolderEntityService', useExisting: DriveFolderEntityService };
 const $EmojiEntityService: Provider = { provide: 'EmojiEntityService', useExisting: EmojiEntityService };
-const $EmojiRequestsEntityService: Provider = { provide: 'EmojiRequestsEntityService', useExisting: EmojiRequestsEntityService };
 const $FollowingEntityService: Provider = { provide: 'FollowingEntityService', useExisting: FollowingEntityService };
 const $FollowRequestEntityService: Provider = { provide: 'FollowRequestEntityService', useExisting: FollowRequestEntityService };
 const $GalleryLikeEntityService: Provider = { provide: 'GalleryLikeEntityService', useExisting: GalleryLikeEntityService };
@@ -269,6 +268,7 @@ const $FlashLikeEntityService: Provider = { provide: 'FlashLikeEntityService', u
 const $RoleEntityService: Provider = { provide: 'RoleEntityService', useExisting: RoleEntityService };
 const $ReversiGameEntityService: Provider = { provide: 'ReversiGameEntityService', useExisting: ReversiGameEntityService };
 const $SubscriptionPlanEntityService: Provider = { provide: 'SubscriptionPlanEntityService', useExisting: SubscriptionPlanEntityService };
+const $MetaEntityService: Provider = { provide: 'MetaEntityService', useExisting: MetaEntityService };
 
 const $ApAudienceService: Provider = { provide: 'ApAudienceService', useExisting: ApAudienceService };
 const $ApDbResolverService: Provider = { provide: 'ApDbResolverService', useExisting: ApDbResolverService };
@@ -388,7 +388,6 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		DriveFileEntityService,
 		DriveFolderEntityService,
 		EmojiEntityService,
-		EmojiRequestsEntityService,
 		FollowingEntityService,
 		FollowRequestEntityService,
 		GalleryLikeEntityService,
@@ -415,6 +414,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		FlashLikeEntityService,
 		RoleEntityService,
 		ReversiGameEntityService,
+		MetaEntityService,
 
 		SubscriptionPlanEntityService,
 		ApAudienceService,
@@ -531,7 +531,6 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$DriveFileEntityService,
 		$DriveFolderEntityService,
 		$EmojiEntityService,
-		$EmojiRequestsEntityService,
 		$FollowingEntityService,
 		$FollowRequestEntityService,
 		$GalleryLikeEntityService,
@@ -558,6 +557,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$FlashLikeEntityService,
 		$RoleEntityService,
 		$ReversiGameEntityService,
+		$MetaEntityService,
 
 		$SubscriptionPlanEntityService,
 		$ApAudienceService,
@@ -674,7 +674,6 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		DriveFileEntityService,
 		DriveFolderEntityService,
 		EmojiEntityService,
-		EmojiRequestsEntityService,
 		FollowingEntityService,
 		FollowRequestEntityService,
 		GalleryLikeEntityService,
@@ -701,6 +700,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		FlashLikeEntityService,
 		RoleEntityService,
 		ReversiGameEntityService,
+		MetaEntityService,
 
 		SubscriptionPlanEntityService,
 		ApAudienceService,
@@ -816,7 +816,6 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$DriveFileEntityService,
 		$DriveFolderEntityService,
 		$EmojiEntityService,
-		$EmojiRequestsEntityService,
 		$FollowingEntityService,
 		$FollowRequestEntityService,
 		$GalleryLikeEntityService,
@@ -843,6 +842,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$FlashLikeEntityService,
 		$RoleEntityService,
 		$ReversiGameEntityService,
+		$MetaEntityService,
 
 		$SubscriptionPlanEntityService,
 		$ApAudienceService,

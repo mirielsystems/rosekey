@@ -156,6 +156,9 @@ export const packedUserLiteSchema = {
 		emojis: {
 			type: 'object',
 			nullable: false, optional: false,
+			additionalProperties: {
+				type: 'string',
+			},
 		},
 		onlineStatus: {
 			type: 'string',
@@ -387,6 +390,10 @@ export const packedUserDetailedNotMeOnlySchema = {
 		},
 		moderationNote: {
 			type: 'string',
+			nullable: false, optional: true,
+		},
+		approved: {
+			type: 'boolean',
 			nullable: false, optional: true,
 		},
 		//#region relations

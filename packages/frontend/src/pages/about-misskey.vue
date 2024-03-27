@@ -16,7 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<div class="version" @click="whatIsNewRosekey">v{{ version }}</div>
 						<div class="version" style="font-size: 11px;" @click="whatIsNewMisskey">v{{ basedMisskeyVersion }} (Based on Misskey)</div>
 						<span v-for="emoji in easterEggEmojis" :key="emoji.id" class="emoji" :data-physics-x="emoji.left" :data-physics-y="emoji.top" :class="{ _physics_circle_: !emoji.emoji.startsWith(':') }">
-							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true"/>
+							<MkCustomEmoji v-if="emoji.emoji[0] === ':'" class="emoji" :name="emoji.emoji" :normal="true" :noStyle="true" :fallbackToImage="true"/>
 							<MkEmoji v-else class="emoji" :emoji="emoji.emoji" :normal="true" :noStyle="true"/>
 						</span>
 					</div>
@@ -45,14 +45,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<span :class="$style.contributorUsername">@16439s
 								<span :class="$style.contributorClient">
 									<span :class="$style.rosekey">Rosekey</span>
-								</span>
-							</span>
-						</a>
-						<a href="https://github.com/1STEP621" target="_blank" :class="$style.contributor">
-							<img src="https://avatars.githubusercontent.com/u/86859447?v=4" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@1STEP621
-								<span :class="$style.contributorClient">
-									<span :class="$style.rosekey">Rosekey＆</span><span :class="$style.misskey">Misskey</span>
 								</span>
 							</span>
 						</a>
@@ -115,6 +107,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<a href="https://github.com/anatawa12" target="_blank" :class="$style.contributor">
 							<img src="https://avatars.githubusercontent.com/u/22656849?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@anatawa12
+								<span :class="$style.contributorClient">
+									<span :class="$style.misskey">Misskey</span>
+								</span>
+							</span>
+						</a>
+						<a href="https://github.com/1STEP621" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/86859447?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@1STEP621
 								<span :class="$style.contributorClient">
 									<span :class="$style.misskey">Misskey</span>
 								</span>

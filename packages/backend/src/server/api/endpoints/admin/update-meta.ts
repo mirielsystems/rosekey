@@ -49,6 +49,13 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
+		allowedHosts: { type: 'array', nullable: true, items: {
+			type: 'string',
+		} },
+		enableAllowedHostsInWhiteList: { type: 'boolean', nullable: true },
+		sensitiveWords: { type: 'array', nullable: true, items: {
+			type: 'string',
+		} },
 		themeColor: { type: 'string', nullable: true, pattern: '^#[0-9a-fA-F]{6}$' },
 		mascotImageUrl: { type: 'string', nullable: true },
 		bannerUrl: { type: 'string', nullable: true },
@@ -68,6 +75,7 @@ export const paramDef = {
 		cacheRemoteFiles: { type: 'boolean' },
 		cacheRemoteSensitiveFiles: { type: 'boolean' },
 		emailRequiredForSignup: { type: 'boolean' },
+		approvalRequiredForSignup: { type: 'boolean' },
 		enableHcaptcha: { type: 'boolean' },
 		hcaptchaSiteKey: { type: 'string', nullable: true },
 		hcaptchaSecretKey: { type: 'string', nullable: true },
@@ -93,7 +101,6 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
-		summalyProxy: { type: 'string', nullable: true },
 		translatorType: { type: 'string', nullable: true },
 		deeplAuthKey: { type: 'string', nullable: true },
 		deeplIsPro: { type: 'boolean' },
@@ -165,6 +172,7 @@ export const paramDef = {
 		perUserHomeTimelineCacheMax: { type: 'integer' },
 		perUserListTimelineCacheMax: { type: 'integer' },
 		notesPerOneAd: { type: 'integer' },
+		enableSubscriptions: { type: 'boolean' },
 		commerceDisclosureUrl: { type: 'string', nullable: true },
 		silencedHosts: {
 			type: 'array',
@@ -173,6 +181,16 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
+		summalyProxy: {
+			type: 'string', nullable: true,
+			description: '[Deprecated] Use "urlPreviewSummaryProxyUrl" instead.',
+		},
+		urlPreviewEnabled: { type: 'boolean' },
+		urlPreviewTimeout: { type: 'integer' },
+		urlPreviewMaximumContentLength: { type: 'integer' },
+		urlPreviewRequireContentLength: { type: 'boolean' },
+		urlPreviewUserAgent: { type: 'string', nullable: true },
+		urlPreviewSummaryProxyUrl: { type: 'string', nullable: true },
 		doNotSendNotificationEmailsForAbuseReport: { type: 'boolean' },
 		emailToReceiveAbuseReport: { type: 'string', nullable: true },
 		enableReceivePrerelease: { type: 'boolean' },
@@ -206,6 +224,14 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (Array.isArray(ps.blockedHosts)) {
 				set.blockedHosts = ps.blockedHosts.filter(Boolean).map(x => x.toLowerCase());
+			}
+
+			if (Array.isArray(ps.allowedHosts)) {
+				set.allowedHosts = ps.allowedHosts.filter(Boolean).map(x => x.toLowerCase());
+			}
+
+			if (typeof ps.enableAllowedHostsInWhiteList === 'boolean') {
+				set.enableAllowedHostsInWhiteList = ps.enableAllowedHostsInWhiteList;
 			}
 
 			if (Array.isArray(ps.sensitiveWords)) {
@@ -298,6 +324,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.emailRequiredForSignup = ps.emailRequiredForSignup;
 			}
 
+			if (ps.approvalRequiredForSignup !== undefined) {
+				set.approvalRequiredForSignup = ps.approvalRequiredForSignup;
+			}
+
 			if (ps.enableHcaptcha !== undefined) {
 				set.enableHcaptcha = ps.enableHcaptcha;
 			}
@@ -380,10 +410,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (Array.isArray(ps.langs)) {
 				set.langs = ps.langs.filter(Boolean);
-			}
-
-			if (ps.summalyProxy !== undefined) {
-				set.summalyProxy = ps.summalyProxy;
 			}
 
 			if (ps.enableEmail !== undefined) {
@@ -686,12 +712,42 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				set.notesPerOneAd = ps.notesPerOneAd;
 			}
 
+			if (ps.enableSubscriptions !== undefined) {
+				set.enableSubscriptions = ps.enableSubscriptions;
+			}
+
 			if (ps.commerceDisclosureUrl !== undefined) {
 				set.commerceDisclosureUrl = ps.commerceDisclosureUrl;
 			}
 
 			if (ps.bannedEmailDomains !== undefined) {
 				set.bannedEmailDomains = ps.bannedEmailDomains;
+			}
+
+			if (ps.urlPreviewEnabled !== undefined) {
+				set.urlPreviewEnabled = ps.urlPreviewEnabled;
+			}
+
+			if (ps.urlPreviewTimeout !== undefined) {
+				set.urlPreviewTimeout = ps.urlPreviewTimeout;
+			}
+
+			if (ps.urlPreviewMaximumContentLength !== undefined) {
+				set.urlPreviewMaximumContentLength = ps.urlPreviewMaximumContentLength;
+			}
+
+			if (ps.urlPreviewRequireContentLength !== undefined) {
+				set.urlPreviewRequireContentLength = ps.urlPreviewRequireContentLength;
+			}
+
+			if (ps.urlPreviewUserAgent !== undefined) {
+				const value = (ps.urlPreviewUserAgent ?? '').trim();
+				set.urlPreviewUserAgent = value === '' ? null : ps.urlPreviewUserAgent;
+			}
+
+			if (ps.summalyProxy !== undefined || ps.urlPreviewSummaryProxyUrl !== undefined) {
+				const value = ((ps.urlPreviewSummaryProxyUrl ?? ps.summalyProxy) ?? '').trim();
+				set.urlPreviewSummaryProxyUrl = value === '' ? null : value;
 			}
 
 			if (ps.doNotSendNotificationEmailsForAbuseReport !== undefined) {

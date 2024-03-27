@@ -48,6 +48,7 @@ export const permissions = [
 	'read:admin:abuse-user-reports',
 	'write:admin:delete-account',
 	'write:admin:delete-all-files-of-a-user',
+	'write:admin:approve-account',
 	'read:admin:index-stats',
 	'read:admin:table-stats',
 	'read:admin:user-ips',
@@ -98,6 +99,7 @@ export const permissions = [
 export const moderationLogTypes = [
 	'updateServerSettings',
 	'suspend',
+	'approve',
 	'unsuspend',
 	'updateUserNote',
 	'addCustomEmoji',
@@ -121,6 +123,7 @@ export const moderationLogTypes = [
 	'resetPassword',
 	'suspendRemoteInstance',
 	'unsuspendRemoteInstance',
+	'updateRemoteInstanceNote',
 	'markSensitiveDriveFile',
 	'unmarkSensitiveDriveFile',
 	'resolveAbuseReport',
@@ -141,6 +144,11 @@ export type ModerationLogPayloads = {
 		after: any | null;
 	};
 	suspend: {
+		userId: string;
+		userUsername: string;
+		userHost: string | null;
+	};
+	approve: {
 		userId: string;
 		userUsername: string;
 		userHost: string | null;
@@ -260,6 +268,12 @@ export type ModerationLogPayloads = {
 	unsuspendRemoteInstance: {
 		id: string;
 		host: string;
+	};
+	updateRemoteInstanceNote: {
+		id: string;
+		host: string;
+		before: string | null;
+		after: string | null;
 	};
 	markSensitiveDriveFile: {
 		fileId: string;

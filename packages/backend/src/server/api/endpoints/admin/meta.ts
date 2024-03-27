@@ -33,6 +33,10 @@ export const meta = {
 				type: 'boolean',
 				optional: false, nullable: false,
 			},
+			approvalRequiredForSignup: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
 			enableHcaptcha: {
 				type: 'boolean',
 				optional: false, nullable: false,
@@ -152,6 +156,18 @@ export const meta = {
 				items: {
 					type: 'string',
 				},
+			},
+			allowedHosts: {
+				type: 'array',
+				optional: true, nullable: false,
+				items: {
+					type: 'string',
+					optional: false, nullable: false,
+				},
+			},
+			enableAllowedHostsInWhiteList: {
+				type: 'boolean',
+				optional: false, nullable: false,
 			},
 			sensitiveWords: {
 				type: 'array',
@@ -490,6 +506,8 @@ export const meta = {
 			summalyProxy: {
 				type: 'string',
 				optional: false, nullable: true,
+				deprecated: true,
+				description: '[Deprecated] Use "urlPreviewSummaryProxyUrl" instead.',
 			},
 			themeColor: {
 				type: 'string',
@@ -498,6 +516,10 @@ export const meta = {
 			tosUrl: {
 				type: 'string',
 				optional: false, nullable: true,
+			},
+			enableSubscriptions: {
+				type: 'boolean',
+				optional: false, nullable: false,
 			},
 			commerceDisclosureUrl: {
 				type: 'string',
@@ -510,6 +532,30 @@ export const meta = {
 			version: {
 				type: 'string',
 				optional: false, nullable: false,
+			},
+			urlPreviewEnabled: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			urlPreviewTimeout: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			urlPreviewMaximumContentLength: {
+				type: 'number',
+				optional: false, nullable: false,
+			},
+			urlPreviewRequireContentLength: {
+				type: 'boolean',
+				optional: false, nullable: false,
+			},
+			urlPreviewUserAgent: {
+				type: 'string',
+				optional: false, nullable: true,
+			},
+			urlPreviewSummaryProxyUrl: {
+				type: 'string',
+				optional: false, nullable: true,
 			},
 			doNotSendNotificationEmailsForAbuseReport: {
 				type: 'boolean',
@@ -570,6 +616,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				privacyPolicyUrl: instance.privacyPolicyUrl,
 				disableRegistration: instance.disableRegistration,
 				emailRequiredForSignup: instance.emailRequiredForSignup,
+				approvalRequiredForSignup: instance.approvalRequiredForSignup,
 				enableHcaptcha: instance.enableHcaptcha,
 				hcaptchaSiteKey: instance.hcaptchaSiteKey,
 				enableMcaptcha: instance.enableMcaptcha,
@@ -606,6 +653,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				hiddenTags: instance.hiddenTags,
 				blockedHosts: instance.blockedHosts,
 				silencedHosts: instance.silencedHosts,
+				allowedHosts: instance.allowedHosts,
+				enableAllowedHostsInWhiteList: instance.enableAllowedHostsInWhiteList,
 				sensitiveWords: instance.sensitiveWords,
 				prohibitedWords: instance.prohibitedWords,
 				preservedUsernames: instance.preservedUsernames,
@@ -618,7 +667,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				setSensitiveFlagAutomatically: instance.setSensitiveFlagAutomatically,
 				enableSensitiveMediaDetectionForVideos: instance.enableSensitiveMediaDetectionForVideos,
 				proxyAccountId: instance.proxyAccountId,
-				summalyProxy: instance.summalyProxy,
 				email: instance.email,
 				smtpSecure: instance.smtpSecure,
 				smtpHost: instance.smtpHost,
@@ -680,11 +728,19 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				perUserHomeTimelineCacheMax: instance.perUserHomeTimelineCacheMax,
 				perUserListTimelineCacheMax: instance.perUserListTimelineCacheMax,
 				notesPerOneAd: instance.notesPerOneAd,
+				summalyProxy: instance.urlPreviewSummaryProxyUrl,
+				urlPreviewEnabled: instance.urlPreviewEnabled,
+				urlPreviewTimeout: instance.urlPreviewTimeout,
+				urlPreviewMaximumContentLength: instance.urlPreviewMaximumContentLength,
+				urlPreviewRequireContentLength: instance.urlPreviewRequireContentLength,
+				urlPreviewUserAgent: instance.urlPreviewUserAgent,
+				urlPreviewSummaryProxyUrl: instance.urlPreviewSummaryProxyUrl,
 				doNotSendNotificationEmailsForAbuseReport: instance.doNotSendNotificationEmailsForAbuseReport,
 				emailToReceiveAbuseReport: instance.emailToReceiveAbuseReport,
 				enableReceivePrerelease: instance.enableReceivePrerelease,
 				skipVersion: instance.skipVersion,
 				skipCherryPickVersion: instance.skipCherryPickVersion,
+				enableSubscriptions: instance.enableSubscriptions,
 				commerceDisclosureUrl: instance.commerceDisclosureUrl,
 			};
 		});

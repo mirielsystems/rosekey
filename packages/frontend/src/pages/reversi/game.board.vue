@@ -38,7 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</div>
 
-		<div :class="$style.board">
+		<div class="_woodenFrame">
 			<div :class="$style.boardInner">
 				<div v-if="showBoardLabels" :class="$style.labelsX">
 					<span v-for="i in game.map[0].length" :key="i" :class="$style.labelsXLabel">{{ String.fromCharCode(64 + i) }}</span>
@@ -292,7 +292,7 @@ if (game.value.isStarted && !game.value.isEnded) {
 			crc32: crc32.toString(),
 		}).then((res) => {
 			if (res.desynced) {
-				console.log('resynced');
+				if (_DEV_) console.log('resynced');
 				restoreGame(res.game!);
 			}
 		});
@@ -526,6 +526,7 @@ function onReactionEmojiClick(emoji: string, ev?: MouseEvent) {
 
 // #region リアクションピッカー
 const reactButton = ref<HTMLElement | null>(null);
+
 function onReactionPickerClick() {
 	reactionPicker.show(reactButton.value ?? null, reaction => {
 		const key = getKey(reaction);
@@ -653,17 +654,6 @@ $gap: 4px;
 
 .root {
 	text-align: center;
-}
-
-.board {
-	width: 100%;
-	box-sizing: border-box;
-	margin: 0 auto;
-
-	padding: 7px;
-	background: #8C4F26;
-	box-shadow: 0 6px 16px #0007, 0 0 1px 1px #693410, inset 0 0 2px 1px #ce8a5c;
-	border-radius: 12px;
 }
 
 .boardInner {

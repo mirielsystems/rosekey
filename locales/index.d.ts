@@ -459,6 +459,10 @@ export interface Locale extends ILocale {
      */
     "users": string;
     /**
+     * 承認
+     */
+    "approvals": string;
+    /**
      * ユーザーを追加
      */
     "addUser": string;
@@ -923,6 +927,14 @@ export interface Locale extends ILocale {
      */
     "suspendConfirm": string;
     /**
+     * 登録を承認しますか？
+     */
+    "registerApproveConfirm": string;
+    /**
+     * この操作は取り消せません。承認後、このユーザーに登録が承認された旨が記載されたメールが送信されます。
+     */
+    "registerApproveConfirmDescription": string;
+    /**
      * 解凍しますか？
      */
     "unsuspendConfirm": string;
@@ -1235,6 +1247,22 @@ export interface Locale extends ILocale {
      */
     "silencedInstancesDescription": string;
     /**
+     * 許可したサーバー
+     */
+    "allowedInstances": string;
+    /**
+     * 許可したいサーバーのホストを改行で区切って設定します。許可されたサーバー以外は、このサーバーとやり取りできなくなります。サブドメインもブロックされます。
+     */
+    "allowedInstancesDescription": string;
+    /**
+     * ホワイトリスト形式で連合を許可
+     */
+    "enableAllowedHostsInWhiteList": string;
+    /**
+     * ホワイトリスト
+     */
+    "whiteList": string;
+    /**
      * ミュートとブロック
      */
     "muteAndBlock": string;
@@ -1410,10 +1438,6 @@ export interface Locale extends ILocale {
      * リセットしますか？
      */
     "resetAreYouSure": string;
-    /**
-     * 絵文字リクエストしてよろしいでしょうか？
-     */
-    "requestApprovalAreYouSure": string;
     /**
      * よろしいですか？
      */
@@ -1959,6 +1983,10 @@ export interface Locale extends ILocale {
      */
     "antennaExcludeKeywords": string;
     /**
+     * Botアカウントを除外
+     */
+    "antennaExcludeBots": string;
+    /**
      * スペースで区切るとAND指定になり、改行で区切るとOR指定になります
      */
     "antennaKeywordsDescription": string;
@@ -2382,6 +2410,10 @@ export interface Locale extends ILocale {
      * ノートのアクションをホバー時のみ表示する
      */
     "showNoteActionsOnlyHover": string;
+    /**
+     * ノートのリアクション数を表示する
+     */
+    "showReactionsCount": string;
     /**
      * 履歴はありません
      */
@@ -3832,10 +3864,6 @@ export interface Locale extends ILocale {
      */
     "emailNotConfiguredWarning": string;
     /**
-     * リスト
-     */
-    "list": string;
-    /**
      * 比率
      */
     "ratio": string;
@@ -3971,6 +3999,14 @@ export interface Locale extends ILocale {
      * アカウント登録にメールアドレスを必須にする
      */
     "emailRequiredForSignup": string;
+    /**
+     * アカウント登録を承認制にする
+     */
+    "approvalRequiredForSignup": string;
+    /**
+     * アカウント登録の承認
+     */
+    "signupPendingApprovals": string;
     /**
      * 未読
      */
@@ -4180,6 +4216,10 @@ export interface Locale extends ILocale {
      */
     "thereIsUnresolvedAbuseReportWarning": string;
     /**
+     * 承認待ちのユーザーがいます。
+     */
+    "pendingUserApprovals": string;
+    /**
      * 推奨
      */
     "recommended": string;
@@ -4211,6 +4251,26 @@ export interface Locale extends ILocale {
      * アカウント削除
      */
     "deleteAccount": string;
+    /**
+     * 承認する
+     */
+    "approveAccount": string;
+    /**
+     * 拒否してアカウント削除
+     */
+    "denyAccount": string;
+    /**
+     * 承認済み
+     */
+    "approved": string;
+    /**
+     * 未承認
+     */
+    "notApproved": string;
+    /**
+     * 承認状況
+     */
+    "approvalStatus": string;
     /**
      * ドキュメント
      */
@@ -4468,10 +4528,6 @@ export interface Locale extends ILocale {
      */
     "manageAvatarDecorations": string;
     /**
-     * 絵文字リクエスト
-     */
-    "requestCustomEmojis": string;
-    /**
      * これ以上作成することはできません。
      */
     "youCannotCreateAnymore": string;
@@ -4584,6 +4640,22 @@ export interface Locale extends ILocale {
      */
     "invitationRequiredToRegister": string;
     /**
+     * 現在このサーバーは承認制です。参加したい理由を記入し、承認された方のみ登録できます。
+     */
+    "approvalRequiredToRegister": string;
+    /**
+     * 登録理由
+     */
+    "registerReason": string;
+    /**
+     * サーバーへの登録はまだ承認されていません。しばらくしてから再度お試しください。登録時にメールアドレスを記入した場合は、登録が承認されたらメールでお知らせします。
+     */
+    "registerHasNotBeenApprovedYet": string;
+    /**
+     * サーバーへの登録が承認されたかどうかの通知を行うために、併せてアカウント登録にメールアドレスを必須にすることを強く推奨します。
+     */
+    "registerApprovalEmailRecommended": string;
+    /**
      * このサーバーではメール配信はサポートされていません
      */
     "emailNotSupported": string;
@@ -4667,13 +4739,6 @@ export interface Locale extends ILocale {
      * お気に入り解除しますか？
      */
     "unfavoriteConfirm": string;
-      /**
-     * 絵文字関連
-     */
-    "requestPending": string;
-    "approval": string;
-    "requestingEmojis": string;
-    "emojiNameValidation": string;
     /**
      * 自分のクリップ
      */
@@ -5351,6 +5416,14 @@ export interface Locale extends ILocale {
      */
     "replaying": string;
     /**
+     * リプレイを終了
+     */
+    "endReplay": string;
+    /**
+     * リプレイデータをコピー
+     */
+    "copyReplayData": string;
+    /**
      * ランキング
      */
     "ranking": string;
@@ -5378,6 +5451,30 @@ export interface Locale extends ILocale {
      * スワイプしてタブを切り替える
      */
     "enableHorizontalSwipe": string;
+    /**
+     * 読み込み中
+     */
+    "loading": string;
+    /**
+     * やめる
+     */
+    "surrender": string;
+    /**
+     * リトライ
+     */
+    "gameRetry": string;
+    /**
+     * 使用しない場合は空欄にしてください
+     */
+    "notUsePleaseLeaveBlank": string;
+    /**
+     * ワンタイムパスワードを使う
+     */
+    "useTotp": string;
+    /**
+     * バックアップコードを使う
+     */
+    "useBackupCode": string;
     /**
      * 未読の通知の数を表示する
      */
@@ -5465,6 +5562,40 @@ export interface Locale extends ILocale {
          * 遊び方
          */
         "howToPlay": string;
+        /**
+         * ホールド
+         */
+        "hold": string;
+        "_score": {
+            /**
+             * スコア
+             */
+            "score": string;
+            /**
+             * 稼いだ金額
+             */
+            "scoreYen": string;
+            /**
+             * ハイスコア
+             */
+            "highScore": string;
+            /**
+             * 最大チェーン数
+             */
+            "maxChain": string;
+            /**
+             * {yen}円
+             */
+            "yen": ParameterizedString<"yen">;
+            /**
+             * {qty}個分
+             */
+            "estimatedQty": ParameterizedString<"qty">;
+            /**
+             * おにぎり {onigiriQtyWithUnit}
+             */
+            "scoreSweets": ParameterizedString<"onigiriQtyWithUnit">;
+        };
         "_howToPlay": {
             /**
              * 位置を調整してハコにモノを落とします。
@@ -7129,6 +7260,10 @@ export interface Locale extends ILocale {
     };
     "_subscription": {
         /**
+         * 現在のプラン
+         */
+        "current": string;
+        /**
          * 価格
          */
         "price": string;
@@ -7356,6 +7491,10 @@ export interface Locale extends ILocale {
              */
             "canInvite": string;
             /**
+             * ノートインポート
+             */
+            "canImportNotes": string;
+            /**
              * 招待コードの作成可能数
              */
             "inviteLimit": string;
@@ -7375,10 +7514,6 @@ export interface Locale extends ILocale {
              * アバターデコレーションの管理
              */
             "canManageAvatarDecorations": string;
-            /**
-             * 絵文字リクエスト
-             */
-            "canRequestCustomEmojis": string;
             /**
              * ドライブ容量
              */
@@ -7449,6 +7584,10 @@ export interface Locale extends ILocale {
             "avatarDecorationLimit": string;
         };
         "_condition": {
+            /**
+             * マニュアルロールにアサイン済み
+             */
+            "roleAssignedTo": string;
             /**
              * ローカルユーザー
              */
@@ -7602,6 +7741,14 @@ export interface Locale extends ILocale {
          * メールに記載されているリンクの有効期限は30分です。
          */
         "emailSent": ParameterizedString<"email">;
+        /**
+         * アカウントが作成され、承認待ちの状態です。
+         */
+        "approvalPending": string;
+        /**
+         * このサーバーに参加したい理由を入力してください。
+         */
+        "reasonInfo": string;
     };
     "_accountDelete": {
         /**
@@ -7726,6 +7873,10 @@ export interface Locale extends ILocale {
          * ソースを表示
          */
         "viewSource": string;
+        /**
+         * ログを表示
+         */
+        "viewLog": string;
     };
     "_preferencesBackups": {
         /**
@@ -9918,6 +10069,10 @@ export interface Locale extends ILocale {
          * 説明
          */
         "summary": string;
+        /**
+         * 非公開に設定するとプロフィールに表示されなくなりますが、URLを知っている人は引き続きアクセスできます。
+         */
+        "visibilityDescription": string;
     };
     "_pages": {
         /**
@@ -10209,6 +10364,10 @@ export interface Locale extends ILocale {
          */
         "reactedBySomeUsers": ParameterizedString<"n">;
         /**
+         * {n}人がいいねしました
+         */
+        "likedBySomeUsers": ParameterizedString<"n">;
+        /**
          * {n}人がリノートしました
          */
         "renotedBySomeUsers": ParameterizedString<"n">;
@@ -10216,6 +10375,10 @@ export interface Locale extends ILocale {
          * {n}人にフォローされました
          */
         "followedBySomeUsers": ParameterizedString<"n">;
+        /**
+         * 通知の履歴をリセットする
+         */
+        "flushNotification": string;
         "_types": {
             /**
              * すべて
@@ -10517,6 +10680,10 @@ export interface Locale extends ILocale {
          */
         "unassignRole": string;
         /**
+         * 承認済み
+         */
+        "approve": string;
+        /**
          * 凍結
          */
         "suspend": string;
@@ -10541,7 +10708,7 @@ export interface Locale extends ILocale {
          */
         "updateServerSettings": string;
         /**
-         * モデレーションノート更新
+         * ユーザーのモデレーションノート更新
          */
         "updateUserNote": string;
         /**
@@ -10588,6 +10755,10 @@ export interface Locale extends ILocale {
          * リモートサーバーを再開
          */
         "unsuspendRemoteInstance": string;
+        /**
+         * リモートサーバーのモデレーションノート更新
+         */
+        "updateRemoteInstanceNote": string;
         /**
          * ファイルをセンシティブ付与
          */
@@ -11062,6 +11233,60 @@ export interface Locale extends ILocale {
          * サーバーに接続できません
          */
         "header": string;
+    };
+    "_urlPreviewSetting": {
+        /**
+         * URLプレビューの設定
+         */
+        "title": string;
+        /**
+         * URLプレビューを有効にする
+         */
+        "enable": string;
+        /**
+         * プレビュー取得時のタイムアウト(ms)
+         */
+        "timeout": string;
+        /**
+         * プレビュー取得の所要時間がこの値を超えた場合、プレビューは生成されません。
+         */
+        "timeoutDescription": string;
+        /**
+         * Content-Lengthの最大値(byte)
+         */
+        "maximumContentLength": string;
+        /**
+         * Content-Lengthがこの値を超えた場合、プレビューは生成されません。
+         */
+        "maximumContentLengthDescription": string;
+        /**
+         * Content-Lengthが取得できた場合のみプレビューを生成
+         */
+        "requireContentLength": string;
+        /**
+         * 相手サーバがContent-Lengthを返さない場合、プレビューは生成されません。
+         */
+        "requireContentLengthDescription": string;
+        /**
+         * User-Agent
+         */
+        "userAgent": string;
+        /**
+         * プレビュー取得時に使用されるUser-Agentを設定します。空欄の場合、デフォルトのUser-Agentが使用されます。
+         */
+        "userAgentDescription": string;
+        /**
+         * プレビューを生成するプロキシのエンドポイント
+         */
+        "summaryProxy": string;
+        /**
+         * CherryPick本体ではなく、サマリープロキシを使用してプレビューを生成します。
+         */
+        "summaryProxyDescription": string;
+        /**
+         * プロキシには下記パラメータがクエリ文字列として連携されます。プロキシ側がこれらをサポートしない場合、設定値は無視されます。
+         */
+        "summaryProxyDescription2": string;
     };
     "_abuse": {
         "_resolver": {

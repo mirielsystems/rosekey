@@ -71,6 +71,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 							</MkSwitch>
 						</MkFolder>
 
+						<MkFolder v-if="matchQuery([i18n.ts._role._options.canImportNotes, 'canImportNotes'])">
+							<template #label>{{ i18n.ts._role._options.canImportNotes }}</template>
+							<template #suffix>{{ policies.canImportNotes ? i18n.ts.yes : i18n.ts.no }}</template>
+							<MkSwitch v-model="policies.canImportNotes">
+								<template #label>{{ i18n.ts.enable }}</template>
+							</MkSwitch>
+						</MkFolder>
+
 						<MkFolder v-if="matchQuery([i18n.ts._role._options.inviteLimit, 'inviteLimit'])">
 							<template #label>{{ i18n.ts._role._options.inviteLimit }}</template>
 							<template #suffix>{{ policies.inviteLimit }}</template>
@@ -106,14 +114,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<template #label>{{ i18n.ts._role._options.canManageCustomEmojis }}</template>
 							<template #suffix>{{ policies.canManageCustomEmojis ? i18n.ts.yes : i18n.ts.no }}</template>
 							<MkSwitch v-model="policies.canManageCustomEmojis">
-								<template #label>{{ i18n.ts.enable }}</template>
-							</MkSwitch>
-						</MkFolder>
-
-						<MkFolder v-if="matchQuery([i18n.ts._role._options.canRequestCustomEmojis, 'canRequestCustomEmojis'])">
-							<template #label>{{ i18n.ts._role._options.canRequestCustomEmojis }}</template>
-							<template #suffix>{{ policies.canRequestCustomEmojis ? i18n.ts.yes : i18n.ts.no }}</template>
-							<MkSwitch v-model="policies.canRequestCustomEmojis">
 								<template #label>{{ i18n.ts.enable }}</template>
 							</MkSwitch>
 						</MkFolder>

@@ -15,8 +15,9 @@
 ## 1.0.0 (unreleased)
 
 ### General
+- Misskey 2024.3.1 (CherryPick 4.8.0)に追従
 - 決済サービス(Stripe)がサーバー内でできるように。
-- ListenBranzに対応
+- ListenBrainzに対応
 - メンションの最大数をロールごとに設定可能にする (misskey-dev/misskey #13343)
 
 ### Client(Frontend)
@@ -25,6 +26,8 @@
 - Fix(frontend): userActivationがない環境において不具合が生じる問題を修正 (misskey-dev/misskey)
 - Fix: メニューが出るタイプのヘッダータブが押せない 
 - feat(reversi): ゲーム中にリアクションを打てるように (misskey-dev/misskey PR #13119)
+- Fix: チャットで絵文字ピッカーを開けなくなる問題を修正
+- Feat: MusicBrainzの情報をリアルタイム更新するように。
 
 
 ### Server(Backend)

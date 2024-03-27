@@ -71,6 +71,16 @@ export class MiMeta {
 	})
 	public blockedHosts: string[];
 
+	@Column('boolean', {
+		default: false,
+	})
+	public enableAllowedHostsInWhiteList: boolean;
+
+	@Column('varchar', {
+		length: 1024, array: true, default: '{}',
+	})
+	public allowedHosts: string[];
+
 	@Column('varchar', {
 		length: 1024, array: true, default: '{}',
 	})
@@ -182,6 +192,11 @@ export class MiMeta {
 	@Column('boolean', {
 		default: false,
 	})
+	public approvalRequiredForSignup: boolean;
+
+	@Column('boolean', {
+		default: false,
+	})
 	public enableHcaptcha: boolean;
 
 	@Column('varchar', {
@@ -276,12 +291,6 @@ export class MiMeta {
 		default: false,
 	})
 	public enableSensitiveMediaDetectionForVideos: boolean;
-
-	@Column('varchar', {
-		length: 1024,
-		nullable: true,
-	})
-	public summalyProxy: string | null;
 
 	@Column('boolean', {
 		default: false,
@@ -696,6 +705,38 @@ export class MiMeta {
 		default: 0,
 	})
 	public notesPerOneAd: number;
+
+	@Column('boolean', {
+		default: true,
+	})
+	public urlPreviewEnabled: boolean;
+
+	@Column('integer', {
+		default: 10000,
+	})
+	public urlPreviewTimeout: number;
+
+	@Column('bigint', {
+		default: 1024 * 1024 * 10,
+	})
+	public urlPreviewMaximumContentLength: number;
+
+	@Column('boolean', {
+		default: true,
+	})
+	public urlPreviewRequireContentLength: boolean;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public urlPreviewSummaryProxyUrl: string | null;
+
+	@Column('varchar', {
+		length: 1024,
+		nullable: true,
+	})
+	public urlPreviewUserAgent: string | null;
 
 	@Column('boolean', {
 		default: false,

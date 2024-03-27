@@ -24,6 +24,9 @@ export type ModerationLog = {
 	type: 'updateServerSettings';
 	info: ModerationLogPayloads['updateServerSettings'];
 } | {
+	type: 'approve';
+	info: ModerationLogPayloads['approve'];
+} | {
 	type: 'suspend';
 	info: ModerationLogPayloads['suspend'];
 } | {
@@ -95,6 +98,9 @@ export type ModerationLog = {
 } | {
 	type: 'unsuspendRemoteInstance';
 	info: ModerationLogPayloads['unsuspendRemoteInstance'];
+} | {
+	type: 'updateRemoteInstanceNote';
+	info: ModerationLogPayloads['updateRemoteInstanceNote'];
 } | {
 	type: 'markSensitiveDriveFile';
 	info: ModerationLogPayloads['markSensitiveDriveFile'];

@@ -5,7 +5,6 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
 import type { DriveFilesRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
@@ -57,9 +56,11 @@ export const paramDef = {
 		roleIdsThatCanBeUsedThisEmojiAsReaction: { type: 'array', items: {
 			type: 'string',
 		} },
-		Request: { type: 'boolean' },
 	},
-	required: ['id', 'name', 'aliases'],
+	anyOf: [
+		{ required: ['id'] },
+		{ required: ['name'] },
+	],
 } as const;
 
 @Injectable()
@@ -69,50 +70,40 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private driveFilesRepository: DriveFilesRepository,
 
 		private customEmojiService: CustomEmojiService,
-		private driveFileEntityService: DriveFileEntityService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			let driveFile;
-			const isRequest = !!ps.Request;
 			if (ps.fileId) {
 				driveFile = await this.driveFilesRepository.findOneBy({ id: ps.fileId });
 				if (driveFile == null) throw new ApiError(meta.errors.noSuchFile);
 			}
-			const emoji = await this.customEmojiService.getEmojiById(ps.id);
-			if (emoji != null) {
-				if (ps.name !== emoji.name) {
+
+			let emojiId;
+			if (ps.id) {
+				emojiId = ps.id;
+				const emoji = await this.customEmojiService.getEmojiById(ps.id);
+				if (!emoji) throw new ApiError(meta.errors.noSuchEmoji);
+				if (ps.name && (ps.name !== emoji.name)) {
 					const isDuplicate = await this.customEmojiService.checkDuplicate(ps.name);
 					if (isDuplicate) throw new ApiError(meta.errors.sameNameEmojiExists);
 				}
 			} else {
-				throw new ApiError(meta.errors.noSuchEmoji);
+				if (!ps.name) throw new Error('Invalid Params unexpectedly passed. This is a BUG. Please report it to the development team.');
+				const emoji = await this.customEmojiService.getEmojiByName(ps.name);
+				if (!emoji) throw new ApiError(meta.errors.noSuchEmoji);
+				emojiId = emoji.id;
 			}
 
-			if (!isRequest) {
-				await this.customEmojiService.update(ps.id, {
-					driveFile,
-					name: ps.name,
-					category: ps.category ?? null,
-					aliases: ps.aliases,
-					license: ps.license ?? null,
-					isSensitive: ps.isSensitive,
-					localOnly: ps.localOnly,
-					roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
-				}, me);
-			} else {
-				const file = await this.driveFileEntityService.getFromUrl(emoji.originalUrl);
-				if (file === null) throw new ApiError(meta.errors.noSuchFile);
-				await this.customEmojiService.request({
-					driveFile: file,
-					name: ps.name,
-					category: ps.category ?? null,
-					aliases: ps.aliases ?? [],
-					license: ps.license ?? null,
-					isSensitive: ps.isSensitive ?? false,
-					localOnly: ps.localOnly ?? false,
-				}, me);
-				await this.customEmojiService.delete(ps.id);
-			}
+			await this.customEmojiService.update(emojiId, {
+				driveFile,
+				name: ps.name,
+				category: ps.category,
+				aliases: ps.aliases,
+				license: ps.license,
+				isSensitive: ps.isSensitive,
+				localOnly: ps.localOnly,
+				roleIdsThatCanBeUsedThisEmojiAsReaction: ps.roleIdsThatCanBeUsedThisEmojiAsReaction,
+			}, me);
 		});
 	}
 }
