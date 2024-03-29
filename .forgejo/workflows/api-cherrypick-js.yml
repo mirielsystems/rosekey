@@ -1,0 +1,42 @@
+name: API report (cherrypick.js)
+
+on:
+  push:
+    paths:
+      - packages/cherrypick-js/**
+  pull_request:
+    paths:
+      - packages/cherrypick-js/**
+
+jobs:
+  report:
+
+    runs-on: docker
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.1
+
+      - run: corepack enable
+
+      - name: Setup Node.js
+        uses: https://code.forgejo.org/actions/setup-node@v4
+        with:
+          node-version-file: '.node-version'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        run: pnpm i --frozen-lockfile
+
+      - name: Build
+        run: pnpm --filter cherrypick-js build
+
+      - name: Check files
+        run: ls packages/cherrypick-js/built
+
+      - name: API report
+        run: pnpm --filter cherrypick-js api-prod
+
+      - name: Show report
+        if: always()
+        run: cat packages/cherrypick-js/temp/cherrypick-js.api.md
