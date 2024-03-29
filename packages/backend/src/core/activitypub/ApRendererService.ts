@@ -543,6 +543,10 @@ export class ApRendererService {
 			person['vcard:Address'] = profile.location;
 		}
 
+		if (profile.listenbrainz) {
+			person.listenbrainz = profile.listenbrainz;
+		}
+
 		return person;
 	}
 
@@ -681,6 +685,8 @@ export class ApRendererService {
 					'isCat': 'misskey:isCat',
 					// vcard
 					vcard: 'http://www.w3.org/2006/vcard/ns#',
+					// rosekey＆sharkey
+					listenbrainz: "sharkey:listenbrainz",
 				},
 			],
 		}, x as T & { id: string });
