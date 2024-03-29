@@ -5252,7 +5252,7 @@ export interface Locale extends ILocale {
      */
     "repositoryUrl": string;
     /**
-     * ソースコードが公開されているリポジトリがある場合、そのURLを記入します。Rosekeyを現状のまま（ソースコードにいかなる変更も加えずに）使用している場合は https://github.com/freelynetwork/rosekey と記入します。
+     * ソースコードが公開されているリポジトリがある場合、そのURLを記入します。Rosekeyを現状のまま（ソースコードにいかなる変更も加えずに）使用している場合は https://code.164.one/master/rosekey と記入します。
      */
     "repositoryUrlDescription": string;
     /**
