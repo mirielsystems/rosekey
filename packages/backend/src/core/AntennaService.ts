@@ -18,7 +18,6 @@ import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
 import type { OnApplicationShutdown } from '@nestjs/common';
-import { deserializeAntenna } from './deserializeAntenna.js';
 
 @Injectable()
 export class AntennaService implements OnApplicationShutdown {
@@ -52,32 +51,48 @@ export class AntennaService implements OnApplicationShutdown {
 	}
 
 	@bindThis
-    private async onRedisMessage(_: string, data: string): Promise<void> {
-    const obj = JSON.parse(data);
+	private async onRedisMessage(_: string, data: string): Promise<void> {
+		const obj = JSON.parse(data);
 
-    if (obj.channel === 'internal') {
-        const { type, body } = obj.message as GlobalEvents['internal']['payload'];
-        switch (type) {
-            case 'antennaCreated':
-                this.antennas.push(deserializeAntenna(body));
-                break;
-            case 'antennaUpdated': {
-                const idx = this.antennas.findIndex(a => a.id === body.id);
-                if (idx >= 0) {
-                    this.antennas[idx] = deserializeAntenna(body);
-                } else {
-                    this.antennas.push(deserializeAntenna(body));
-                }
-            }
-                break;
-            case 'antennaDeleted':
-                this.antennas = this.antennas.filter(a => a.id !== body.id);
-                break;
-            default:
-                break;
-        }
-    }
-}
+		if (obj.channel === 'internal') {
+			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
+			switch (type) {
+				case 'antennaCreated':
+					this.antennas.push({ // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
+						...body,
+						lastUsedAt: new Date(body.lastUsedAt),
+						user: null, // joinなカラムは通常取ってこないので
+						userList: null, // joinなカラムは通常取ってこないので
+					});
+					break;
+				case 'antennaUpdated': {
+					const idx = this.antennas.findIndex(a => a.id === body.id);
+					if (idx >= 0) {
+						this.antennas[idx] = { // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
+							...body,
+							lastUsedAt: new Date(body.lastUsedAt),
+							user: null, // joinなカラムは通常取ってこないので
+							userList: null, // joinなカラムは通常取ってこないので
+						};
+					} else {
+						// サーバ起動時にactiveじゃなかった場合、リストに持っていないので追加する必要あり
+						this.antennas.push({ // TODO: このあたりのデシリアライズ処理は各modelファイル内に関数としてexportしたい
+							...body,
+							lastUsedAt: new Date(body.lastUsedAt),
+							user: null, // joinなカラムは通常取ってこないので
+							userList: null, // joinなカラムは通常取ってこないので
+						});
+					}
+				}
+					break;
+				case 'antennaDeleted':
+					this.antennas = this.antennas.filter(a => a.id !== body.id);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	@bindThis
 	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null; isBot: boolean; }): Promise<void> {
