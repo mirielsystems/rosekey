@@ -14,6 +14,7 @@ import { IdService } from '@/core/IdService.js';
 export const meta = {
     tags: ['admin'],
     requireCredential: true,
+	secure: true,
     requireAdmin: true,
     kind: 'arr-create', // ここにkindプロパティを追加
     res: {

@@ -13,6 +13,7 @@ export const meta = {
 	requireCrendential: true,
 	kind: 'arr-delete', // ここにkindプロパティを追加
 	requireAdmin: true,
+	secure: true,
 
 	errors: {
 		resolverNotFound: {
