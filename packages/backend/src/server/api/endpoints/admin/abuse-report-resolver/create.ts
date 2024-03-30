@@ -15,7 +15,7 @@ export const meta = {
     tags: ['admin'],
     requireCredential: true,
     requireAdmin: true,
-    kind: 'abuse-report-resolver-create', // 任意の値を設定する
+    kind: 'arr-create', // ここにkindプロパティを追加
     res: {
         type: 'object',
         properties: {

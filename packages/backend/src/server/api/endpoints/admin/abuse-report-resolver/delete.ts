@@ -11,7 +11,7 @@ import { ApiError } from '../../../error.js';
 
 export const meta = {
 	requireCrendential: true,
-
+	kind: 'arr-delete', // ここにkindプロパティを追加
 	requireAdmin: true,
 
 	errors: {

@@ -12,7 +12,7 @@ import type { AbuseReportResolversRepository } from '@/models/_.js';
 
 export const meta = {
 	requireCredential: true,
-
+	kind: 'arr-list', // ここにkindプロパティを追加
 	requireAdmin: true,
 
 	res: {
