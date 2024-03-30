@@ -10,19 +10,19 @@
           <p>Loading...</p>
         </template>
         <template v-else-if="listenbrainz.title">
-          <a :href="listenbrainz.musicbrainzurl">
+          <a :href="listenbrainz.musicbrainzurl" v-if="listenbrainz.title">
             <img v-if="listenbrainz.img" class="image" :src="listenbrainz.img" :alt="listenbrainz.title"/>
             <div class="flex flex-col items-start">
               <p class="text-sm font-bold">Now Playing: {{ listenbrainz.title }}</p>
               <p class="text-xs font-medium">{{ listenbrainz.artist }}</p>
             </div>
           </a>
-          <a :href="listenbrainz.listenbrainzurl" v-if="listenbrainz.img">
+          <a v-if="listenbrainz.listenbrainzurl" :href="listenbrainz.listenbrainzurl">
             <div class="playicon">
               <i class="ti ti-player-play-filled"></i>
             </div>
           </a>
-          <button class="share-button" @click="sendMusicNote" :disabled="loading || sending">{{ buttonLabel }}</button>
+          <button @click="sendMusicNote" :disabled="loading || sending" class="share-button">{{ buttonLabel }}</button>
         </template>
         <template v-else>
           <p>Data not available</p>
@@ -51,7 +51,7 @@ const sending = ref(false);
 const sentSuccessfully = ref(false);
 const sendFailed = ref(false);
 
-let intervalId: NodeJS.Timeout | null = null;
+let timerId: number | null = null;
 
 const getNowPlayingData = async () => {
   if (props.user.listenbrainz) {
@@ -130,12 +130,14 @@ onMounted(() => {
   // Call immediately
   getNowPlayingData();
   // Polling interval
-  intervalId = setInterval(getNowPlayingData, 15000);
+  timerId = window.setInterval(getNowPlayingData, 15000);
 });
 
+// コンポーネントがアンマウントされるときに実行
 onBeforeUnmount(() => {
-  if (intervalId) {
-    clearInterval(intervalId);
+  // ポーリングを停止
+  if (timerId) {
+    clearInterval(timerId);
   }
 });
 

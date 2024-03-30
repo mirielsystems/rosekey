@@ -524,6 +524,8 @@ export class ApRendererService {
 			discoverable: user.isExplorable,
 			publicKey: this.renderKey(user, keypair, '#main-key'),
 			isCat: user.isCat,
+			isIndexable: user.isIndexable,
+			speakAsCat: user.speakAsCat,
 			attachment: attachment.length ? attachment : undefined,
 		};
 
@@ -541,6 +543,10 @@ export class ApRendererService {
 
 		if (profile.location) {
 			person['vcard:Address'] = profile.location;
+		}
+
+		if (profile.listenbrainz) {
+			person.listenbrainz = profile.listenbrainz;
 		}
 
 		return person;
@@ -679,8 +685,13 @@ export class ApRendererService {
 					'_misskey_summary': 'misskey:_misskey_summary',
 					'_misskey_talk': 'misskey:_misskey_talk',
 					'isCat': 'misskey:isCat',
+					// Firefish
+					firefish: "https://joinfirefish.org/ns#",
+					speakAsCat: "firefish:speakAsCat",
 					// vcard
 					vcard: 'http://www.w3.org/2006/vcard/ns#',
+					// rosekey＆sharkey
+					listenbrainz: "sharkey:listenbrainz",
 				},
 			],
 		}, x as T & { id: string });

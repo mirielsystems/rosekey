@@ -40,6 +40,7 @@ describe('ユーザー', () => {
 			avatarDecorations: user.avatarDecorations,
 			isBot: user.isBot,
 			isCat: user.isCat,
+			speakAsCat: user.speakAsCat,
 			instance: user.instance,
 			emojis: user.emojis,
 			onlineStatus: user.onlineStatus,
@@ -310,6 +311,7 @@ describe('ユーザー', () => {
 		assert.deepStrictEqual(response.avatarDecorations, []);
 		assert.strictEqual(response.isBot, false);
 		assert.strictEqual(response.isCat, false);
+		assert.strictEqual(response.speakAsCat, false);
 		assert.strictEqual(response.instance, undefined);
 		assert.deepStrictEqual(response.emojis, {});
 		assert.strictEqual(response.onlineStatus, 'unknown');
@@ -446,6 +448,8 @@ describe('ユーザー', () => {
 		{ parameters: () => ({ isBot: false }) },
 		{ parameters: () => ({ isCat: true }) },
 		{ parameters: () => ({ isCat: false }) },
+		{ parameters: (): object => ({ speakAsCat: true }) },
+		{ parameters: (): object => ({ speakAsCat: false }) },
 		{ parameters: () => ({ injectFeaturedNote: true }) },
 		{ parameters: () => ({ injectFeaturedNote: false }) },
 		{ parameters: () => ({ receiveAnnouncementEmail: true }) },
