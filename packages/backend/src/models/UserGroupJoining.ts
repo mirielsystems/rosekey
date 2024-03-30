@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and misskey-project
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -11,35 +11,32 @@ import { MiUserGroup } from './UserGroup.js';
 @Entity('user_group_joining')
 @Index(['userId', 'userGroupId'], { unique: true })
 export class MiUserGroupJoining {
-    @PrimaryColumn(id())
-    public id: string;
+	@PrimaryColumn(id())
+	public id: string;
 
-    @Index()
-    @Column({
-        ...id(),
-        comment: 'The user ID.',
-    })
-    public userId: string;
+	@Index()
+	@Column({
+		...id(),
+		comment: 'The user ID.',
+	})
+	public userId: MiUser['id'];
 
-    @ManyToOne(() => MiUser, {
-        onDelete: 'CASCADE',
-    })
-    @JoinColumn()
-    public user: MiUser | null;
+	@ManyToOne(type => MiUser, {
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn()
+	public user: MiUser | null;
 
-    @Index()
-    @Column({
-        ...id(),
-        comment: 'The group ID.',
-    })
-    public userGroupId: string;
+	@Index()
+	@Column({
+		...id(),
+		comment: 'The group ID.',
+	})
+	public userGroupId: MiUserGroup['id'];
 
-    @ManyToOne(() => MiUserGroup, {
-        onDelete: 'CASCADE',
-    })
-    @JoinColumn()
-    public userGroup: MiUserGroup | null;
-
-    @Column({ type: 'timestamp', nullable: true, default: null })
-    public updatedAt: Date | null;
+	@ManyToOne(type => MiUserGroup, {
+		onDelete: 'CASCADE',
+	})
+	@JoinColumn()
+	public userGroup: MiUserGroup | null;
 }
