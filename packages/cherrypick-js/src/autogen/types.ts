@@ -3946,6 +3946,7 @@ export type components = {
         }[];
       isBot?: boolean;
       isCat?: boolean;
+      speakAsCat?: boolean;
       instance?: {
         name: string | null;
         softwareName: string | null;
