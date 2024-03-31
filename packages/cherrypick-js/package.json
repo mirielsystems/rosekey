@@ -1,7 +1,7 @@
 {
 	"type": "module",
 	"name": "cherrypick-js",
-	"version": "1.0.0-dev.XIV",
+	"version": "1.0.0-dev.XV",
 	"basedMisskeyVersion": "2024.3.1",
 	"basedCherryPickVersion": "4.8.0-beta.1",
 	"description": "CherryPick SDK for JavaScript",
