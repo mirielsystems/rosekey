@@ -89,84 +89,87 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			if (ps.userId != null) {
-				// Fetch recipient (user)
-				const recipient = await this.getterService.getUser(ps.userId).catch(err => {
-					if (err.id === '15348ddd-432d-49c2-8a5a-8069753becff') throw new ApiError(meta.errors.noSuchUser);
-					throw err;
-				});
-
-				const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
-					.andWhere(new Brackets(qb => {
-						qb
-							.where(new Brackets(qb => {
-								qb
-									.where('message.userId = :meId')
-									.andWhere('message.recipientId = :recipientId');
-							}))
-							.orWhere(new Brackets(qb => {
-								qb
-									.where('message.userId = :recipientId')
-									.andWhere('message.recipientId = :meId');
-							}));
+			  // Fetch recipient (user)
+			  const recipient = await this.getterService.getUser(ps.userId).catch(err => {
+				if (err.id === '15348ddd-432d-49c2-8a5a-8069753becff') throw new ApiError(meta.errors.noSuchUser);
+				throw err;
+			  });
+		  
+			  const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
+				.andWhere(new Brackets(qb => {
+				  qb
+					.where(new Brackets(qb => {
+					  qb
+						.where('message.userId = :meId')
+						.andWhere('message.recipientId = :recipientId');
 					}))
-					.setParameter('meId', me.id)
-					.setParameter('recipientId', recipient.id);
-
-				const messages = await query.limit(ps.limit).getMany();
-
-				if (ps.sinceId !== undefined) {
-					messages.reverse();
+					.orWhere(new Brackets(qb => {
+					  qb
+						.where('message.userId = :recipientId')
+						.andWhere('message.recipientId = :meId');
+					}));
+				}))
+				.setParameter('meId', me.id)
+				.setParameter('recipientId', recipient.id);
+		  
+			  const messages = await query.limit(ps.limit).getMany();
+		  
+			  if (ps.sinceId !== undefined) {
+				messages.reverse();
+			  }
+		  
+			  // Mark all as read
+			  if (ps.markAsRead) {
+				await this.messagingService.readUserMessagingMessage(me.id, recipient.id, messages.filter(m => m.recipientId === me.id).map(x => x.id));
+		  
+				// リモートユーザーとのメッセージだったら既読配信
+				if (this.userEntityService.isLocalUser(me) && this.userEntityService.isRemoteUser(recipient)) {
+				  await this.messagingService.deliverReadActivity(me, recipient, messages);
 				}
-
-				// Mark all as read
-				if (ps.markAsRead) {
-					await this.messagingService.readUserMessagingMessage(me.id, recipient.id, messages.filter(m => m.recipientId === me.id).map(x => x.id));
-
-					// リモートユーザーとのメッセージだったら既読配信
-					if (this.userEntityService.isLocalUser(me) && this.userEntityService.isRemoteUser(recipient)) {
-						await this.messagingService.deliverReadActivity(me, recipient, messages);
-					}
-				}
-
-				return await Promise.all(messages.map(message => this.messagingMessageEntityService.pack(message, me, {
-					populateRecipient: false,
-				})));
+			  }
+		  
+			  return Promise.all(messages.map(message => this.messagingMessageEntityService.pack(message, me, {
+				populateRecipient: false,
+			  })));
 			} else if (ps.groupId != null) {
-				// Fetch recipient (group)
-				const recipientGroup = await this.userGroupRepository.findOneBy({ id: ps.groupId });
-
-				if (recipientGroup == null) {
-					throw new ApiError(meta.errors.noSuchGroup);
-				}
-
-				// check joined
-				const joining = await this.userGroupJoiningsRepository.findOneBy({
-					userId: me.id,
-					userGroupId: recipientGroup.id,
-				});
-
-				if (joining == null) {
-					throw new ApiError(meta.errors.groupAccessDenied);
-				}
-
-				const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
-					.andWhere('message.groupId = :groupId', { groupId: recipientGroup.id });
-
-				const messages = await query.limit(ps.limit).getMany();
-
-				if (ps.sinceId) {
-					messages.reverse();
-				}
-
-				// Mark all as read
-				if (ps.markAsRead) {
-					this.messagingService.readGroupMessagingMessage(me.id, recipientGroup.id, messages.map(x => x.id));
-				}
-
-				return await Promise.all(messages.map(message => this.messagingMessageEntityService.pack(message, me, {
-					populateGroup: false,
-				})));
+			  // Fetch recipient (group)
+			  const recipientGroup = await this.userGroupRepository.findOneBy({ id: ps.groupId });
+		  
+			  if (recipientGroup == null) {
+				throw new ApiError(meta.errors.noSuchGroup);
+			  }
+		  
+			  // check joined
+			  const joining = await this.userGroupJoiningsRepository.findOneBy({
+				userId: me.id,
+				userGroupId: recipientGroup.id,
+			  });
+		  
+			  if (joining == null) {
+				throw new ApiError(meta.errors.groupAccessDenied);
+			  }
+		  
+			  const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
+				.andWhere('message.groupId = :groupId', { groupId: recipientGroup.id });
+		  
+			  const messages = await query.limit(ps.limit).getMany();
+		  
+			  if (ps.sinceId) {
+				messages.reverse();
+			  }
+		  
+			  // Mark all as read
+			  if (ps.markAsRead) {
+				await this.messagingService.readGroupMessagingMessage(me.id, recipientGroup.id, messages.map(x => x.id));
+			  }
+		  
+			  return Promise.all(messages.map(message => this.messagingMessageEntityService.pack(message, me, {
+				populateGroup: false,
+			  })));
 			}
-		});
+		  
+			// 必要に応じて適切な戻り値を提供する
+			return []; // デフォルトの戻り値を返す
+		  });
 	}
 }
