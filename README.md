@@ -1,4 +1,7 @@
 <div align="center">
+<a href="https://misskey-hub.net">
+	<img src="./assets/rosekey.webp" alt="Rosekey logo" style="border-radius:50%" width="300"/>
+</a>
 
 **🌎 **Rosekey** is an open source, federated social media platform that's free forever! 🚀**
 
