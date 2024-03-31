@@ -5504,8 +5504,6 @@ export interface Locale extends ILocale {
      * プロフィールを翻訳する
      */
     "translateProfile": string;
-    "translateLanguage": string;
-    "useUILanguageAsTranslateLanguage": string;
     "_nsfwOpenBehavior": {
         /**
          * タップして開く
