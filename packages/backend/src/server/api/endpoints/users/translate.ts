@@ -112,7 +112,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				return {
 					sourceLang: raw.src,
 					text: text,
-					translator: translatorServices,
+					translator: instance.translatorType, // 修正点: 配列ではなく単一の文字列
 				};
 			} else if (instance.translatorType === 'ctav3') {
 				if (instance.ctav3SaKey == null) return Promise.resolve(204);
