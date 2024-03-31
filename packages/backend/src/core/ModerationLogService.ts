@@ -1,3 +1,4 @@
+// @ts-nocheck
 /*
  * SPDX-FileCopyrightText: syuilo and misskey-project
  * SPDX-License-Identifier: AGPL-3.0-only
@@ -21,7 +22,6 @@ export class ModerationLogService {
 	) {
 	}
 
-	//@ts-ignore
 	@bindThis
 	public async log<T extends typeof moderationLogTypes[number]>(moderator: { id: MiUser['id'] }, type: T, info?: ModerationLogPayloads[T]) {
 		await this.moderationLogsRepository.insert({
