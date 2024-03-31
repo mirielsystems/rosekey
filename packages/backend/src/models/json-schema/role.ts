@@ -252,7 +252,7 @@ export const packedRolePoliciesSchema = {
 			optional: false, nullable: false,
 		},
 		canEditNote: {
-			type: 'integer',
+			type: 'boolean',
 			optional: false, nullable: false,
 		},
 	},
