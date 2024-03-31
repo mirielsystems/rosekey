@@ -341,9 +341,10 @@ export type ModerationLogPayloads = {
 			isArchived: boolean;
 		};
 	};
+
 	archiveSubscriptionPlan: {
-	    subscriptionPlanId: string;
-	};
+    subscriptionPlanId: string;
+};
 
 	SubscriptionPlan: {
 		id: string;
