@@ -48,24 +48,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</FormSection>
 				<FormSection>
 					<div class="_gaps_s">
-						<FormLink to="https://activitypub.software/TransFem-org/Sharkey/" external>
-							<template #icon><i class="ph-code ph-bold ph-lg"></i></template>
-							{{ i18n.ts._aboutMisskey.source }} ({{ i18n.ts._aboutMisskey.original_sharkey }})
+						<FormLink to="https://code.16439s.dev/16439s/rosekey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							{{ i18n.ts._aboutMisskey.source }}
 							<template #suffix>GitLab</template>
-						</FormLink>
-						<FormLink to="https://ko-fi.com/transfem" external>
-							<template #icon><i class="ph-piggy-bank ph-bold ph-lg"></i></template>
-							{{ i18n.ts._aboutMisskey.donate_sharkey }}
-							<template #suffix>Ko-Fi</template>
-						</FormLink>
-					</div>
-				</FormSection>
-				<FormSection>
-					<div class="_gaps_s">
-						<FormLink to="https://github.com/misskey-dev/misskey" external>
-							<template #icon><i class="ph-code ph-bold ph-lg"></i></template>
-							{{ i18n.ts._aboutMisskey.source }} ({{ i18n.ts._aboutMisskey.original }})
-							<template #suffix>GitHub</template>
 						</FormLink>
 						<FormLink to="https://www.patreon.com/syuilo" external>
 							<template #icon><i class="ph-piggy-bank ph-bold ph-lg"></i></template>
@@ -77,9 +63,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors" style="margin-bottom: 8px;">
-						<a href="https://activitypub.software/Amelia" target="_blank" :class="$style.contributor">
-							<img src="https://activitypub.software/uploads/-/system/user/avatar/1/avatar.png?width=128" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@Amelia</span>
+						<a href="https://github.com/16439s" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/146170742?v=4" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@16439s</span>
 						</a>
 						<a href="https://activitypub.software/dakkar" target="_blank" :class="$style.contributor">
 							<img src="https://secure.gravatar.com/avatar/c71b315eed7c63ff94c42b1b3e8dbad1?s=192&d=identicon" :class="$style.contributorAvatar">
@@ -139,21 +125,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<img src="https://avatars.githubusercontent.com/u/22656849?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@anatawa12</span>
 						</a>
-					</div>
-				</FormSection>
-				<FormSection v-if="sponsors[0].length > 0">
-					<template #label>Our lovely Sponsors</template>
-					<div :class="$style.contributors">
-						<span
-							v-for="sponsor in sponsors[0]"
-							:key="sponsor"
-							style="margin-bottom: 0.5rem;"
-						>
-							<a :href="sponsor.profile" target="_blank" :class="$style.contributor">
-								<img :src="sponsor.avatar" :class="$style.contributorAvatar">
-								<span :class="$style.contributorUsername">{{ sponsor.details.name }}</span>
-							</a>
-						</span>
 					</div>
 				</FormSection>
 			</div>

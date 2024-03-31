@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<XTimeline class="tl"/>
 	<div class="shape1"></div>
 	<div class="shape2"></div>
-	<img :src="misskeysvg" class="misskey"/>
+	<img :src="rosekeywebp" class="misskey"/>
 	<div class="emojis">
 		<MkEmoji :normal="true" :noStyle="true" emoji="👍"/>
 		<MkEmoji :normal="true" :noStyle="true" emoji="❤"/>
@@ -38,7 +38,7 @@ import * as Misskey from 'misskey-js';
 import XTimeline from './welcome.timeline.vue';
 import MarqueeText from '@/components/MkMarquee.vue';
 import MkFeaturedPhotos from '@/components/MkFeaturedPhotos.vue';
-import misskeysvg from '/client-assets/sharkey.svg';
+import rosekeywebp from '/client-assets/rosekey.webp';
 import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 import { getProxiedImageUrl } from '@/scripts/media-proxy.js';

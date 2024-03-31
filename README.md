@@ -1,56 +1,50 @@
 <div align="center">
-<a href="https://joinsharkey.org/">
-	<img src="https://activitypub.software/TransFem-org/Sharkey/-/raw/develop/packages/frontend/assets/sharkey.svg" alt="Sharkey logo" style="border-radius:50%" width="300"/>
+<a href="https://misskey-hub.net">
+	<img src="./assets/rosekey.webp" alt="Rosekey logo" style="border-radius:50%" width="300"/>
 </a>
 
-**🌎 **[Sharkey](https://joinsharkey.org/)** is an open source, decentralized social media platform that's free forever! 🚀**
+**🌎 **Rosekey** is an open source, federated social media platform that's free forever! 🚀**
+
+[Learn more](https://misskey-hub.net/)
 
 ---
 
-<a href="https://fedidb.org/software/sharkey">
-		<img src="https://custom-icon-badges.herokuapp.com/badge/find_an-instance-acea31?logoColor=acea31&style=for-the-badge&logo=sharkey&labelColor=363B40" alt="find an instance"/></a>
+<a href="https://misskey-hub.net/servers/">
+		<img src="https://custom-icon-badges.herokuapp.com/badge/find_an-instance-acea31?logoColor=acea31&style=for-the-badge&logo=misskey&labelColor=363B40" alt="find an instance"/></a>
 
-<a href="https://docs.joinsharkey.org/docs/install/fresh/">
+<a href="https://misskey-hub.net/docs/for-admin/install/guides/">
 		<img src="https://custom-icon-badges.herokuapp.com/badge/create_an-instance-FBD53C?logoColor=FBD53C&style=for-the-badge&logo=server&labelColor=363B40" alt="create an instance"/></a>
 
 <a href="./CONTRIBUTING.md">
 		<img src="https://custom-icon-badges.herokuapp.com/badge/become_a-contributor-A371F7?logoColor=A371F7&style=for-the-badge&logo=git-merge&labelColor=363B40" alt="become a contributor"/></a>
 
-<a href="https://discord.gg/6VgKmEqHNk">
+<a href="https://discord.gg/V8qghB28Aj">
 		<img src="https://custom-icon-badges.herokuapp.com/badge/join_the-community-5865F2?logoColor=5865F2&style=for-the-badge&logo=discord&labelColor=363B40" alt="join the community"/></a>
 
-<a href="https://ko-fi.com/transfem">
-		<img src="https://custom-icon-badges.herokuapp.com/badge/donate-F96854?logoColor=F96854&style=for-the-badge&logo=kofi&labelColor=363B40" alt="donate"/></a>
-
----
+<a href="https://www.patreon.com/noridev">
+		<img src="https://custom-icon-badges.herokuapp.com/badge/become_a-patron-F96854?logoColor=F96854&style=for-the-badge&logo=patreon&labelColor=363B40" alt="become a patron"/></a>
 
 </div>
 
-<div>
+[![Crowdin](https://badges.crowdin.net/rosekey/localized.svg)](https://crowdin.com/project/rosekey)
 
-<a href="https://joinsharkey.org/"><img src="https://cdn.shonk.social/files/b671c81c-58cf-4f13-bc96-af0b0c96c667.webp" align="right" height="520px"/></a>
+## Thanks
 
-## ✨ Features
-- **ActivityPub support**\
-Not on Sharkey? No problem! Not only can Sharkey instances talk to each other, but you can make friends with people on other networks like Mastodon and Pixelfed!
-- **Federated Backgrounds and Music status**\
-You can add a background to your profile as well as a music status via ListenBrainz, show everyone what music you are currently listening too
-- **Mastodon API**\
-Sharkey implements the Mastodon API unlike normal Misskey
-- **UI/UX Improvements**\
-Sharkey makes some UI/UX improvements to make it easier to navigate
-- **Sign-Up Approval**\
-With Sharkey, you can enable sign-ups, subject to manual moderator approval and mandatory user-provided reasons for joining.
-- **Rich Web UI**\
-       Sharkey has a rich and easy to use Web UI!
-       It is highly customizable, from changing the layout and adding widgets to making custom themes.
-       Furthermore, plugins can be created using AiScript, an original programming language.
-- And much more...
+<a href="https://www.chromatic.com/"><img src="https://user-images.githubusercontent.com/321738/84662277-e3db4f80-af1b-11ea-88f5-91d67a5e59f6.png" height="30" alt="Chromatic" /></a>
 
-</div>
+Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testing platform that helps us review UI changes and catch visual regressions.
 
-<div style="clear: both;"></div>
+<a href="https://about.codecov.io/for/open-source/"><img src="https://about.codecov.io/wp-content/themes/codecov/assets/brand/sentry-cobranding/logos/codecov-by-sentry-logo.svg" height="30" alt="Codecov" /></a>
 
-## Documentation
+Thanks to [Codecov](https://about.codecov.io/for/open-source/) for providing the code coverage platform that helps us improve our test coverage.
 
-Sharkey Documentation can be found at [Sharkey Documentation](https://docs.joinsharkey.org/docs/install/fresh/)
+<a href="https://crowdin.com/"><img src="https://user-images.githubusercontent.com/20679825/230709597-1299a011-171a-4294-a91e-355a9b37c672.svg" height="30" alt="Crowdin" /></a>
+
+Thanks to [Crowdin](https://crowdin.com/) for providing the localization platform that helps us translate CherryPick into many languages.
+
+<a href="https://hub.docker.com/"><img src="https://user-images.githubusercontent.com/20679825/230148221-f8e73a32-a49b-47c3-9029-9a15c3824f92.png" height="30" alt="Docker" /></a>
+
+Thanks to [Docker](https://hub.docker.com/) for providing the container platform that helps us run CherryPick in production.
+
+## Special Thanks
+A repository of special thanks is available in the about-misskey.vue file.
