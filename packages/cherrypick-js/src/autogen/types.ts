@@ -5426,8 +5426,13 @@ export type operations = {
             perUserListTimelineCacheMax: number;
             notesPerOneAd: number;
             backgroundImageUrl: string | null;
-            deeplAuthKey: string | null;
+            deeplAuthKey: string;
             deeplIsPro: boolean;
+            ctav3SaKey: string;
+            ctav3ProjectId: string;
+            ctav3Location: string;
+            ctav3Model: string;
+            ctav3Glossary: string;
             defaultDarkTheme: string | null;
             defaultLightTheme: string | null;
             description: string | null;
