@@ -490,10 +490,6 @@ const routes: RouteDef[] = [{
 		name: 'update',
 		component: page(() => import('@/pages/admin/update.vue')),
 	}, {
-		path: '/approvals',
-		name: 'approvals',
-		component: page(() => import('@/pages/admin/approvals.vue')),
-	}, {
 		path: '/',
 		component: page(() => import('@/pages/_empty_.vue')),
 	}],
