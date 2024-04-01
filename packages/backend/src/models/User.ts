@@ -172,6 +172,12 @@ export class MiUser {
 	public isLocked: boolean;
 
 	@Column('boolean', {
+		default: true,
+		comment: 'Whether the User\'s notes get indexed.',
+	})
+	public isIndexable: boolean;
+
+	@Column('boolean', {
 		default: false,
 		comment: 'Whether the User is a bot.',
 	})
@@ -182,6 +188,12 @@ export class MiUser {
 		comment: 'Whether the User is a cat.',
 	})
 	public isCat: boolean;
+
+	@Column('boolean', {
+		default: true,
+		comment: 'Whether the User speaks in nya.',
+	})
+	public speakAsCat: boolean;
 
 	@Column('boolean', {
 		default: false,

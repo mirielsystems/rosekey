@@ -39,11 +39,6 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
-		sensitiveWords: {
-			type: 'array', nullable: true, items: {
-				type: 'string',
-			},
-		},
 		prohibitedWords: {
 			type: 'array', nullable: true, items: {
 				type: 'string',

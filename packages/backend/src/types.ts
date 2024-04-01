@@ -305,6 +305,55 @@ export type ModerationLogPayloads = {
 		userHost: string | null;
 		fileId: string;
 	};
+	createSubscriptionPlan: {
+		subscriptionPlanId: string;
+		subscriptionPlan: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+	};
+	updateSubscriptionPlan: {
+		subscriptionPlanId: string;
+		before: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+		after: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+	};
+
+	archiveSubscriptionPlan: {
+    subscriptionPlanId: string;
+};
+
+	SubscriptionPlan: {
+		id: string;
+		name: string;
+		price: number;
+		currency: string;
+		description: string;
+		roleId: string;
+	};
 };
 
 export type Serialized<T> = {

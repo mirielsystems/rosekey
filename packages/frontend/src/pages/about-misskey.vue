@@ -30,17 +30,17 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 				<FormSection>
 					<div class="_gaps_s">
-						<FormLink to="https://github.com/freelynetwork/rosekey" external>
+						<FormLink to="https://code.164.one/master/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
-							<template #suffix>GitHub</template>
+							<template #suffix>164.CODE</template>
 						</FormLink>
 					</div>
 				</FormSection>
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
-                        <a href="https://github.com/16439s" target="_blank" :class="$style.contributor">
+						<a href="https://github.com/16439s" target="_blank" :class="$style.contributor">
 							<img src="https://avatars.githubusercontent.com/u/146170742?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@16439s
 								<span :class="$style.contributorClient">
@@ -177,7 +177,7 @@ const easterEggEngine = ref<{ stop: () => void } | null>(null);
 const containerEl = shallowRef<HTMLElement>();
 
 const whatIsNewRosekey = () => {
-	window.open(`https://github.com/freelynetwork/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.164.one/master/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewMisskey = () => {

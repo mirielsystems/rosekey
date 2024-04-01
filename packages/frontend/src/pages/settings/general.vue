@@ -16,12 +16,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</I18n>
 		</template>
 	</MkSelect>
-	<MkSelect v-model="overridedTranslateLanguage">
-		<template #label>{{ i18n.ts.translateLanguage }}</template>
-		<p>{{ i18n.ts.useUILanguageAsTranslateLanguage }}</p>
-		<option :key="i18n.ts.useUILanguageAsTranslateLanguage" :value="null">{{ i18n.ts.useUILanguageAsTranslateLanguage }}</option>
-		<option v-for="x in translateLanguages" :key="x.name" :value="x.language">{{ x.name }}</option>
-	</MkSelect>
 
 	<MkRadios v-model="hemisphere">
 		<template #label>{{ i18n.ts.hemisphere }}</template>
@@ -372,7 +366,6 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { globalEvents } from '@/events.js';
 import { claimAchievement } from '@/scripts/achievements.js';
-import translateLanguages from '@/translate-language.json';
 
 const lang = ref(miLocalStorage.getItem('lang'));
 // const fontSize = ref(miLocalStorage.getItem('fontSize'));
@@ -462,7 +455,6 @@ const allMediaNoteCollapse = computed(defaultStore.makeGetterSetter('allMediaNot
 const nsfwOpenBehavior = computed(defaultStore.makeGetterSetter('nsfwOpenBehavior'));
 const renoteVisibilitySelection = computed(defaultStore.makeGetterSetter('renoteVisibilitySelection'));
 const forceRenoteVisibilitySelection = computed(defaultStore.makeGetterSetter('forceRenoteVisibilitySelection'));
-const overridedTranslateLanguage = computed(defaultStore.makeGetterSetter('overridedTranslateLanguage'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
