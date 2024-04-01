@@ -643,15 +643,6 @@ export type paths = {
      */
     post: operations['admin___suspend-user'];
   };
-  '/admin/approve-user': {
-    /**
-     * admin/approve-user
-     * @description No description provided.
-     *
-     * **Credential required**: *Yes* / **Permission**: *write:admin:approve-account*
-     */
-    post: operations['admin/approve-user'];
-  };
   '/admin/unsuspend-user': {
     /**
      * admin/unsuspend-user
@@ -4024,7 +4015,6 @@ export type components = {
       roles: components['schemas']['RoleLite'][];
       memo: string | null;
       moderationNote?: string;
-      approved?: boolean;
       isFollowing?: boolean;
       isFollowed?: boolean;
       hasPendingFollowRequestFromYou?: boolean;
@@ -5330,7 +5320,6 @@ export type operations = {
             cacheRemoteFiles: boolean;
             cacheRemoteSensitiveFiles: boolean;
             emailRequiredForSignup: boolean;
-            approvalRequiredForSignup: boolean;
             enableHcaptcha: boolean;
             hcaptchaSiteKey: string | null;
             enableMcaptcha: boolean;
@@ -5426,8 +5415,13 @@ export type operations = {
             perUserListTimelineCacheMax: number;
             notesPerOneAd: number;
             backgroundImageUrl: string | null;
-            deeplAuthKey: string | null;
+            deeplAuthKey: string;
             deeplIsPro: boolean;
+            ctav3SaKey: string;
+            ctav3ProjectId: string;
+            ctav3Location: string;
+            ctav3Model: string;
+            ctav3Glossary: string;
             defaultDarkTheme: string | null;
             defaultLightTheme: string | null;
             description: string | null;
@@ -9554,7 +9548,7 @@ export type operations = {
            * @default all
            * @enum {string}
            */
-          state?: 'all' | 'alive' | 'available' | 'admin' | 'moderator' | 'adminOrModerator' | 'suspended' | 'approved';
+          state?: 'all' | 'alive' | 'available' | 'admin' | 'moderator' | 'adminOrModerator' | 'suspended';
           /**
            * @default combined
            * @enum {string}
@@ -9616,58 +9610,6 @@ export type operations = {
    * **Credential required**: *Yes* / **Permission**: *write:admin:suspend-user*
    */
   'admin___suspend-user': {
-    requestBody: {
-      content: {
-        'application/json': {
-          /** Format: misskey:id */
-          userId: string;
-        };
-      };
-    };
-    responses: {
-      /** @description OK (without any results) */
-      204: {
-        content: never;
-      };
-      /** @description Client error */
-      400: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Authentication error */
-      401: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Forbidden error */
-      403: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description I'm Ai */
-      418: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-      /** @description Internal server error */
-      500: {
-        content: {
-          'application/json': components['schemas']['Error'];
-        };
-      };
-    };
-  };
-  /**
-   * admin/approve-user
-   * @description No description provided.
-   *
-   * **Credential required**: *Yes* / **Permission**: *write:admin:approve-account*
-   */
-  'admin/approve-user': {
     requestBody: {
       content: {
         'application/json': {
@@ -9802,7 +9744,6 @@ export type operations = {
           cacheRemoteFiles?: boolean;
           cacheRemoteSensitiveFiles?: boolean;
           emailRequiredForSignup?: boolean;
-          approvalRequiredForSignup?: boolean;
           enableHcaptcha?: boolean;
           hcaptchaSiteKey?: string | null;
           hcaptchaSecretKey?: string | null;
