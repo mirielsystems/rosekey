@@ -140,6 +140,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 							PrisMisskey Source Code
 							<template #suffix>Gitea</template>
 						</FormLink>
+						<FormLink to="https://github.com/GrapeApple0/misskey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							GrapeApple0's Misskey Source Code
+							<template #suffix>Gitea</template>
+						</FormLink>
 					</div>
 				</FormSection>
 			</div>
