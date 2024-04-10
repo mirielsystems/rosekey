@@ -1,0 +1,16 @@
+stages:
+  - test
+
+production:
+  stage: test
+  image: node:20.10.0
+  script:
+    - apt-get update && apt-get install -y git wget curl build-essential python3 
+    - cp .config/ci.yml .config/default.yml
+    - corepack enable
+    - corepack prepare pnpm@latest --activate
+    - git submodule update --init
+    - pnpm install --frozen-lockfile
+    - git diff --exit-code pnpm-lock.yaml
+    - cp .github/cherrypick/test.yml .config/default.yml
+    - pnpm run build
