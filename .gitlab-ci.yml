@@ -6,7 +6,6 @@ production:
   image: node:20.10.0
   script:
     - apt-get update && apt-get install -y git wget curl build-essential python3 
-    - cp .config/ci.yml .config/default.yml
     - corepack enable
     - corepack prepare pnpm@latest --activate
     - git submodule update --init
