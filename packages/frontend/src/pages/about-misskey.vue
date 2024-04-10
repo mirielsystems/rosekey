@@ -30,7 +30,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 				<FormSection>
 					<div class="_gaps_s">
-						<FormLink to="https://code.164.one/master/rosekey" external>
+						<FormLink to="https://code.16439s.dev/16439s/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
 							<template #suffix>164.CODE</template>
@@ -182,7 +182,7 @@ const easterEggEngine = ref<{ stop: () => void } | null>(null);
 const containerEl = shallowRef<HTMLElement>();
 
 const whatIsNewRosekey = () => {
-	window.open(`https://code.164.one/master/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.16439s.dev/16439s/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewMisskey = () => {

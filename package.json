@@ -6,7 +6,7 @@
 	"codename": "nasubi",
 	"repository": {
 		"type": "git",
-		"url": "https://code.164.one/master/rosekey.git"
+		"url": "https://code.16439s.dev/16439s/rosekey.git"
 	},
 	"packageManager": "pnpm@8.15.4",
 	"workspaces": [

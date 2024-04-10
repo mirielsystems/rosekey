@@ -60,12 +60,12 @@ export const packedMetaLiteSchema = {
 		repositoryUrl: {
 			type: 'string',
 			optional: false, nullable: true,
-			default: 'https://code.164.one/master/rosekey',
+			default: 'https://code.16439s.dev/16439s/rosekey',
 		},
 		feedbackUrl: {
 			type: 'string',
 			optional: false, nullable: true,
-			default: 'https://code.164.one/master/rosekey/issues/new',
+			default: 'https://code.16439s.dev/16439s/rosekey/issues/new',
 		},
 		defaultDarkTheme: {
 			type: 'string',
