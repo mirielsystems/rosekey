@@ -210,9 +210,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			if (user == null || profile == null) {
 				throw new Error('user not found');
 			}
-
+            
+			const policies = await this.roleService.getUserPolicies(user.id);
 			const isModerator = await this.roleService.isModerator(user);
-			const isSilenced = !(await this.roleService.getUserPolicies(user.id)).canPublicNote;
+			const isLimited = !(policies.canCreateContent && policies.canUpdateContent && policies.canDeleteContent && policies.canInitiateConversation);
+			const isSilenced = !policies.canPublicNote;
 
 			const _me = await this.usersRepository.findOneByOrFail({ id: me.id });
 			if (!await this.roleService.isAdministrator(_me) && await this.roleService.isAdministrator(user)) {

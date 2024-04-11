@@ -7430,13 +7430,13 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
+             * メンション、リプライ、引用の許可
+             */
+            "canInitiateConversation": string;
+            /**
              * ノートの編集
              */
             "canEditNote": string;
-            /**
-             * ノート内の最大メンション数
-             */
-            "mentionMax": string;
             /**
              * サーバー招待コードの発行
              */
