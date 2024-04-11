@@ -20,7 +20,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<MkButton v-if="$i !== null" v-tooltip="i18n.ts.shareWithNote" :class="$style.button" class="button" rounded @click="shareWithNote"><i class="ti ti-repeat ti-fw"></i></MkButton>
 							<MkButton v-tooltip="i18n.ts.copyLink" :class="$style.button" class="button" rounded @click="copyLink"><i class="ti ti-link ti-fw"></i></MkButton>
 							<MkButton v-if="isSupportShare()" v-tooltip="i18n.ts.share" :class="$style.button" class="button" rounded @click="share"><i class="ti ti-share ti-fw"></i></MkButton>
-						    <MkButton v-if="$i && $i.id !== flash.user.id" class="button" rounded @mousedown="showMenu"><i class="ti ti-dots ti-fw"></i></MkButton>
+							<MkButton v-if="$i && $i.id !== flash.user.id" class="button" rounded @mousedown="showMenu"><i class="ti ti-dots ti-fw"></i></MkButton>
 						</div>
 					</div>
 					<div v-else :class="$style.ready">
