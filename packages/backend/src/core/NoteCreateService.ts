@@ -268,11 +268,16 @@ export class NoteCreateService implements OnApplicationShutdown {
 		const meta = await this.metaService.fetch();
 		const policies = await this.roleService.getUserPolicies(user.id);
 
+		if (policies.canPublicNote === false) {
+			// policies.canPublicNote が false の場合、どの visibility でも投稿を許可しない
+			const errorName = 'NoteNotAllowedError';
+			const errorMessage = 'You are not allowed to post notes with visibility.';
+			throw new IdentifiableError(errorName, errorMessage);
+		}
+
 		if (data.visibility === 'public' && data.channel == null) {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
-				data.visibility = 'home';
-            } else if (policies.canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
