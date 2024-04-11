@@ -63,6 +63,7 @@ import { isReply } from '@/misc/is-reply.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
+import { LoggerService } from '@/core/LoggerService.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -156,6 +157,7 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService implements OnApplicationShutdown {
+	private logger: Logger;
 	#shutdownController = new AbortController();
 
 	constructor(
@@ -224,7 +226,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private instanceChart: InstanceChart,
 		private utilityService: UtilityService,
 		private userBlockingService: UserBlockingService,
-	) { }
+		private loggerService: LoggerService,
+	) {
+		this.logger = this.loggerService.getLogger('note:create');
+	}
 
 	@bindThis
 	public async create(user: {
