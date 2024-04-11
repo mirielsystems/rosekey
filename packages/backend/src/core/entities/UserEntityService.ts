@@ -490,7 +490,8 @@ export class UserEntityService implements OnModuleInit {
 				createdAt: this.idService.parse(announcement.id).date.toISOString(),
 				...announcement,
 			})) : null;
-
+        
+		const policies = isDetailed ? await this.roleService.getUserPolicies(user.id) : null;
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
 
 		const packed = {
@@ -546,7 +547,8 @@ export class UserEntityService implements OnModuleInit {
 				bannerUrl: user.bannerUrl,
 				bannerBlurhash: user.bannerBlurhash,
 				isLocked: user.isLocked,
-				isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+				isSilenced: !policies?.canPublicNote,
+				isLimited: !(policies?.canCreateContent && policies.canUpdateContent && policies.canDeleteContent && policies.canInitiateConversation),
 				isSuspended: user.isSuspended,
 				description: profile!.description,
 				location: profile!.location,
