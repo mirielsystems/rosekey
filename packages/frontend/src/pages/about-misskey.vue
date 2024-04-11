@@ -33,15 +33,15 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<FormLink to="https://code.16439s.dev/16439s/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
-							<template #suffix>164.CODE</template>
+							<template #suffix>GitLab</template>
 						</FormLink>
 					</div>
 				</FormSection>
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
-						<a href="https://code.164.one/master" target="_blank" :class="$style.contributor">
-							<img src="https://code.164.one/avatars/a7f236c4eb4681c5179aad0f9c9c24af4491467ef9e4b63881a46af18eaa6dcc?size=512" :class="$style.contributorAvatar">
+						<a href="https://code.16439s.dev/16439s" target="_blank" :class="$style.contributor">
+							<img src="https://code.16439s.dev/uploads/-/system/user/avatar/1/avatar.png?width=512" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@master
 								<span :class="$style.contributorClient">
 									<span :class="$style.rosekey">Rosekey</span>
@@ -143,7 +143,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<FormLink to="https://github.com/GrapeApple0/misskey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							GrapeApple0's Misskey Source Code
-							<template #suffix>Gitea</template>
+							<template #suffix>GitHub</template>
+						</FormLink>
+						<FormLink to="https://github.com/misskeyIO/misskey" external>
+							<template #icon><i class="ti ti-code"></i></template>
+							Misskey.io Source Code
+							<template #suffix>GitHub</template>
 						</FormLink>
 					</div>
 				</FormSection>
