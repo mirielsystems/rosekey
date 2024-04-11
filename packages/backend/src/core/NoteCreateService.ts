@@ -272,8 +272,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
 				data.visibility = 'home';
-            } else if (policies.canPublicNote === false) {
-				data.visibility = 'home';
+			} else if (policies.canPublicNote === false) {
+				// ノートの可視性を変更せず、投稿を許可しない
+				const errorName = 'PublicNoteNotAllowedError';
+				const errorMessage = 'You are not allowed to post public notes.';
+				throw new IdentifiableError(errorName, errorMessage);
 			}
 		}
 
