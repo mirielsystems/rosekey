@@ -3,15 +3,52 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { MegalodonInterface } from 'megalodon';
-import querystring from 'querystring';
 import { v4 as uuid } from 'uuid';
 /* import { kinds } from '@/misc/api-permissions.js';
 import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js'; */
 import { bindThis } from '@/decorators.js';
+import type { Config } from '@/config.js';
+import { DI } from '@/di-symbols.js';
 import type { FastifyInstance } from 'fastify';
+
+const kinds = [
+	'read:account',
+	'write:account',
+	'read:blocks',
+	'write:blocks',
+	'read:drive',
+	'write:drive',
+	'read:favorites',
+	'write:favorites',
+	'read:following',
+	'write:following',
+	'read:messaging',
+	'write:messaging',
+	'read:mutes',
+	'write:mutes',
+	'write:notes',
+	'read:notifications',
+	'write:notifications',
+	'read:reactions',
+	'write:reactions',
+	'write:votes',
+	'read:pages',
+	'write:pages',
+	'write:page-likes',
+	'read:page-likes',
+	'read:user-groups',
+	'write:user-groups',
+	'read:channels',
+	'write:channels',
+	'read:gallery',
+	'write:gallery',
+	'read:gallery-likes',
+	'write:gallery-likes',
+];
 
 function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -24,8 +61,8 @@ function getClient(BASE_URL: string, authorization: string | undefined): Megalod
 @Injectable()
 export class OAuth2ProviderService {
 	constructor(
-		/* @Inject(DI.config)
-		private config: Config, */
+		@Inject(DI.config)
+		private config: Config,
 	) { }
 
 	// https://datatracker.ietf.org/doc/html/rfc8414.html
@@ -85,10 +122,10 @@ export class OAuth2ProviderService {
 
 		fastify.get('/oauth/authorize', async (request, reply) => {
 			const query: any = request.query;
-			let param = "mastodon=true";
+			let param = 'mastodon=true';
 			if (query.state) param += `&state=${query.state}`;
 			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
-			const client = query.client_id ? query.client_id : "";
+			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${atob(client)}?${param}`,
 			);
@@ -96,11 +133,11 @@ export class OAuth2ProviderService {
 
 		fastify.post('/oauth/token', async (request, reply) => {
 			const body: any = request.body || request.query;
-			if (body.grant_type === "client_credentials") {
+			if (body.grant_type === 'client_credentials') {
 				const ret = {
 					access_token: uuid(),
-					token_type: "Bearer",
-					scope: "read",
+					token_type: 'Bearer',
+					scope: 'read',
 					created_at: Math.floor(new Date().getTime() / 1000),
 				};
 				reply.send(ret);
@@ -128,12 +165,12 @@ export class OAuth2ProviderService {
 				const atData = await client.fetchAccessToken(
 					client_id,
 					body.client_secret,
-					token ? token : "",
+					token ? token : '',
 				);
 				const ret = {
 					access_token: atData.accessToken,
-					token_type: "Bearer",
-					scope: body.scope || "read write follow push",
+					token_type: 'Bearer',
+					scope: body.scope || 'read write follow push',
 					created_at: Math.floor(new Date().getTime() / 1000),
 				};
 				reply.send(ret);

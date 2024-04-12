@@ -22,7 +22,7 @@ import {
 	locationSchema,
 	nameSchema,
 	passwordSchema,
-	listenbrainzSchema
+	listenbrainzSchema,
 } from '@/models/User.js';
 import type {
 	BlockingsRepository,
@@ -418,6 +418,7 @@ export class UserEntityService implements OnModuleInit {
 		me?: { id: MiUser['id']; } | null | undefined,
 		options?: {
 			schema?: S,
+			detail?: boolean;
 			includeSecrets?: boolean,
 			userProfile?: MiUserProfile,
 			userRelations?: Map<MiUser['id'], UserRelation>,
