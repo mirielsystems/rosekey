@@ -6,6 +6,7 @@ import { ApiError } from '../../../error.js';
 
 export const meta = {
 	requireCredential: true,
+	kind: 'read:account',
 
 	secure: false,
 
@@ -36,7 +37,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		private registryItemsRepository: RegistryItemsRepository,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			if (ps.key !== "reactions" && ps.key !== "defaultNoteVisibility") return;
+			if (ps.key !== 'reactions' && ps.key !== 'defaultNoteVisibility') return;
 			const query = this.registryItemsRepository.createQueryBuilder('item')
 				.where('item.domain IS NULL')
 				.andWhere('item.userId = :userId', { userId: me.id })
