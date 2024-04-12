@@ -80,4 +80,8 @@ jobs:
         cache: 'pnpm'
     - run: corepack enable
     - run: pnpm i --frozen-lockfile
+    - run: pnpm --filter cherrypick-js run build
+      if: ${{ matrix.workspace == 'backend' }}
+    - run: pnpm --filter misskey-reversi run build
+      if: ${{ matrix.workspace == 'backend' }}
     - run: pnpm --filter ${{ matrix.workspace }} run typecheck

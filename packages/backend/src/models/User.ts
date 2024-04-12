@@ -51,6 +51,7 @@ export class MiUser {
 	})
 	public usernameLower: string;
 
+	@Index() // USING pgroonga pgroonga_varchar_full_text_search_ops_v2
 	@Column('varchar', {
 		length: 128, nullable: true,
 		comment: 'The name of the User.',
@@ -286,16 +287,6 @@ export class MiUser {
 		comment: 'The native access token of the User. It will be null if the origin of the user is local.',
 	})
 	public token: string | null;
-
-	@Column('boolean', {
-		default: false,
-	})
-	public approved: boolean;
-
-	@Column('varchar', {
-		length: 1000, nullable: true,
-	})
-	public signupReason: string | null;
 
 	constructor(data: Partial<MiUser>) {
 		if (data == null) return;

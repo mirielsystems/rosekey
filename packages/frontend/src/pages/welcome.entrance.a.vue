@@ -11,7 +11,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<div class="shape2"></div>
 	<div class="logo-wrapper">
 		<div class="powered-by">Powered by</div>
-		<img :src="cherrypicksvg" class="cherrypick"/>
+		<img :src="rosekeywebp" class="cherrypick"/>
 	</div>
 	<div class="emojis">
 		<MkEmoji :normal="true" :noStyle="true" emoji="👍"/>
@@ -41,8 +41,7 @@ import * as Misskey from 'cherrypick-js';
 import XTimeline from './welcome.timeline.vue';
 import MarqueeText from '@/components/MkMarquee.vue';
 import MkFeaturedPhotos from '@/components/MkFeaturedPhotos.vue';
-import cherrypicksvg from '/client-assets/cherrypick.svg';
-import misskeysvg from '/client-assets/misskey.svg';
+import rosekeywebp from '/client-assets/rosekey.webp';
 import { misskeyApi, misskeyApiGet } from '@/scripts/misskey-api.js';
 import MkVisitorDashboard from '@/components/MkVisitorDashboard.vue';
 import { getProxiedImageUrl } from '@/scripts/media-proxy.js';
@@ -130,15 +129,8 @@ misskeyApiGet('federation/instances', {
 			margin-bottom: 2px;
 		}
 
-		> .misskey {
+		> .misskey, .cherrypick {
 			width: 140px;
-			@media (max-width: 450px) {
-				width: 130px;
-			}
-		}
-
-		> .cherrypick {
-			width: 180px;
 			@media (max-width: 450px) {
 				width: 130px;
 			}

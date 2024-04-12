@@ -113,7 +113,7 @@ class MessagingChannel extends Channel {
 			if (now.getTime() - date.getTime() > 5000) delete this.typers[userId];
 		}
 
-		const users = await this.userEntityService.packMany(Object.keys(this.typers), null, { detail: false });
+		const users = await this.userEntityService.packMany(Object.keys(this.typers), null, { schema: "UserLite" });
 
 		this.send({
 			type: 'typers',

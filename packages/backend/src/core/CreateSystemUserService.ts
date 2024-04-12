@@ -60,7 +60,6 @@ export class CreateSystemUserService {
 				isRoot: false,
 				isLocked: true,
 				isExplorable: false,
-				approved: true,
 				isBot: true,
 			}).then(x => transactionalEntityManager.findOneByOrFail(MiUser, x.identifiers[0]));
 

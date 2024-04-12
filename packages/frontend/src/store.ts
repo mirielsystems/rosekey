@@ -212,10 +212,6 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: null as null | 'smartphone' | 'tablet' | 'desktop',
 	},
-	overridedTranslateLanguage: {
-		where: 'device',
-		default: null as null | string,
-	},
 	serverDisconnectedBehavior: {
 		where: 'device',
 		default: 'quiet' as 'quiet' | 'reload' | 'dialog' | 'none',
@@ -463,6 +459,10 @@ export const defaultStore = markRaw(new Storage('base', {
 	enableHorizontalSwipe: {
 		where: 'device',
 		default: true,
+	},
+	useNativeUIForVideoAudioPlayer: {
+		where: 'device',
+		default: false,
 	},
 	showUnreadNotificationsCount: {
 		where: 'deviceAccount',

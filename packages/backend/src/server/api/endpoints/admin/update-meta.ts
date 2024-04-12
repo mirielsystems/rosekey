@@ -39,11 +39,6 @@ export const paramDef = {
 				type: 'string',
 			},
 		},
-		sensitiveWords: {
-			type: 'array', nullable: true, items: {
-				type: 'string',
-			},
-		},
 		prohibitedWords: {
 			type: 'array', nullable: true, items: {
 				type: 'string',
@@ -75,7 +70,6 @@ export const paramDef = {
 		cacheRemoteFiles: { type: 'boolean' },
 		cacheRemoteSensitiveFiles: { type: 'boolean' },
 		emailRequiredForSignup: { type: 'boolean' },
-		approvalRequiredForSignup: { type: 'boolean' },
 		enableHcaptcha: { type: 'boolean' },
 		hcaptchaSiteKey: { type: 'string', nullable: true },
 		hcaptchaSecretKey: { type: 'string', nullable: true },
@@ -322,10 +316,6 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (ps.emailRequiredForSignup !== undefined) {
 				set.emailRequiredForSignup = ps.emailRequiredForSignup;
-			}
-
-			if (ps.approvalRequiredForSignup !== undefined) {
-				set.approvalRequiredForSignup = ps.approvalRequiredForSignup;
 			}
 
 			if (ps.enableHcaptcha !== undefined) {

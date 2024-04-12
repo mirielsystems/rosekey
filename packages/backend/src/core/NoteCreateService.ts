@@ -34,6 +34,7 @@ import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
+import type Logger from '@/logger.js';
 import NotesChart from '@/core/chart/charts/notes.js';
 import PerUserNotesChart from '@/core/chart/charts/per-user-notes.js';
 import InstanceChart from '@/core/chart/charts/instance.js';
@@ -63,6 +64,7 @@ import { isReply } from '@/misc/is-reply.js';
 import { trackPromise } from '@/misc/promise-tracker.js';
 import { isNotNull } from '@/misc/is-not-null.js';
 import { IdentifiableError } from '@/misc/identifiable-error.js';
+import { LoggerService } from '@/core/LoggerService.js';
 
 type NotificationType = 'reply' | 'renote' | 'quote' | 'mention';
 
@@ -156,6 +158,7 @@ type Option = {
 
 @Injectable()
 export class NoteCreateService implements OnApplicationShutdown {
+	private logger: Logger;
 	#shutdownController = new AbortController();
 
 	constructor(
@@ -224,7 +227,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		private instanceChart: InstanceChart,
 		private utilityService: UtilityService,
 		private userBlockingService: UserBlockingService,
-	) { }
+		private loggerService: LoggerService,
+	) {
+		this.logger = this.loggerService.getLogger('note:create');
+	}
 
 	@bindThis
 	public async create(user: {
@@ -260,12 +266,18 @@ export class NoteCreateService implements OnApplicationShutdown {
 		if (data.channel != null) data.localOnly = true;
 
 		const meta = await this.metaService.fetch();
+		const policies = await this.roleService.getUserPolicies(user.id);
+
+		if (policies.canPublicNote === false) {
+			// policies.canPublicNote が false の場合、どの visibility でも投稿を許可しない
+			const errorName = 'NoteNotAllowedError';
+			const errorMessage = 'You are not allowed to post notes with visibility.';
+			throw new IdentifiableError(errorName, errorMessage);
+		}
 
 		if (data.visibility === 'public' && data.channel == null) {
 			const sensitiveWords = meta.sensitiveWords;
 			if (this.utilityService.isKeyWordIncluded(data.cw ?? data.text ?? '', sensitiveWords)) {
-				data.visibility = 'home';
-			} else if ((await this.roleService.getUserPolicies(user.id)).canPublicNote === false) {
 				data.visibility = 'home';
 			}
 		}
@@ -381,6 +393,18 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 		}
 
+		if (policies.canInitiateConversation === false) {
+			if (
+				mentionedUsers.some(u => u.id !== user.id)
+				|| (data.reply && data.reply.replyUserId !== user.id)
+				|| (data.visibility === 'specified' && data.visibleUsers?.some(u => u.id !== user.id))
+				|| (this.isQuote(data) && data.renote.userId !== user.id)
+			) {
+				this.logger.error('Request rejected because user has no permission to initiate conversation', { user: user.id, note: data });
+				throw new IdentifiableError('332dd91b-6a00-430a-ac39-620cf60ad34b', 'Notes including mentions, replies, or renotes are not allowed.');
+			}
+		}
+
 		tags = tags.filter(tag => Array.from(tag).length <= 128).splice(0, 32);
 
 		if (data.reply && (user.id !== data.reply.userId) && !mentionedUsers.some(u => u.id === data.reply!.userId)) {
@@ -399,10 +423,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 			if (data.reply && !data.visibleUsers.some(x => x.id === data.reply!.userId)) {
 				data.visibleUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
 			}
-		}
-
-		if (mentionedUsers.length > 0 && mentionedUsers.length > (await this.roleService.getUserPolicies(user.id)).mentionLimit) {
-			throw new IdentifiableError('9f466dab-c856-48cd-9e65-ff90ff750580', 'Note contains too many mentions');
 		}
 
 		const note = await this.insertNote(user, data, tags, emojis, mentionedUsers);

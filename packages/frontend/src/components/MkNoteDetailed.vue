@@ -89,7 +89,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkEvent v-if="appearNote.event" :note="appearNote"/>
 			<p v-if="appearNote.cw != null" :class="$style.cw">
 				<Mfm v-if="appearNote.cw != ''" style="margin-right: 8px;" :text="appearNote.cw" :author="appearNote.user" :nyaize="noNyaize ? false : 'respect'"/>
-				<MkCwButton v-model="showContent" :text="appearNote.text" :files="appearNote.files" :poll="appearNote.poll"/>
+				<MkCwButton v-model="showContent" :text="appearNote.text" :renote="appearNote.renote" :files="appearNote.files" :poll="appearNote.poll"/>
 			</p>
 			<div v-show="appearNote.cw == null || showContent">
 				<span v-if="appearNote.isHidden" style="opacity: 0.5">({{ i18n.ts._ffVisibility.private }})</span>
@@ -316,9 +316,8 @@ import MkUserCardMini from '@/components/MkUserCardMini.vue';
 import MkPagination, { type Paging } from '@/components/MkPagination.vue';
 import MkReactionIcon from '@/components/MkReactionIcon.vue';
 import MkButton from '@/components/MkButton.vue';
-import { isEnabledUrlPreview } from '@/instance.js';
+import { isEnabledUrlPreview, infoImageUrl, instance } from '@/instance.js';
 import { miLocalStorage } from '@/local-storage.js';
-import { infoImageUrl, instance } from '@/instance.js';
 import MkPostForm from '@/components/MkPostFormSimple.vue';
 import { deviceKind } from '@/scripts/device-kind.js';
 import { vibrate } from '@/scripts/vibrate.js';
@@ -327,9 +326,12 @@ import detectLanguage from '@/scripts/detect-language.js';
 const MOBILE_THRESHOLD = 500;
 const isMobile = ref(deviceKind === 'smartphone' || window.innerWidth <= MOBILE_THRESHOLD);
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
 	note: Misskey.entities.Note;
-}>();
+	initialTab: string;
+}>(), {
+	initialTab: 'replies',
+});
 
 const inChannel = inject('inChannel', null);
 
@@ -356,7 +358,9 @@ if (noteViewInterruptors.length > 0) {
 
 const isRenote = (
 	note.value.renote != null &&
+	note.value.reply == null &&
 	note.value.text == null &&
+	note.value.cw == null &&
 	note.value.fileIds && note.value.fileIds.length === 0 &&
 	note.value.poll == null
 );
@@ -401,7 +405,7 @@ provide('react', (reaction: string) => {
 	});
 });
 
-const tab = ref('replies');
+const tab = ref(props.initialTab);
 const reactionTabType = ref<string | null>(null);
 
 const renotesPagination = computed<Paging>(() => ({

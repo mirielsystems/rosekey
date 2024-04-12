@@ -24,9 +24,6 @@ export type ModerationLog = {
 	type: 'updateServerSettings';
 	info: ModerationLogPayloads['updateServerSettings'];
 } | {
-	type: 'approve';
-	info: ModerationLogPayloads['approve'];
-} | {
 	type: 'suspend';
 	info: ModerationLogPayloads['suspend'];
 } | {
@@ -137,6 +134,15 @@ export type ModerationLog = {
 } | {
 	type: 'unsetUserBanner';
 	info: ModerationLogPayloads['unsetUserBanner'];
+} | {
+	type: 'deletePage';
+	info: ModerationLogPayloads['deletePage'];
+} | {
+	type: 'deleteFlash';
+	info: ModerationLogPayloads['deleteFlash'];
+} | {
+	type: 'deleteGalleryPost';
+	info: ModerationLogPayloads['deleteGalleryPost'];
 });
 
 export type ServerStats = {

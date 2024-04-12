@@ -68,7 +68,6 @@ export const subscriptionStatus = [
 export const moderationLogTypes = [
 	'updateServerSettings',
 	'suspend',
-	'approve',
 	'unsuspend',
 	'updateUserNote',
 	'addCustomEmoji',
@@ -108,6 +107,9 @@ export const moderationLogTypes = [
 	'createSubscriptionPlan',
 	'updateSubscriptionPlan',
 	'archiveSubscriptionPlan',
+	'deletePage',
+	'deleteFlash',
+	'deleteGalleryPost',
 ] as const;
 
 export type ModerationLogPayloads = {
@@ -116,11 +118,6 @@ export type ModerationLogPayloads = {
 		after: any | null;
 	};
 	suspend: {
-		userId: string;
-		userUsername: string;
-		userHost: string | null;
-	};
-	approve: {
 		userId: string;
 		userUsername: string;
 		userHost: string | null;
@@ -304,6 +301,73 @@ export type ModerationLogPayloads = {
 		userUsername: string;
 		userHost: string | null;
 		fileId: string;
+	};
+	deletePage: {
+		pageId: string;
+		pageUserId: string;
+		pageUserUsername: string;
+		page: any;
+	};
+	deleteFlash: {
+		flashId: string;
+		flashUserId: string;
+		flashUserUsername: string;
+		flash: any;
+	};
+	deleteGalleryPost: {
+		postId: string;
+		postUserId: string;
+		postUserUsername: string;
+		post: any;
+	};
+	createSubscriptionPlan: {
+		subscriptionPlanId: string;
+		subscriptionPlan: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+	};
+	updateSubscriptionPlan: {
+		subscriptionPlanId: string;
+		before: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+		after: {
+			id: string;
+			name: string;
+			price: number;
+			currency: string;
+			description: string | null;
+			roleId: string;
+			stripePriceId: string;
+			isArchived: boolean;
+		};
+	};
+
+	archiveSubscriptionPlan: {
+    subscriptionPlanId: string;
+};
+
+	SubscriptionPlan: {
+		id: string;
+		name: string;
+		price: number;
+		currency: string;
+		description: string;
+		roleId: string;
 	};
 };
 

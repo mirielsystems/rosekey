@@ -490,7 +490,8 @@ export class UserEntityService implements OnModuleInit {
 				createdAt: this.idService.parse(announcement.id).date.toISOString(),
 				...announcement,
 			})) : null;
-
+        
+		const policies = isDetailed ? await this.roleService.getUserPolicies(user.id) : null;
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
 
 		const packed = {
@@ -513,7 +514,7 @@ export class UserEntityService implements OnModuleInit {
 			isBot: user.isBot,
 			isCat: user.isCat,
 			isIndexable: user.isIndexable,
-			isSilenced: user.isSilenced || this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
 			instance: user.host ? this.federatedInstanceService.federatedInstanceCache.fetch(user.host).then(instance => instance ? {
 				name: instance.name,
@@ -546,7 +547,8 @@ export class UserEntityService implements OnModuleInit {
 				bannerUrl: user.bannerUrl,
 				bannerBlurhash: user.bannerBlurhash,
 				isLocked: user.isLocked,
-				isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
+				isSilenced: !policies?.canPublicNote,
+				isLimited: !(policies?.canCreateContent && policies.canUpdateContent && policies.canDeleteContent && policies.canInitiateConversation),
 				isSuspended: user.isSuspended,
 				description: profile!.description,
 				location: profile!.location,
@@ -584,7 +586,6 @@ export class UserEntityService implements OnModuleInit {
 				}))),
 				memo: memo,
 				moderationNote: iAmModerator ? (profile!.moderationNote ?? '') : undefined,
-				approved: iAmModerator ? user.approved : undefined,
 			} : {}),
 
 			...(isDetailed && isMe ? {
@@ -636,7 +637,6 @@ export class UserEntityService implements OnModuleInit {
 			...(opts.includeSecrets ? {
 				email: profile!.email,
 				emailVerified: profile!.emailVerified,
-				signupReason: user.signupReason,
 				securityKeysList: profile!.twoFactorEnabled
 					? this.userSecurityKeysRepository.find({
 						where: {

@@ -15,8 +15,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<span class="name"><MkUserName class="name" :user="user"/></span>
 						<span class="sub"><span class="acct _monospace">@{{ acct(user) }}</span></span>
 						<span class="state">
-							<span v-if="!approved" class="silenced">{{ i18n.ts.notApproved }}</span>
-							<span v-if="approved && !user.host" class="moderator">{{ i18n.ts.approved }}</span>
 							<span v-if="suspended" class="suspended">Suspended</span>
 							<span v-if="silenced" class="silenced">Silenced</span>
 							<span v-if="moderator" class="moderator">Moderator</span>
@@ -245,7 +243,6 @@ const ips = ref<Misskey.entities.AdminGetUserIpsResponse | null>(null);
 const ap = ref<any>(null);
 const moderator = ref(false);
 const silenced = ref(false);
-const approved = ref(false);
 const suspended = ref(false);
 const moderationNote = ref('');
 const filesPagination = {
@@ -277,7 +274,6 @@ function createFetcher() {
 		ips.value = _ips;
 		moderator.value = info.value.isModerator;
 		silenced.value = info.value.isSilenced;
-		approved.value = info.value.approved;
 		suspended.value = info.value.isSuspended;
 		moderationNote.value = info.value.moderationNote;
 
@@ -612,18 +608,6 @@ definePageMetadata(() => ({
 			margin-bottom: 12px;
 			font-weight: bold;
 		}
-	}
-}
-
-.casdwq {
-	.silenced {
-		color: var(--warn);
-		border-color: var(--warn);
-	}
-
-	.moderator {
-		color: var(--success);
-		border-color: var(--success);
 	}
 }
 </style>

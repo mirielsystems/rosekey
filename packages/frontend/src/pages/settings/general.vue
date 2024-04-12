@@ -16,12 +16,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</I18n>
 		</template>
 	</MkSelect>
-	<MkSelect v-model="overridedTranslateLanguage">
-		<template #label>{{ i18n.ts.translateLanguage }}</template>
-		<p>{{ i18n.ts.useUILanguageAsTranslateLanguage }}</p>
-		<option :key="i18n.ts.useUILanguageAsTranslateLanguage" :value="null">{{ i18n.ts.useUILanguageAsTranslateLanguage }}</option>
-		<option v-for="x in translateLanguages" :key="x.name" :value="x.language">{{ x.name }}</option>
-	</MkSelect>
 
 	<MkRadios v-model="hemisphere">
 		<template #label>{{ i18n.ts.hemisphere }}</template>
@@ -178,6 +172,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<MkSwitch v-model="disableDrawer">{{ i18n.ts.disableDrawer }}</MkSwitch>
 				<MkSwitch v-model="forceShowAds">{{ i18n.ts.forceShowAds }}</MkSwitch>
 				<MkSwitch v-model="enableSeasonalScreenEffect">{{ i18n.ts.seasonalScreenEffect }}</MkSwitch>
+				<MkSwitch v-model="useNativeUIForVideoAudioPlayer">{{ i18n.ts.useNativeUIForVideoAudioPlayer }}</MkSwitch>
 				<MkSwitch v-model="showUnreadNotificationsCount">{{ i18n.ts.showUnreadNotificationsCount }}</MkSwitch>
 			</div>
 			<div>
@@ -372,7 +367,6 @@ import { definePageMetadata } from '@/scripts/page-metadata.js';
 import { miLocalStorage } from '@/local-storage.js';
 import { globalEvents } from '@/events.js';
 import { claimAchievement } from '@/scripts/achievements.js';
-import translateLanguages from '@/translate-language.json';
 
 const lang = ref(miLocalStorage.getItem('lang'));
 // const fontSize = ref(miLocalStorage.getItem('fontSize'));
@@ -443,6 +437,7 @@ const disableStreamingTimeline = computed(defaultStore.makeGetterSetter('disable
 const useGroupedNotifications = computed(defaultStore.makeGetterSetter('useGroupedNotifications'));
 const enableSeasonalScreenEffect = computed(defaultStore.makeGetterSetter('enableSeasonalScreenEffect'));
 const enableHorizontalSwipe = computed(defaultStore.makeGetterSetter('enableHorizontalSwipe'));
+const useNativeUIForVideoAudioPlayer = computed(defaultStore.makeGetterSetter('useNativeUIForVideoAudioPlayer'));
 const showUnreadNotificationsCount = computed(defaultStore.makeGetterSetter('showUnreadNotificationsCount'));
 const newNoteReceivedNotificationBehavior = computed(defaultStore.makeGetterSetter('newNoteReceivedNotificationBehavior'));
 const fontSize = computed(defaultStore.makeGetterSetter('fontSize'));
@@ -462,7 +457,6 @@ const allMediaNoteCollapse = computed(defaultStore.makeGetterSetter('allMediaNot
 const nsfwOpenBehavior = computed(defaultStore.makeGetterSetter('nsfwOpenBehavior'));
 const renoteVisibilitySelection = computed(defaultStore.makeGetterSetter('renoteVisibilitySelection'));
 const forceRenoteVisibilitySelection = computed(defaultStore.makeGetterSetter('forceRenoteVisibilitySelection'));
-const overridedTranslateLanguage = computed(defaultStore.makeGetterSetter('overridedTranslateLanguage'));
 
 watch(lang, () => {
 	miLocalStorage.setItem('lang', lang.value as string);
