@@ -169,16 +169,16 @@ export class MastoConverters {
 		return await this.convertStatus(status);
 	}
 
-	public async getEdits(noteId: string) {
-		const note = await this.getterService.getNote(noteId);
+	public async getEdits(id: string) {
+		const note = await this.getterService.getNote(id);
 		if (!note) {
 			return {};
 		}
-	
+
 		const noteUser = await this.getUser(note.userId).then(async (p) => await this.convertAccount(p));
 		const edits = await this.notesRepository.find({ where: { id: note.id }, order: { id: 'ASC' } });
 		const history: Promise<any>[] = [];
-	
+
 		let lastDate = this.idService.parse(note.id).date;
 		for (const edit of edits) {
 			const files = this.driveFileEntityService.packManyByIds(edit.fileIds);
@@ -195,7 +195,7 @@ export class MastoConverters {
 			lastDate = edit.updatedAt ?? new Date();
 			history.push(awaitAll(item));
 		}
-	
+
 		return await Promise.all(history);
 	}
 
