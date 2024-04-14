@@ -58,28 +58,28 @@ const props = defineProps<{
 const getUrlParams = () =>
 	window.location.search
 		.substring(1)
-		.split("&")
+		.split('&')
 		.reduce((result, query) => {
-			const [k, v] = query.split("=");
+			const [k, v] = query.split('=');
 			result[k] = decodeURI(v);
 			return result;
 		}, {});
 
 const state = ref<'waiting' | 'accepted' | 'fetch-session-error' | 'denied' | null>(null);
-const session = ref<Misskey.entities.AuthSession | null>(null);
+const session = ref<Misskey.entities.AuthSessionShowResponse | null>(null);
 
 function accepted() {
 	state.value = 'accepted';
 	const isMastodon = !!getUrlParams().mastodon;
 	if (session.value && session.value.app.callbackUrl && isMastodon) {
 		const redirectUri = decodeURIComponent(getUrlParams().redirect_uri);
-		if (!session.value.app.callbackUrl.split("\n").includes(redirectUri)) {
-			state.value = "fetch-session-error";
-			throw new Error("Callback URI doesn't match registered app");
+		if (!session.value.app.callbackUrl.split('\n').includes(redirectUri)) {
+			state.value = 'fetch-session-error';
+			throw new Error('Callback URI doesn\'t match registered app');
 		}
 		const callbackUrl = new URL(redirectUri);
-		callbackUrl.searchParams.append("code", session.value.token);
-		if (getUrlParams().state) callbackUrl.searchParams.append("state", getUrlParams().state);
+		callbackUrl.searchParams.append('code', session.value.token);
+		if (getUrlParams().state) callbackUrl.searchParams.append('state', getUrlParams().state);
 		location.href = callbackUrl.toString();
 	} else if (session.value && session.value.app.callbackUrl) {
 		const url = new URL(session.value.app.callbackUrl);
