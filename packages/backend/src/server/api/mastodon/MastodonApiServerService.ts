@@ -8,13 +8,13 @@ import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
+import { toSingleLast } from '@/misc/prelude/array.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveService } from '@/core/DriveService.js';
-import { toSingleLast } from '@/misc/prelude/array.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -105,8 +105,8 @@ export class MastodonApiServerService {
 					},
 					order: { id: 'ASC' },
 				});
-				const contact = admin == null ? null : convertAccount((await client.getAccount(admin.id)).data);
-				reply.send(await getInstance(data.data, contact, this.config, await this.metaService.fetch()));
+				const contact = admin == null ? null : await this.mastoConverter.convertAccount((await client.getAccount(admin.id)).data);
+				reply.send(await getInstance(data.data, contact as Entity.Account, this.config, await this.metaService.fetch()));
 			} catch (e: any) {
 				/* console.error(e); */
 				reply.code(401).send(e.response.data);
@@ -285,7 +285,7 @@ export class MastodonApiServerService {
 					}
 				}
 				const data = await client.updateCredentials(_request.body!);
-				reply.send(convertAccount(data.data));
+				reply.send(this.mastoConverter.convertAccount(data.data));
 			} catch (e: any) {
 				//console.error(e);
 				reply.code(401).send(e.response.data);
@@ -301,7 +301,7 @@ export class MastodonApiServerService {
 				const data = await client.search((_request.query as any).acct, { type: 'accounts' });
 				const profile = await this.userProfilesRepository.findOneBy({ userId: data.data.accounts[0].id });
 				data.data.accounts[0].fields = profile?.fields.map(f => ({ ...f, verified_at: null })) || [];
-				reply.send(convertAccount(data.data.accounts[0]));
+				reply.send(this.mastoConverter.convertAccount(data.data.accounts[0]));
 			} catch (e: any) {
 				/* console.error(e); */
 				reply.code(401).send(e.response.data);
@@ -577,7 +577,7 @@ export class MastodonApiServerService {
 			const client = getClient(BASE_URL, accessTokens);
 			try {
 				const data = await client.getFollowRequests( ((_request.query as any) || { limit: 20 }).limit );
-				reply.send(data.data.map((account) => convertAccount(account as Entity.Account)));
+				reply.send(data.data.map((account) => this.mastoConverter.convertAccount(account as Entity.Account)));
 			} catch (e: any) {
 				/* console.error(e);
 				console.error(e.response.data); */
