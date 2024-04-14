@@ -1192,7 +1192,7 @@ export default class Misskey implements MegalodonInterface {
       }
     }
     return this.client
-      .post<MisskeyAPI.Entity.CreatedNote>('/api/notes/edit', params)
+      .post<MisskeyAPI.Entity.CreatedNote>('/api/notes/update', params)
       .then(res => ({ ...res, data: MisskeyAPI.Converter.note(res.data.createdNote, this.baseUrl) }))
   }
 
