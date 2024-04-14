@@ -1,11 +1,11 @@
 /*
- * SPDX-FileCopyrightText: syuilo and misskey-project
+ * SPDX-FileCopyrightText: syuilo and other misskey contributors
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { MegalodonInterface } from 'megalodon';
-import querystring from 'querystring';
 import { v4 as uuid } from 'uuid';
 /* import { kinds } from '@/misc/api-permissions.js';
 import type { Config } from '@/config.js';
@@ -27,22 +27,6 @@ export class OAuth2ProviderService {
 		/* @Inject(DI.config)
 		private config: Config, */
 	) { }
-
-	// https://datatracker.ietf.org/doc/html/rfc8414.html
-	// https://indieauth.spec.indieweb.org/#indieauth-server-metadata
-	public generateRFC8414() {
-		return {
-			issuer: this.config.url,
-			authorization_endpoint: new URL('/oauth/authorize', this.config.url),
-			token_endpoint: new URL('/oauth/token', this.config.url),
-			scopes_supported: kinds,
-			response_types_supported: ['code'],
-			grant_types_supported: ['authorization_code'],
-			service_documentation: 'https://misskey-hub.net',
-			code_challenge_methods_supported: ['S256'],
-			authorization_response_iss_parameter_supported: true,
-		};
-	}
 
 	@bindThis
 	public async createServer(fastify: FastifyInstance): Promise<void> {
@@ -85,10 +69,10 @@ export class OAuth2ProviderService {
 
 		fastify.get('/oauth/authorize', async (request, reply) => {
 			const query: any = request.query;
-			let param = "mastodon=true";
+			let param = 'mastodon=true';
 			if (query.state) param += `&state=${query.state}`;
 			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
-			const client = query.client_id ? query.client_id : "";
+			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${atob(client)}?${param}`,
 			);
@@ -96,11 +80,11 @@ export class OAuth2ProviderService {
 
 		fastify.post('/oauth/token', async (request, reply) => {
 			const body: any = request.body || request.query;
-			if (body.grant_type === "client_credentials") {
+			if (body.grant_type === 'client_credentials') {
 				const ret = {
 					access_token: uuid(),
-					token_type: "Bearer",
-					scope: "read",
+					token_type: 'Bearer',
+					scope: 'read',
 					created_at: Math.floor(new Date().getTime() / 1000),
 				};
 				reply.send(ret);
@@ -128,12 +112,12 @@ export class OAuth2ProviderService {
 				const atData = await client.fetchAccessToken(
 					client_id,
 					body.client_secret,
-					token ? token : "",
+					token ? token : '',
 				);
 				const ret = {
 					access_token: atData.accessToken,
-					token_type: "Bearer",
-					scope: body.scope || "read write follow push",
+					token_type: 'Bearer',
+					scope: body.scope || 'read write follow push',
 					created_at: Math.floor(new Date().getTime() / 1000),
 				};
 				reply.send(ret);
@@ -142,18 +126,5 @@ export class OAuth2ProviderService {
 				reply.code(401).send(err.response.data);
 			}
 		});
-	}
-
-	@bindThis
-	public async createTokenServer(fastify: FastifyInstance): Promise<void> {
-		fastify.register(fastifyCors);
-		fastify.post('', async () => { });
-
-		await fastify.register(fastifyExpress);
-		// Clients may use JSON or urlencoded
-		fastify.use('', bodyParser.urlencoded({ extended: false }));
-		fastify.use('', bodyParser.json({ strict: true }));
-		fastify.use('', this.#server.token());
-		fastify.use('', this.#server.errorHandler());
 	}
 }

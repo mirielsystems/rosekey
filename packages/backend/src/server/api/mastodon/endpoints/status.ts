@@ -1,13 +1,13 @@
 import querystring from 'querystring';
 import { emojiRegexAtStartToEnd } from '@/misc/emoji-regex.js';
+import type { Config } from '@/config.js';
+import { NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { convertId, IdConvertType as IdType, convertAccount, convertAttachment, convertPoll, convertStatusSource, MastoConverters } from '../converters.js';
 import { getClient } from '../MastodonApiServerService.js';
 import { convertTimelinesArgsId, limitToInt } from './timeline.js';
 import type { Entity } from 'megalodon';
 import type { FastifyInstance } from 'fastify';
-import type { Config } from '@/config.js';
-import { NotesRepository, UsersRepository } from '@/models/_.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 
 function normalizeQuery(data: any) {
 	const str = querystring.stringify(data);
@@ -18,9 +18,9 @@ export class ApiStatusMastodon {
 	private fastify: FastifyInstance;
 	private mastoconverter: MastoConverters;
 
-	constructor(fastify: FastifyInstance, config: Config, usersrepo: UsersRepository, notesrepo: NotesRepository, userentity: UserEntityService) {
+	constructor(fastify: FastifyInstance, config: Config, usersrepo: UsersRepository, notesrepo: NotesRepository, userprofiles: UserProfilesRepository, userentity: UserEntityService) {
 		this.fastify = fastify;
-		this.mastoconverter = new MastoConverters(config, usersrepo, notesrepo, userentity);
+		this.mastoconverter = new MastoConverters(config, usersrepo, notesrepo, userprofiles, userentity);
 	}
 
 	public async getStatus() {

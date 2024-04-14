@@ -1,14 +1,14 @@
-import type { Config } from '@/config.js';
-import { MfmService } from '@/core/MfmService.js';
-import { DI } from '@/di-symbols.js';
 import { Inject } from '@nestjs/common';
 import { Entity } from 'megalodon';
-import { parse } from 'mfm-js';
-import { GetterService } from '../GetterService.js';
+import { parse } from 'cherrypick-mfm-js';
+import { DI } from '@/di-symbols.js';
+import { MfmService } from '@/core/MfmService.js';
+import type { Config } from '@/config.js';
 import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import type { MiUser } from '@/models/User.js';
-import type { NotesRepository, UsersRepository } from '@/models/_.js';
+import type { NotesRepository, UsersRepository, UserProfilesRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { GetterService } from '../GetterService.js';
 
 const CHAR_COLLECTION = '0123456789abcdefghijklmnopqrstuvwxyz';
 
@@ -18,13 +18,13 @@ export enum IdConvertType {
 }
 
 export const escapeMFM = (text: string): string => text
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;")
-    .replace(/`/g, "&#x60;")
-    .replace(/\r?\n/g, "<br>");
+	.replace(/&/g, '&amp;')
+	.replace(/</g, '&lt;')
+	.replace(/>/g, '&gt;')
+	.replace(/"/g, '&quot;')
+	.replace(/'/g, '&#39;')
+	.replace(/`/g, '&#x60;')
+	.replace(/\r?\n/g, '<br>');
 
 export class MastoConverters {
 	private MfmService: MfmService;
@@ -39,11 +39,14 @@ export class MastoConverters {
 
 		@Inject(DI.notesRepository)
 		private notesRepository: NotesRepository,
+
+		@Inject(DI.userProfilesRepository)
+		private userProfilesRepository: UserProfilesRepository,
 		
-		private userEntityService: UserEntityService
+		private userEntityService: UserEntityService,
 	) {
 		this.MfmService = new MfmService(this.config);
-		this.GetterService = new GetterService(this.usersRepository, this.notesRepository, this.userEntityService);
+		this.GetterService = new GetterService(this.usersRepository, this.notesRepository, this.userProfilesRepository, this.userEntityService);
 	}
 
 	private encode(u: MiUser, m: IMentionedRemoteUsers): MastodonEntity.Mention {
@@ -67,7 +70,7 @@ export class MastoConverters {
 	public async getUser(id: string): Promise<MiUser> {
 		return this.GetterService.getUser(id).then(p => {
 			return p;
-		})
+		});
 	}
 
 	public async convertStatus(status: Entity.Status) {
@@ -94,7 +97,7 @@ export class MastoConverters {
 			id: convertId(mention.id, IdConvertType.MastodonId),
 		}));
 		const convertedMFM = this.MfmService.toHtml(parse(status.content), JSON.parse(note.mentionedRemoteUsers));
-		status.content = status.content ? convertedMFM?.replace(/&amp;/g , "&").replaceAll(`<span>&</span><a href="${this.config.url}/tags/39;" rel="tag">#39;</a>` , "<span>\'</span>")! : status.content;
+		status.content = status.content ? convertedMFM?.replace(/&amp;/g, '&').replaceAll(`<span>&</span><a href="${this.config.url}/tags/39;" rel="tag">#39;</a>`, '<span>\'</span>')! : status.content;
 		if (status.poll) status.poll = convertPoll(status.poll);
 		if (status.reblog) status.reblog = convertStatus(status.reblog);
 	

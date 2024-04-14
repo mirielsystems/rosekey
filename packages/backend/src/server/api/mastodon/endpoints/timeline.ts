@@ -1,11 +1,11 @@
 import { ParsedUrlQuery } from 'querystring';
+import type { Config } from '@/config.js';
+import { NotesRepository, UsersRepository, UserProfilesRepository } from '@/models/_.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { convertId, IdConvertType as IdType, convertAccount, convertConversation, convertList, MastoConverters } from '../converters.js';
 import { getClient } from '../MastodonApiServerService.js';
 import type { Entity } from 'megalodon';
 import type { FastifyInstance } from 'fastify';
-import type { Config } from '@/config.js';
-import { NotesRepository, UsersRepository } from '@/models/_.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
 
 export function limitToInt(q: ParsedUrlQuery) {
 	const object: any = q;
@@ -43,9 +43,9 @@ export class ApiTimelineMastodon {
 	private fastify: FastifyInstance;
 	private mastoconverter: MastoConverters;
 
-	constructor(fastify: FastifyInstance, config: Config, usersRepository: UsersRepository, notesRepository: NotesRepository, userEntityService: UserEntityService) {
+	constructor(fastify: FastifyInstance, config: Config, usersrepo: UsersRepository, notesrepo: NotesRepository, userprofiles: UserProfilesRepository, userentity: UserEntityService) {
 		this.fastify = fastify;
-		this.mastoconverter = new MastoConverters(config, usersRepository, notesRepository, userEntityService);
+		this.mastoconverter = new MastoConverters(config, usersrepo, notesrepo, userprofiles, userentity);
 	}
 
 	public async getTL() {
