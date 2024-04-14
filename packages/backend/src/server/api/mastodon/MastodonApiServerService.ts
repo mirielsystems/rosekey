@@ -3,14 +3,13 @@ import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
-import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import type { AccessTokensRepository, NoteEditRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DriveService } from '@/core/DriveService.js';
-import { toSingleLast } from '@/misc/prelude/array.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
@@ -33,6 +32,8 @@ export class MastodonApiServerService {
         private notesRepository: NotesRepository,
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
+		@Inject(DI.noteEditRepository)
+		private noteEditRepository: NoteEditRepository,
 		@Inject(DI.accessTokensRepository)
 		private accessTokensRepository: AccessTokensRepository,
         @Inject(DI.config)
@@ -225,7 +226,7 @@ export class MastodonApiServerService {
 			reply.send([]);
 		});
 
-		fastify.post('/v1/apps', async (_request, reply) => {
+		fastify.post('/v1/apps', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const client = getClient(BASE_URL, ''); // we are using this here, because in private mode some info isnt
 			// displayed without being logged in
@@ -327,7 +328,7 @@ export class MastodonApiServerService {
 				}
 
 				const data = await client.updateCredentials(_request.body!);
-				reply.send(this.mastoConverter.convertAccount(data.data));
+				reply.send(await this.mastoConverter.convertAccount(data.data));
 			} catch (e: any) {
 				//console.error(e);
 				reply.code(401).send(e.response.data);
@@ -343,7 +344,7 @@ export class MastodonApiServerService {
 				const data = await client.search((_request.query as any).acct, { type: 'accounts' });
 				const profile = await this.userProfilesRepository.findOneBy({ userId: data.data.accounts[0].id });
 				data.data.accounts[0].fields = profile?.fields.map(f => ({ ...f, verified_at: null })) || [];
-				reply.send(this.mastoConverter.convertAccount(data.data.accounts[0]));
+				reply.send(await this.mastoConverter.convertAccount(data.data.accounts[0]));
 			} catch (e: any) {
 				/* console.error(e); */
 				reply.code(401).send(e.response.data);
@@ -459,7 +460,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/follow', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/follow', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -473,7 +474,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unfollow', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unfollow', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -487,7 +488,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/block', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/block', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -501,7 +502,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unblock', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unblock', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -515,7 +516,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/mute', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/mute', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -529,7 +530,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unmute', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/accounts/:id/unmute', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -619,7 +620,7 @@ export class MastodonApiServerService {
 			const client = getClient(BASE_URL, accessTokens);
 			try {
 				const data = await client.getFollowRequests( ((_request.query as any) || { limit: 20 }).limit );
-				reply.send(data.data.map((account) => this.mastoConverter.convertAccount(account as Entity.Account)));
+				reply.send(await Promise.all(data.data.map(async (account) => await this.mastoConverter.convertAccount(account as Entity.Account))));
 			} catch (e: any) {
 				/* console.error(e);
 				console.error(e.response.data); */
@@ -627,7 +628,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/follow_requests/:id/authorize', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/follow_requests/:id/authorize', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -641,7 +642,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/follow_requests/:id/reject', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/follow_requests/:id/reject', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -743,7 +744,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/notification/:id/dismiss', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/notification/:id/dismiss', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -757,7 +758,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post('/v1/notifications/clear', async (_request, reply) => {
+		fastify.post('/v1/notifications/clear', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -787,7 +788,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post('/v1/filters', async (_request, reply) => {
+		fastify.post('/v1/filters', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
@@ -801,7 +802,7 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.post<{ Params: { id: string } }>('/v1/filters/:id', async (_request, reply) => {
+		fastify.post<{ Params: { id: string } }>('/v1/filters/:id', { preHandler: upload.single('none') }, async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);

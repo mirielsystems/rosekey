@@ -3,15 +3,15 @@ import { Entity } from 'megalodon';
 import mfm from 'cherrypick-mfm-js';
 import { DI } from '@/di-symbols.js';
 import { MfmService } from '@/core/MfmService.js';
-import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import type { Config } from '@/config.js';
+import type { IMentionedRemoteUsers } from '@/models/Note.js';
 import type { MiUser } from '@/models/User.js';
-import type { NotesRepository, UsersRepository, UserProfilesRepository } from '@/models/_.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import type { NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { awaitAll } from '@/misc/prelude/await-all.js';
 import { CustomEmojiService } from '@/core/CustomEmojiService.js';
+import { DriveFileEntityService } from '@/core/entities/DriveFileEntityService.js';
+import { IdService } from '@/core/IdService.js';
 import { GetterService } from '../GetterService.js';
-import { ReactionService } from '@/core/ReactionService.js';
 
 export enum IdConvertType {
     MastodonId,
@@ -42,7 +42,8 @@ export class MastoConverters {
 		private mfmService: MfmService,
 		private getterService: GetterService,
 		private customEmojiService: CustomEmojiService,
-		private reactionService: ReactionService,
+		private idService: IdService,
+		private driveFileEntityService: DriveFileEntityService,
 	) {
 	}
 
@@ -64,6 +65,39 @@ export class MastoConverters {
 		};
 	}
 
+	public fileType(s: string): 'unknown' | 'image' | 'gifv' | 'video' | 'audio' {
+		if (s === 'image/gif') {
+			return 'gifv';
+		}
+		if (s.includes('image')) {
+			return 'image';
+		}
+		if (s.includes('video')) {
+			return 'video';
+		}
+		if (s.includes('audio')) {
+			return 'audio';
+		}
+		return 'unknown';
+	}
+  
+	public encodeFile(f: any): Entity.Attachment {
+		return {
+			id: f.id,
+			type: this.fileType(f.type),
+			url: f.url,
+			remote_url: f.url,
+			preview_url: f.thumbnailUrl,
+			text_url: f.url,
+			meta: {
+				width: f.properties.width,
+				height: f.properties.height,
+			},
+			description: f.comment ? f.comment : null,
+			blurhash: f.blurhash ? f.blurhash : null,
+		};
+	}
+
 	public async getUser(id: string): Promise<MiUser> {
 		return this.getterService.getUser(id).then(p => {
 			return p;
@@ -78,7 +112,7 @@ export class MastoConverters {
 		};
 	}
 
-	public async convertAccount(account: Entity.Account) {
+	public async convertAccount(account: Entity.Account | MiUser) {
 		const user = await this.getUser(account.id);
 		const profile = await this.userProfilesRepository.findOneBy({ userId: user.id });
 		const emojis = await this.customEmojiService.populateEmojis(user.emojis, user.host ? user.host : this.config.host);
@@ -93,19 +127,28 @@ export class MastoConverters {
 				category: undefined,
 			});
 		});
+		const fqn = `${user.username}@${user.host ?? this.config.hostname}`;
+		let acct = user.username;
+		let acctUrl = `https://${user.host || this.config.host}/@${user.username}`;
+		const acctUri = `https://${this.config.host}/users/${user.id}`;
+		if (user.host) {
+			acct = `${user.username}@${user.host}`;
+			acctUrl = `https://${user.host}/@${user.username}`;
+		}
 		return awaitAll({
 			id: account.id,
-			username: account.username,
-			acct: account.acct,
-			fqn: account.fqn,
-			display_name: account.display_name || account.username,
+			username: user.username,
+			acct: acct,
+			fqn: fqn,
+			display_name: user.name ?? user.username,
 			locked: user.isLocked,
-			created_at: account.created_at,
+			created_at: this.idService.parse(user.id).date.toISOString(),
 			followers_count: user.followersCount,
 			following_count: user.followingCount,
 			statuses_count: user.notesCount,
-			note: profile?.description ?? account.note,
-			url: account.url,
+			note: profile?.description ?? '',
+			url: user.uri ?? acctUrl,
+			uri: user.uri ?? acctUri,
 			avatar: user.avatarUrl ? user.avatarUrl : 'https://dev.joinsharkey.org/static-assets/avatar.png',
 			avatar_static: user.avatarUrl ? user.avatarUrl : 'https://dev.joinsharkey.org/static-assets/avatar.png',
 			header: user.bannerUrl ? user.bannerUrl : 'https://dev.joinsharkey.org/static-assets/transparent.png',
@@ -198,7 +241,7 @@ export class MastoConverters {
 			poll: status.poll ?? null,
 			application: null, //FIXME
 			language: null, //FIXME
-			pinned: null,
+			pinned: false,
 			reactions: status.emoji_reactions,
 			emoji_reactions: status.emoji_reactions,
 			bookmarked: false,
