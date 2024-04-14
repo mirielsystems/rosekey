@@ -67,29 +67,29 @@ export class OAuth2ProviderService {
 			payload.on('error', done);
 		});
 
-		fastify.get('/oauth/authorize', async (request, reply) => {
+		fastify.get('/authorize', async (request, reply) => {
 			const query: any = request.query;
-			let param = "mastodon=true";
+			let param = 'mastodon=true';
 			if (query.state) param += `&state=${query.state}`;
 			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
-			const client = query.client_id ? query.client_id : "";
+			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${Buffer.from(client.toString(), 'base64').toString()}?${param}`,
 			);
 		});
 
-		fastify.get('/oauth/authorize/', async (request, reply) => {
+		fastify.get('/authorize/', async (request, reply) => {
 			const query: any = request.query;
-			let param = "mastodon=true";
+			let param = 'mastodon=true';
 			if (query.state) param += `&state=${query.state}`;
 			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
-			const client = query.client_id ? query.client_id : "";
+			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${Buffer.from(client.toString(), 'base64').toString()}?${param}`,
 			);
 		});
 
-		fastify.post('/oauth/token', async (request, reply) => {
+		fastify.post('/token', async (request, reply) => {
 			const body: any = request.body || request.query;
 			if (body.grant_type === 'client_credentials') {
 				const ret = {
