@@ -22,7 +22,7 @@ import {
 	locationSchema,
 	nameSchema,
 	passwordSchema,
-	listenbrainzSchema
+	listenbrainzSchema,
 } from '@/models/User.js';
 import type {
 	BlockingsRepository,
@@ -529,8 +529,8 @@ export class UserEntityService implements OnModuleInit {
 				faviconUrl: instance.faviconUrl,
 				themeColor: instance.themeColor,
 			} : undefined) : undefined,
-			followersCount: followersCount ?? '?',
-			followingCount: followingCount ?? '?',
+			followersCount: followersCount ?? '0',
+			followingCount: followingCount ?? '0',
 			notesCount: user.notesCount,
 			emojis: this.customEmojiService.populateEmojis(user.emojis, user.host),
 			onlineStatus: this.getOnlineStatus(user),
