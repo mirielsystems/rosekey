@@ -1,4 +1,4 @@
-import { MastoConverters, convertAccount, convertStatus } from '../converters.js';
+import { MastoConverters } from '../converters.js';
 import { limitToInt } from './timeline.js';
 import type { MegalodonInterface } from 'megalodon';
 import type { FastifyRequest } from 'fastify';

@@ -1,6 +1,6 @@
-import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
+import querystring from 'querystring';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
 import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
@@ -8,12 +8,12 @@ import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveService } from '@/core/DriveService.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -356,7 +356,7 @@ export class MastodonApiServerService {
 			// displayed without being logged in
 			let users;
 			try {
-				let ids = _request.query ? (_request.query as any)['id[]'] : null;
+				let ids = _request.query ? (_request.query as any)['id[]'] ?? (_request.query as any)['id'] : null;
 				if (typeof ids === 'string') {
 					ids = [ids];
 				}

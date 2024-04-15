@@ -1,7 +1,7 @@
 import querystring from 'querystring';
 import { emojiRegexAtStartToEnd } from '@/misc/emoji-regex.js';
 import type { Config } from '@/config.js';
-import { NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
+import { NotesRepository, UsersRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { convertAttachment, convertPoll, convertStatusSource, MastoConverters } from '../converters.js';
 import { getClient } from '../MastodonApiServerService.js';
@@ -176,7 +176,7 @@ export class ApiStatusMastodon {
 				const removed = text.replace(/@\S+/g, '').replace(/\s|/g, '');
 				const isDefaultEmoji = emojiRegexAtStartToEnd.test(removed);
 				const isCustomEmoji = /^:[a-zA-Z0-9@_]+:$/.test(removed);
-				if ((body.in_reply_to_id && isDefaultEmoji) || isCustomEmoji) {
+				if ((body.in_reply_to_id && isDefaultEmoji) || (body.in_reply_to_id && isCustomEmoji)) {
 					const a = await client.createEmojiReaction(
 						body.in_reply_to_id,
 						removed,

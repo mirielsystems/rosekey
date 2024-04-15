@@ -11,24 +11,23 @@ export async function getInstance(
 ) {
 	return {
 		uri: config.url,
-		title: meta.name || 'Sharkey',
+		title: meta.name ?? 'Rosekey',
 		short_description:
-			meta.description?.substring(0, 50) || 'See real server website',
+			meta.description ?? 'This is a vanilla Rosekey Instance. It doesn\'t seem to have a description.',
 		description:
-			meta.description ||
-			'This is a vanilla Sharkey Instance. It doesn\'t seem to have a description.',
+			meta.description ??
+			'This is a vanilla Rosekey Instance. It doesn\'t seem to have a description.',
 		email: response.email || '',
-		version: `3.0.0 (compatible; Sharkey ${config.version})`,
+		version: `3.0.0 (compatible; Rosekey ${config.version})`,
 		urls: response.urls,
 		stats: {
 			user_count: response.stats.user_count,
 			status_count: response.stats.status_count,
 			domain_count: response.stats.domain_count,
 		},
-		thumbnail: meta.backgroundImageUrl || '/static-assets/transparent.png',
+		thumbnail: meta.backgroundImageUrl ?? '/static-assets/transparent.png',
 		languages: meta.langs,
 		registrations: !meta.disableRegistration || response.registrations,
-		approval_required: !response.registrations,
 		invites_enabled: response.registrations,
 		configuration: {
 			accounts: {

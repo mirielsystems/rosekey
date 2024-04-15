@@ -83,7 +83,7 @@ export class MastoConverters {
 		}
 		return 'unknown';
 	}
-  
+
 	public encodeFile(f: any): Entity.Attachment {
 		return {
 			id: f.id,
@@ -164,11 +164,6 @@ export class MastoConverters {
 		});
 	}
 
-	private async convertReblog(status: Entity.Status | null): Promise<any> {
-		if (!status) return null;
-		return await this.convertStatus(status);
-	}
-
 	public async getEdits(id: string) {
 		const note = await this.getterService.getNote(id);
 		if (!note) {
@@ -192,11 +187,16 @@ export class MastoConverters {
 				poll: null,
 				media_attachments: files.then(files => files.length > 0 ? files.map((f) => this.encodeFile(f)) : []),
 			};
-			lastDate = edit.updatedAt ?? new Date();
+			lastDate = edit.updatedAt ?? new Date;
 			history.push(awaitAll(item));
 		}
 
 		return await Promise.all(history);
+	}
+
+	private async convertReblog(status: Entity.Status | null): Promise<any> {
+		if (!status) return null;
+		return await this.convertStatus(status);
 	}
 
 	public async convertStatus(status: Entity.Status) {
@@ -278,8 +278,9 @@ export class MastoConverters {
 			reactions: status.emoji_reactions,
 			emoji_reactions: status.emoji_reactions,
 			bookmarked: false,
-			quote: isQuote ? await this.convertReblog(status.reblog) : null,
-			edited_at: note.updatedAt?.toISOString(),
+			quote: isQuote ? await this.convertReblog(status.reblog) : false,
+			// optional chaining cannot be used, as it evaluates to undefined, not null
+			edited_at: note.updatedAt ? note.updatedAt.toISOString() : null,
 		});
 	}
 }
