@@ -222,7 +222,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 		icon: 'ti ti-users',
 		text: i18n.ts.inviteToGroup,
 		action: inviteGroup,
-	} : undefined,[{
+	} : undefined, {
 		icon: 'ph-pencil-simple ph-bold ph-lg',
 		text: i18n.ts.editMemo,
 		action: () => {
@@ -253,7 +253,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 						});
 					}
 				}));
-
+	
 				return {
 					type: 'switch',
 					text: list.name,
@@ -288,7 +288,7 @@ export function getUserMenu(user: Misskey.entities.UserDetailed, router: IRouter
 				},
 			}));
 		},
-	}] as any;
+	}] as any;	
 	
 	if ($i && meId !== user.id) {
 		if (iAmModerator) {
