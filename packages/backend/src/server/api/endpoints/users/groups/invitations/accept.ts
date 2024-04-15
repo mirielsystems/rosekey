@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
-import type { UserGroupInvitationsRepository, UserGroupJoiningsRepository } from '@/models/index.js';
+import type { UserGroupInvitationsRepository, UserGroupJoiningsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import type { UserGroupJoining } from '@/models/entities/UserGroupJoining.js';
+import type { UserGroupJoining } from '@/models/UserGroupJoining.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../../error.js';
@@ -60,7 +60,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 			// Push the user
 			await this.userGroupJoiningsRepository.insert({
-				id: this.idService.genId(),
+				id: this.idService.gen(),
 				createdAt: new Date(),
 				userId: me.id,
 				userGroupId: invitation.userGroupId,

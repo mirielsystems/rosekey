@@ -1,9 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
-import type { UserGroupsRepository, UserGroupJoiningsRepository } from '@/models/index.js';
+import type { UserGroupsRepository, UserGroupJoiningsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import type { UserGroup } from '@/models/entities/UserGroup.js';
-import type { UserGroupJoining } from '@/models/entities/UserGroupJoining.js';
+import type { UserGroup } from '@/models/UserGroup.js';
+import type { UserGroupJoining } from '@/models/UserGroupJoining.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserGroupEntityService } from '@/core/entities/UserGroupEntityService.js';
 import { DI } from '@/di-symbols.js';

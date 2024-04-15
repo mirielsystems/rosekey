@@ -21,7 +21,7 @@ import type { MiWebhook } from '@/models/Webhook.js';
 import type { MiMeta } from '@/models/Meta.js';
 import { MiAvatarDecoration, MiReversiGame, MiRole, MiRoleAssignment } from '@/models/_.js';
 import type { Packed } from '@/misc/json-schema.js';
-import type { UserGroup } from '@/models/entities/UserGroup.js';
+import type { UserGroup } from '@/models/UserGroup.js';
 import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { bindThis } from '@/decorators.js';

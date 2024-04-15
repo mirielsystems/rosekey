@@ -1,10 +1,15 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { Inject, Injectable } from '@nestjs/common';
-import type { UserGroupsRepository, UserGroupJoiningsRepository, UserGroupInvitationsRepository } from '@/models/index.js';
+import type { UserGroupsRepository, UserGroupJoiningsRepository, UserGroupInvitationsRepository } from '@/models/_.js';
 import { IdService } from '@/core/IdService.js';
-import type { UserGroupInvitation } from '@/models/entities/UserGroupInvitation.js';
+import type { UserGroupInvitation } from '@/models/UserGroupInvitation.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { GetterService } from '@/server/api/GetterService.js';
-import { CreateNotificationService } from '@/core/CreateNotificationService.js';
+import { NotificationService } from '@/core/NotificationService.js';
 import { DI } from '@/di-symbols.js';
 import { ApiError } from '../../../error.js';
 
@@ -53,9 +58,8 @@ export const paramDef = {
 	required: ['groupId', 'userId'],
 } as const;
 
-// eslint-disable-next-line import/no-default-export
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.userGroupsRepository)
 		private userGroupsRepository: UserGroupsRepository,
@@ -68,7 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 
 		private idService: IdService,
 		private getterService: GetterService,
-		private createNotificationService: CreateNotificationService,
+		private notificationService: NotificationService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			// Fetch the group
@@ -106,17 +110,15 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 			}
 
 			const invitation = await this.userGroupInvitationsRepository.insert({
-				id: this.idService.genId(),
-				createdAt: new Date(),
+				id: this.idService.gen(),
 				userId: user.id,
 				userGroupId: userGroup.id,
 			} as UserGroupInvitation).then(x => this.userGroupInvitationsRepository.findOneByOrFail(x.identifiers[0]));
 
 			// 通知を作成
-			this.createNotificationService.createNotification(user.id, 'groupInvited', {
-				notifierId: me.id,
+			this.notificationService.createNotification(user.id, 'groupInvited', {
 				userGroupInvitationId: invitation.id,
-			});
+			}, me.id);
 		});
 	}
 }
