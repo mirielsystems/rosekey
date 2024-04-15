@@ -1,6 +1,6 @@
-import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
+import querystring from 'querystring';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
 import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
@@ -8,12 +8,12 @@ import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveService } from '@/core/DriveService.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -349,39 +349,26 @@ export class MastodonApiServerService {
 			}
 		});
 
-		const relationshopModel = {
-			id: '',
-			following: false,
-			followed_by: false,
-			delivery_following: false,
-			blocking: false,
-			blocked_by: false,
-			muting: false,
-			muting_notifications: false,
-			requested: false,
-			domain_blocking: false,
-			showing_reblogs: false,
-			endorsed: false,
-			notifying: false,
-			note: '',
-		};
-
-		fastify.get('/api/v1/accounts/relationships', async (request, reply) => {
-			const BASE_URL = request.protocol + '://' + request.hostname;
-			const accessTokens = request.headers.authorization;
-			const client = getClient(BASE_URL, accessTokens);
+		fastify.get('/v1/accounts/relationships', async (_request, reply) => {
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+			const client = getClient(BASE_URL, accessTokens); // we are using this here, because in private mode some info isnt
+			// displayed without being logged in
+			let users;
 			try {
-				const idsRaw = (request.query as any)['id[]'];
-				const ids = typeof idsRaw === 'string' ? [idsRaw] : idsRaw;
-				relationshopModel.id = idsRaw || '1';
-				if (!idsRaw) return [relationshopModel];
-				const data = await client.getRelationships(ids) as any;
-				return data.data;
+				let ids = _request.query ? (_request.query as any)['id[]'] ?? (_request.query as any)['id'] : null;
+				if (typeof ids === 'string') {
+					ids = [ids];
+				}
+				users = ids;
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
+				reply.send(await account.getRelationships(users));
 			} catch (e: any) {
-				console.error(e),
-				console.error(e.response.data),
-				reply.code(401);
-				return e.response.data;
+				/* console.error(e); */
+				const data = e.response.data;
+				data.users = users;
+				console.error(data);
+				reply.code(401).send(data);
 			}
 		});
 
