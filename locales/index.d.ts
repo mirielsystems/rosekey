@@ -1885,9 +1885,33 @@ export interface Locale extends ILocale {
      */
     "close": string;
     /**
+     * グループ
+     */
+    "group": string;
+    /**
+     * グループ
+     */
+    "groups": string;
+    /**
+     * グループを作成
+     */
+    "createGroup": string;
+    /**
+     * 所有グループ
+     */
+    "ownedGroups": string;
+    /**
+     * 参加しているグループ
+     */
+    "joinedGroups": string;
+    /**
      * 招待
      */
     "invites": string;
+    /**
+     * グループ名
+     */
+    "groupName": string;
     /**
      * メンバー
      */
@@ -1896,6 +1920,14 @@ export interface Locale extends ILocale {
      * 譲渡
      */
     "transfer": string;
+    /**
+     * ユーザーとチャット
+     */
+    "messagingWithUser": string;
+    /**
+     * グループでチャット
+     */
+    "messagingWithGroup": string;
     /**
      * タイトル
      */
@@ -1928,6 +1960,10 @@ export interface Locale extends ILocale {
      * すべての返信の内容を隠す
      */
     "collapseAllCws": string;
+    /**
+     * グループに招待
+     */
+    "inviteToGroup": string;
     /**
      * 引用付き
      */
@@ -2025,6 +2061,10 @@ export interface Locale extends ILocale {
      */
     "uiLanguage": string;
     /**
+     * グループに招待されました
+     */
+    "groupInvited": string;
+    /**
      * {x}について
      */
     "aboutX": ParameterizedString<"x">;
@@ -2044,6 +2084,14 @@ export interface Locale extends ILocale {
      * ノートのアクションをホバー時のみ表示する
      */
     "showNoteActionsOnlyHover": string;
+    /**
+     * グループがありません
+     */
+    "youHaveNoGroups": string;
+    /**
+     * 既存のグループに招待してもらうか、新しくグループを作成してください。
+     */
+    "joinOrCreateGroup": string;
     /**
      * 履歴はありません
      */
@@ -3681,6 +3729,14 @@ export interface Locale extends ILocale {
      * 隠す
      */
     "hide": string;
+    /**
+     * グループから抜ける
+     */
+    "leaveGroup": string;
+    /**
+     * 「{name}」から抜けますか？
+     */
+    "leaveGroupConfirm": ParameterizedString<"name">;
     /**
      * モバイルデバイスのときドロワーで表示
      */
@@ -8244,6 +8300,10 @@ export interface Locale extends ILocale {
          * 指定した一人または複数のユーザーを除いた全てのノート
          */
         "userBlacklist": string;
+        /**
+         * 指定したグループのユーザーのノート
+         */
+        "userGroup": string;
     };
     "_weekday": {
         /**
@@ -9107,6 +9167,14 @@ export interface Locale extends ILocale {
          */
         "youRenoted": ParameterizedString<"name">;
         /**
+         * {name}からのチャットがあります
+         */
+        "youGotMessagingMessageFromUser": ParameterizedString<"name">;
+        /**
+         * {name}のチャットがあります
+         */
+        "youGotMessagingMessageFromGroup": ParameterizedString<"name">;
+        /**
          * フォローされました
          */
         "youWereFollowed": string;
@@ -9118,6 +9186,10 @@ export interface Locale extends ILocale {
          * フォローリクエストが承認されました
          */
         "yourFollowRequestAccepted": string;
+        /**
+         * {userName}があなたをグループに招待しました
+         */
+        "youWereInvitedToGroup": ParameterizedString<"userName">;
         /**
          * アンケートの結果が出ました
          */
@@ -9231,6 +9303,10 @@ export interface Locale extends ILocale {
              * 実績の獲得
              */
             "achievementEarned": string;
+            /**
+             * グループに招待された
+             */
+            "groupInvited": string;
             /**
              * 連携アプリからの通知
              */
