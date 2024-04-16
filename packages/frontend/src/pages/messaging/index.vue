@@ -48,7 +48,7 @@ import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import { acct } from '@/filters/user';
 import * as os from '@/os';
-import { usestream } from '@/stream';
+import { useStream } from '@/stream';
 import { useRouter } from '@/router/supplier.js';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
@@ -132,7 +132,7 @@ async function startGroup() {
 }
 
 onMounted(() => {
-	connection = markRaw(usestream.useChannel('messagingIndex'));
+	connection = markRaw(useStream().useChannel('messagingIndex'));
 
 	connection.on('message', onMessage);
 	connection.on('read', onRead);
