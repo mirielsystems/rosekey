@@ -16,9 +16,6 @@ export class AntennaEntityService {
 	constructor(
 		@Inject(DI.antennasRepository)
 		private antennasRepository: AntennasRepository,
-		
-		@Inject(DI.antennaNotesRepository)
-		private antennaNotesRepository: AntennaNotesRepository,
 
 		@Inject(DI.userGroupJoiningsRepository)
 		private userGroupJoiningsRepository: UserGroupJoiningsRepository,
@@ -33,7 +30,6 @@ export class AntennaEntityService {
 	): Promise<Packed<'Antenna'>> {
 		const antenna = typeof src === 'object' ? src : await this.antennasRepository.findOneByOrFail({ id: src });
 
-		const hasUnreadNote = (await this.antennaNotesRepository.findOneBy({ antennaId: antenna.id, read: false })) != null;
 		const userGroupJoining = antenna.userGroupJoiningId ? await this.userGroupJoiningsRepository.findOneBy({ id: antenna.userGroupJoiningId }) : null;
 
 		return {
