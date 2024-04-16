@@ -6,6 +6,7 @@ export type MeDetailedOnly = components['schemas']['MeDetailedOnly'];
 export type UserDetailedNotMe = components['schemas']['UserDetailedNotMe'];
 export type MeDetailed = components['schemas']['MeDetailed'];
 export type UserDetailed = components['schemas']['UserDetailed'];
+export type UserGroup = components['schemas']['UserGroup'];
 export type User = components['schemas']['User'];
 export type UserList = components['schemas']['UserList'];
 export type Ad = components['schemas']['Ad'];

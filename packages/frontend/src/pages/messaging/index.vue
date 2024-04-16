@@ -1,7 +1,7 @@
 <template>
 <MkStickyContainer>
 	<template #header><MkPageHeader :actions="headerActions" :tabs="headerTabs"/></template>
-	<MkSpacer :content-max="800">
+	<MkSpacer :contentMax="800">
 		<div class="yweeujhr">
 			<MkButton primary class="start" @click="start"><i class="ti ti-plus"></i> {{ $ts.startMessaging }}</MkButton>
 
@@ -43,25 +43,24 @@
 </template>
 
 <script lang="ts" setup>
-import { defineAsyncComponent, defineComponent, inject, markRaw, onMounted, onUnmounted } from 'vue';
-import * as Acct from 'misskey-js/built/acct';
+import { ref, computed, defineAsyncComponent, defineComponent, inject, markRaw, onMounted, onUnmounted } from 'vue';
+import * as Misskey from 'misskey-js';
 import MkButton from '@/components/MkButton.vue';
 import { acct } from '@/filters/user';
 import * as os from '@/os';
-import { stream } from '@/stream';
-import { useRouter } from '@/router';
+import { usestream } from '@/stream';
+import { useRouter } from '@/router/supplier.js';
 import { i18n } from '@/i18n';
 import { definePageMetadata } from '@/scripts/page-metadata';
 import { $i } from '@/account';
 
 const router = useRouter();
 
-let fetching = $ref(true);
-let moreFetching = $ref(false);
-let messages = $ref([]);
-let connection = $ref(null);
+const fetching = ref(true);
+let messages;
+let connection;
 
-const getAcct = Acct.toString;
+const getAcct = acct.toString;
 
 function isMe(message) {
 	return message.userId === $i.id;
@@ -107,7 +106,7 @@ function start(ev) {
 
 async function startUser() {
 	os.selectUser().then(user => {
-		router.push(`/my/messaging/${Acct.toString(user)}`);
+		router.push(`/my/messaging/${acct.toString()}`);
 	});
 }
 
@@ -133,7 +132,7 @@ async function startGroup() {
 }
 
 onMounted(() => {
-	connection = markRaw(stream.useChannel('messagingIndex'));
+	connection = markRaw(usestream.useChannel('messagingIndex'));
 
 	connection.on('message', onMessage);
 	connection.on('read', onRead);
@@ -143,7 +142,7 @@ onMounted(() => {
 			const _messages = userMessages.concat(groupMessages);
 			_messages.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
 			messages = _messages;
-			fetching = false;
+			fetching.value = false;
 		});
 	});
 });
@@ -152,9 +151,9 @@ onUnmounted(() => {
 	if (connection) connection.dispose();
 });
 
-const headerActions = $computed(() => []);
+const headerActions = computed(() => []);
 
-const headerTabs = $computed(() => []);
+const headerTabs = computed(() => []);
 
 definePageMetadata({
 	title: i18n.ts.messaging,

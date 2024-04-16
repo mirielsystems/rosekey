@@ -5,10 +5,10 @@
 	@drop.stop="onDrop"
 >
 	<textarea
-		:class="$style['textarea']"
-		class="_acrylic"
 		ref="textEl"
 		v-model="text"
+		:class="$style.textarea"
+		class="_acrylic"
 		:placeholder="i18n.ts.inputMessageHere"
 		@keydown="onKeydown"
 		@compositionupdate="onCompositionUpdate"
@@ -24,45 +24,47 @@
 			</button>
 		</div>
 	</footer>
-	<input :class="$style['file-input']" ref="fileEl" type="file" @change="onChangeFile"/>
+	<input ref="fileEl" :class="$style.fileInput" type="file" @change="onChangeFile"/>
 </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted, watch } from 'vue';
+import { computed, onMounted, ref, shallowRef, watch } from 'vue';
 import * as Misskey from 'misskey-js';
 import autosize from 'autosize';
 //import insertTextAtCursor from 'insert-text-at-cursor';
 import { throttle } from 'throttle-debounce';
+import insertTextAtCursor from 'insert-text-at-cursor';
 import { formatTimeString } from '@/scripts/format-time-string';
 import { selectFile } from '@/scripts/select-file';
 import * as os from '@/os';
-import { stream } from '@/stream';
+import { useStream } from '@/stream.js';
 import { defaultStore } from '@/store';
 import { i18n } from '@/i18n';
 //import { Autocomplete } from '@/scripts/autocomplete';
 import { uploadFile } from '@/scripts/upload';
 import { miLocalStorage } from '@/local-storage';
+import { emojiPicker } from '@/scripts/emoji-picker.js';
 
 const props = defineProps<{
 	user?: Misskey.entities.UserDetailed | null;
 	group?: Misskey.entities.UserGroup | null;
 }>();
 
-let textEl = $shallowRef<HTMLTextAreaElement>();
-let fileEl = $shallowRef<HTMLInputElement>();
+const textEl = shallowRef<HTMLTextAreaElement | null>(null);
+const fileEl = shallowRef<HTMLInputElement | null>(null);
 
-let text = $ref<string>('');
-let file = $ref<Misskey.entities.DriveFile | null>(null);
-let sending = $ref(false);
-const typing = throttle(3000, () => {
-	stream.send('typingOnMessaging', props.user ? { partner: props.user.id } : { group: props.group?.id });
-});
+const text = ref<string>('');
+const file = ref<Misskey.entities.DriveFile | null>(null);
+const sending = ref(false);
+const typing = () => {
+	useStream().send('typingOnMessaging', props.user ? { partner: props.user.id } : { group: props.group?.id });
+};
 
-let draftKey = $computed(() => props.user ? 'user:' + props.user.id : 'group:' + props.group?.id);
-let canSend = $computed(() => (text != null && text !== '') || file != null);
+const draftKey = computed(() => props.user ? 'user:' + props.user.id : 'group:' + props.group?.id);
+const canSend = computed(() => (text.value != null && text.value !== '') || file.value != null);
 
-watch([$$(text), $$(file)], saveDraft);
+watch([text.value, file.value], saveDraft);
 
 async function onPaste(ev: ClipboardEvent) {
 	if (!ev.clipboardData) return;
@@ -135,7 +137,7 @@ function onDrop(ev: DragEvent): void {
 	//#region ドライブのファイル
 	const driveFile = ev.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 	if (driveFile != null && driveFile !== '') {
-		file = JSON.parse(driveFile);
+		file.value = JSON.parse(driveFile);
 		ev.preventDefault();
 	}
 	//#endregion
@@ -154,46 +156,46 @@ function onCompositionUpdate() {
 
 function chooseFile(ev: MouseEvent) {
 	selectFile(ev.currentTarget ?? ev.target, i18n.ts.selectFile).then(selectedFile => {
-		file = selectedFile;
+		file.value = selectedFile;
 	});
 }
 
 function onChangeFile() {
-	if (fileEl.files![0]) upload(fileEl.files[0]);
+	if (fileEl.value.files![0]) upload(fileEl.value.files[0]);
 }
 
 function upload(fileToUpload: File, name?: string) {
 	uploadFile(fileToUpload, defaultStore.state.uploadFolder, name).then(res => {
-		file = res;
+		file.value = res;
 	});
 }
 
 function send() {
-	sending = true;
+	sending.value = true;
 	os.api('messaging/messages/create', {
 		userId: props.user ? props.user.id : undefined,
 		groupId: props.group ? props.group.id : undefined,
-		text: text ? text : undefined,
-		fileId: file ? file.id : undefined,
+		text: text.value ? text : undefined,
+		fileId: file.value ? file.value.id : undefined,
 	}).then(message => {
 		clear();
 	}).catch(err => {
 		console.error(err);
 	}).then(() => {
-		sending = false;
+		sending.value = false;
 	});
 }
 
 function clear() {
-	text = '';
-	file = null;
+	text.value = '';
+	file.value = null;
 	deleteDraft();
 }
 
 function saveDraft() {
 	const drafts = JSON.parse(miLocalStorage.getItem('message_drafts') || '{}');
 
-	drafts[draftKey] = {
+	drafts[draftKey.value] = {
 		updatedAt: new Date(),
 		// eslint-disable-next-line id-denylist
 		data: {
@@ -208,13 +210,21 @@ function saveDraft() {
 function deleteDraft() {
 	const drafts = JSON.parse(miLocalStorage.getItem('message_drafts') || '{}');
 
-	delete drafts[draftKey];
+	delete drafts[draftKey.value];
 
 	miLocalStorage.setItem('message_drafts', JSON.stringify(drafts));
 }
 
 async function insertEmoji(ev: MouseEvent) {
-	os.openEmojiPicker(ev.currentTarget ?? ev.target, {}, textEl);
+	emojiPicker.show(
+		ev.currentTarget ?? ev.target,
+		emoji => {
+			insertTextAtCursor(textEl.value, emoji);
+		},
+		() => {
+			focus();
+		},
+	);
 }
 
 onMounted(() => {
@@ -227,8 +237,8 @@ onMounted(() => {
 	// 書きかけの投稿を復元
 	const draft = JSON.parse(miLocalStorage.getItem('message_drafts') || '{}')[draftKey];
 	if (draft) {
-		text = draft.data.text;
-		file = draft.data.file;
+		text.value = draft.data.text;
+		file.value = draft.data.file;
 	}
 });
 

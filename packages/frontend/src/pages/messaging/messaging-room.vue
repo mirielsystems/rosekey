@@ -1,62 +1,62 @@
 <template>
 <MkStickyContainer>
-<template #header>
-	<MkPageHeader />
-</template>
-<div
-	ref="rootEl"
-	:class="$style['root']"
-	@dragover.prevent.stop="onDragover"
-	@drop.prevent.stop="onDrop"
->
-	<div :class="$style['body']">
-		<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
-			<template #empty>
-				<div class="_fullinfo">
-					<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
-					<div>{{ i18n.ts.noMessagesYet }}</div>
-				</div>
-			</template>
-			<template #default="{ items: messages, fetching: pFetching }">
-				<MkDateSeparatedList
-					v-if="messages.length > 0"
-					v-slot="{ item: message }"
-					:class="{ [$style['messages']]: true, 'deny-move-transition': pFetching }"
-					:items="messages"
-					direction="up"
-					reversed
-				>
-					<XMessage :key="message.id" :message="message" :is-group="group != null"/>
-				</MkDateSeparatedList>
-			</template>
-		</MkPagination>
-	</div>
-	<footer :class="$style['footer']">
-		<div v-if="typers.length > 0" :class="$style['typers']">
-			<I18n :src="i18n.ts.typingUsers" text-tag="span">
-				<template #users>
-					<b v-for="typer in typers" :key="typer.id" :class="$style['user']">{{ typer.username }}</b>
+	<template #header>
+		<MkPageHeader/>
+	</template>
+	<div
+		ref="rootEl"
+		:class="$style['root']"
+		@dragover.prevent.stop="onDragover"
+		@drop.prevent.stop="onDrop"
+	>
+		<div :class="$style['body']">
+			<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
+				<template #empty>
+					<div class="_fullinfo">
+						<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
+						<div>{{ i18n.ts.noMessagesYet }}</div>
+					</div>
 				</template>
-			</I18n>
-			<MkEllipsis/>
+				<template #default="{ items: messages, fetching: pFetching }">
+					<MkDateSeparatedList
+						v-if="messages.length > 0"
+						v-slot="{ item: message }"
+						:class="{ [$style['messages']]: true, 'deny-move-transition': pFetching }"
+						:items="messages"
+						direction="up"
+						reversed
+					>
+						<XMessage :key="message.id" :message="message" :isGroup="group != null"/>
+					</MkDateSeparatedList>
+				</template>
+			</MkPagination>
 		</div>
-		<Transition :name="animation ? 'fade' : ''">
-			<div v-show="showIndicator" :class="$style['new-message']">
-				<button class="_buttonPrimary" @click="onIndicatorClick" :class="$style['new-message-button']">
-					<i class="fas ti-fw fa-arrow-circle-down" :class="$style['new-message-icon']"></i>{{ i18n.ts.newMessageExists }}
-				</button>
+		<footer :class="$style['footer']">
+			<div v-if="typers.length > 0" :class="$style['typers']">
+				<I18n :src="i18n.ts.typingUsers" textTag="span">
+					<template #users>
+						<b v-for="typer in typers" :key="typer.id" :class="$style['user']">{{ typer.username }}</b>
+					</template>
+				</I18n>
+				<MkEllipsis/>
 			</div>
-		</Transition>
-		<XForm v-if="!fetching" ref="formEl" :user="user" :group="group" :class="$style['form']"/>
-	</footer>
-</div>
+			<Transition :name="animation ? 'fade' : ''">
+				<div v-show="showIndicator" :class="$style['new-message']">
+					<button class="_buttonPrimary" :class="$style['new-message-button']" @click="onIndicatorClick">
+						<i class="fas ti-fw fa-arrow-circle-down" :class="$style['new-message-icon']"></i>{{ i18n.ts.newMessageExists }}
+					</button>
+				</div>
+			</Transition>
+			<XForm v-if="!fetching" ref="formEl" :user="user" :group="group" :class="$style['form']"/>
+		</footer>
+	</div>
 </MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, nextTick, onBeforeUnmount } from 'vue';
+import { computed, watch, onMounted, nextTick, onBeforeUnmount, ref, shallowRef } from 'vue';
 import * as Misskey from 'misskey-js';
-import * as Acct from 'misskey-js/built/acct';
+import * as Acct from 'misskey-js';
 import XMessage from './messaging-room.message.vue';
 import XForm from './messaging-room.form.vue';
 import MkDateSeparatedList from '@/components/MkDateSeparatedList.vue';
@@ -75,80 +75,81 @@ const props = defineProps<{
 	groupId?: string;
 }>();
 
-let rootEl = $shallowRef<HTMLDivElement>();
-let formEl = $shallowRef<InstanceType<typeof XForm>>();
-let pagingComponent = $shallowRef<InstanceType<typeof MkPagination>>();
+const props = defineProps<{
+	userAcct?: string;
+	groupId?: string;
+}>();
 
-let fetching = $ref(true);
-let user: Misskey.entities.UserDetailed | null = $ref(null);
-let group: Misskey.entities.UserGroup | null = $ref(null);
-let typers: Misskey.entities.User[] = $ref([]);
-let connection: Misskey.ChannelConnection<Misskey.Channels['messaging']> | null = $ref(null);
-let showIndicator = $ref(false);
-const {
-	animation,
-} = defaultStore.reactiveState;
+const rootEl = shallowRef<HTMLDivElement>();
+const formEl = shallowRef<InstanceType<typeof XForm>>();
+const pagingComponent = shallowRef<InstanceType<typeof MkPagination>>();
 
-let pagination: Paging | null = $ref(null);
+const fetching = ref(true);
+const user = ref<Misskey.entities.UserDetailed | null>(null);
+const group = ref<Misskey.entities.UserGroup | null>(null);
+const typers = ref<Misskey.entities.User[]>([]);
+const connection = ref<Misskey.ChannelConnection<Misskey.Channels['messaging']> | null>(null);
+const showIndicator = ref(false);
+const animation = defaultStore.reactiveState;
+
+const pagination = ref<Paging | null>(null);
 
 watch([() => props.userAcct, () => props.groupId], () => {
-	if (connection) connection.dispose();
+	if (connection.value) connection.value.dispose();
 	fetch();
 });
 
 async function fetch() {
-	fetching = true;
+	fetching.value = true;
 
 	if (props.userAcct) {
-		const acct = Acct.parse(props.userAcct);
-		user = await os.api('users/show', { username: acct.username, host: acct.host || undefined });
-		group = null;
-		
-		pagination = {
+		const acct = Misskey.acct.parse(props.userAcct);
+		user.value = await misskeyApi('users/show', { username: acct.username, host: acct.host || undefined });
+		group.value = null;
+
+		pagination.value = {
 			endpoint: 'messaging/messages',
 			limit: 20,
 			params: {
-				userId: user.id,
+				userId: user.value.id,
 			},
 			reversed: true,
-			pageEl: $$(rootEl).value,
+			pageEl: rootEl.value,
 		};
-		connection = stream.useChannel('messaging', {
-			otherparty: user.id,
+		connection.value = useStream().useChannel('messaging', {
+			otherparty: user.value.id,
 		});
 	} else {
-		user = null;
-		group = await os.api('users/groups/show', { groupId: props.groupId });
+		user.value = null;
+		group.value = await misskeyApi('users/groups/show', { groupId: props.groupId });
 
-		pagination = {
+		pagination.value = {
 			endpoint: 'messaging/messages',
 			limit: 20,
 			params: {
-				groupId: group?.id,
+				groupId: group.value.id,
 			},
 			reversed: true,
-			pageEl: $$(rootEl).value,
+			pageEl: rootEl.value,
 		};
-		connection = stream.useChannel('messaging', {
-			group: group?.id,
+		connection.value = useStream().useChannel('messaging', {
+			group: group.value.id,
 		});
 	}
 
-	connection.on('message', onMessage);
-	connection.on('read', onRead);
-	connection.on('deleted', onDeleted);
-	connection.on('typers', _typers => {
-		typers = _typers.filter(u => u.id !== $i?.id);
+	connection.value.on('message', onMessage);
+	connection.value.on('read', onRead);
+	connection.value.on('deleted', onDeleted);
+	connection.value.on('typers', _typers => {
+		typers.value = _typers.filter(u => u.id !== $i?.id);
 	});
 
 	document.addEventListener('visibilitychange', onVisibilitychange);
 
 	nextTick(() => {
-		pagingComponent.inited.then(() => {
-			thisScrollToBottom();
-		});
+		thisScrollToBottom();
 		window.setTimeout(() => {
-			fetching = false;
+			fetching.value = false;
 		}, 300);
 	});
 }
@@ -186,7 +187,7 @@ function onDrop(ev: DragEvent): void {
 
 	// ファイルだったら
 	if (ev.dataTransfer.files.length === 1) {
-		formEl.upload(ev.dataTransfer.files[0]);
+		formEl.value.upload(ev.dataTransfer.files[0]);
 		return;
 	} else if (ev.dataTransfer.files.length > 1) {
 		os.alert({
@@ -200,7 +201,7 @@ function onDrop(ev: DragEvent): void {
 	const driveFile = ev.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 	if (driveFile != null && driveFile !== '') {
 		const file = JSON.parse(driveFile);
-		formEl.file = file;
+		formEl.value.file = file;
 	}
 	//#endregion
 }
@@ -210,9 +211,9 @@ function onMessage(message) {
 
 	const _isBottom = isBottomVisible(rootEl, 64);
 
-	pagingComponent.prepend(message);
+	pagingComponent.value.prepend(message);
 	if (message.userId !== $i?.id && !document.hidden) {
-		connection?.send('read', {
+		connection.value?.send('read', {
 			id: message.id,
 		});
 	}
@@ -229,24 +230,24 @@ function onMessage(message) {
 }
 
 function onRead(x) {
-	if (user) {
+	if (user.value) {
 		if (!Array.isArray(x)) x = [x];
 		for (const id of x) {
-			if (pagingComponent.items.some(y => y.id === id)) {
-				const exist = pagingComponent.items.map(y => y.id).indexOf(id);
-				pagingComponent.items[exist] = {
-					...pagingComponent.items[exist],
+			if (pagingComponent.value.items.some(y => y.id === id)) {
+				const exist = pagingComponent.value.items.map(y => y.id).indexOf(id);
+				pagingComponent.value.items[exist] = {
+					...pagingComponent.value.items[exist],
 					isRead: true,
 				};
 			}
 		}
-	} else if (group) {
+	} else if (group.value) {
 		for (const id of x.ids) {
-			if (pagingComponent.items.some(y => y.id === id)) {
-				const exist = pagingComponent.items.map(y => y.id).indexOf(id);
-				pagingComponent.items[exist] = {
-					...pagingComponent.items[exist],
-					reads: [...pagingComponent.items[exist].reads, x.userId],
+			if (pagingComponent.value.items.some(y => y.id === id)) {
+				const exist = pagingComponent.value.items.map(y => y.id).indexOf(id);
+				pagingComponent.value.items[exist] = {
+					...pagingComponent.value.items[exist],
+					reads: [...pagingComponent.value.items[exist].reads, x.userId],
 				};
 			}
 		}
@@ -254,9 +255,9 @@ function onRead(x) {
 }
 
 function onDeleted(id) {
-	const msg = pagingComponent.items.find(m => m.id === id);
+	const msg = pagingComponent.value.items.find(m => m.id === id);
 	if (msg) {
-		pagingComponent.items = pagingComponent.items.filter(m => m.id !== msg.id);
+		pagingComponent.value.items = pagingComponent.value.items.filter(m => m.id !== msg.id);
 	}
 }
 
@@ -265,26 +266,26 @@ function thisScrollToBottom() {
 }
 
 function onIndicatorClick() {
-	showIndicator = false;
+	showIndicator.value = false;
 	thisScrollToBottom();
 }
 
 let scrollRemove: (() => void) | null = $ref(null);
 
 function notifyNewMessage() {
-	showIndicator = true;
+	showIndicator.value = true;
 
 	scrollRemove = onScrollBottom(rootEl, () => {
-		showIndicator = false;
+		showIndicator.value = false;
 		scrollRemove = null;
 	});
 }
 
 function onVisibilitychange() {
 	if (document.hidden) return;
-	for (const message of pagingComponent.items) {
+	for (const message of pagingComponent.value.items) {
 		if (message.userId !== $i?.id && !message.isRead) {
-			connection?.send('read', {
+			connection.value?.send('read', {
 				id: message.id,
 			});
 		}
@@ -296,16 +297,16 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	connection?.dispose();
+	connection.value?.dispose();
 	document.removeEventListener('visibilitychange', onVisibilitychange);
 	if (scrollRemove) scrollRemove();
 });
 
-definePageMetadata(computed(() => !fetching ? user ? {
+definePageMetadata(computed(() => !fetching.value ? user.value ? {
 	userName: user,
 	avatar: user,
 } : {
-	title: group?.name,
+	title: group.value?.name,
 	icon: 'ti ti-users',
 } : null));
 </script>
@@ -385,7 +386,6 @@ definePageMetadata(computed(() => !fetching ? user ? {
 	font-size: 0.9em;
 	color: var(--fgTransparentWeak);
 }
-
 
 .user + .user:before {
 	content: ", ";
