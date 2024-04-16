@@ -7,8 +7,8 @@ export class SharkeyRepositoryUrl1708342829000 {
   name = 'SharkeyRepositoryUrl1708342829000'
 
   async up(queryRunner) {
-    await queryRunner.query(`ALTER TABLE "meta" ALTER COLUMN "repositoryUrl" SET DEFAULT 'https://activitypub.software/TransFem-org/Sharkey/'`);
-    await queryRunner.query(`ALTER TABLE "meta" ALTER COLUMN "feedbackUrl" SET DEFAULT 'https://activitypub.software/TransFem-org/Sharkey/-/issues/new'`);
+    await queryRunner.query(`ALTER TABLE "meta" ALTER COLUMN "repositoryUrl" SET DEFAULT 'https://code.16439s.dev/16439s/rosekey/'`);
+    await queryRunner.query(`ALTER TABLE "meta" ALTER COLUMN "feedbackUrl" SET DEFAULT 'https://code.16439s.dev/16439s/rosekey/-/issues/new'`);
     await queryRunner.query(`UPDATE "meta" SET "repositoryUrl"=DEFAULT WHERE "repositoryUrl" IN ('https://git.joinsharkey.org/Sharkey/Sharkey','https://github.com/transfem-org/sharkey','https://github.com/misskey-dev/misskey')`);
     await queryRunner.query(`UPDATE "meta" SET "feedbackUrl"=DEFAULT WHERE "feedbackUrl" IN ('https://git.joinsharkey.org/Sharkey/Sharkey/issues/new/choose','https://github.com/transfem-org/sharkey/issues/new','https://github.com/misskey-dev/misskey/issues/new')`);
   }

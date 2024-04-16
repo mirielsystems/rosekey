@@ -379,14 +379,14 @@ export class MiMeta {
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://activitypub.software/TransFem-org/Sharkey/',
+		default: 'https://code.16439s.dev/16439s/rosekey/',
 		nullable: false,
 	})
 	public repositoryUrl: string | null;
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://activitypub.software/TransFem-org/Sharkey/-/issues/new',
+		default: 'https://code.16439s.dev/16439s/rosekey/-/issues/new',
 		nullable: true,
 	})
 	public feedbackUrl: string | null;

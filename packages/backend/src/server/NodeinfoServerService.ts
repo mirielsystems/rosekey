@@ -36,12 +36,12 @@ export class NodeinfoServerService {
 	@bindThis
 	public getLinks() {
 		return [{
-				rel: 'http://nodeinfo.diaspora.software/ns/schema/2.1',
-				href: this.config.url + nodeinfo2_1path
-			}, {
-				rel: 'http://nodeinfo.diaspora.software/ns/schema/2.0',
-				href: this.config.url + nodeinfo2_0path,
-			}];
+			rel: 'http://nodeinfo.diaspora.software/ns/schema/2.1',
+			href: this.config.url + nodeinfo2_1path,
+		}, {
+			rel: 'http://nodeinfo.diaspora.software/ns/schema/2.0',
+			href: this.config.url + nodeinfo2_0path,
+		}];
 	}
 
 	@bindThis
@@ -76,7 +76,7 @@ export class NodeinfoServerService {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any
 			const document: any = {
 				software: {
-					name: 'sharkey',
+					name: 'rosekey',
 					version: this.config.version,
 					homepage: nodeinfo_homepage,
 					repository: meta.repositoryUrl,

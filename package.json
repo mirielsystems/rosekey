@@ -1,10 +1,10 @@
 {
-	"name": "sharkey",
-	"version": "2024.3.2-devel",
-	"codename": "shonk",
+	"name": "rosekey",
+	"version": "1.0.0-dev.I",
+	"codename": "rose",
 	"repository": {
 		"type": "git",
-		"url": "https://activitypub.software/TransFem-org/Sharkey.git"
+		"url": "https://code.16439s.dev/16439s/rosekey.git"
 	},
 	"packageManager": "pnpm@8.15.4",
 	"workspaces": [

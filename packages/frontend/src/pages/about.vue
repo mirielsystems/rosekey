@@ -26,7 +26,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<FormSection>
 					<div class="_gaps_m">
 						<MkKeyValue :copy="version">
-							<template #key>Sharkey</template>
+							<template #key>Rosekey</template>
 							<template #value>{{ version }}</template>
 						</MkKeyValue>
 						<div v-html="i18n.tsx.poweredByMisskeyDescription({ name: instance.name ?? host })">

@@ -11,14 +11,14 @@ export async function getInstance(
 ) {
 	return {
 		uri: config.url,
-		title: meta.name || 'Sharkey',
+		title: meta.name || 'Rosekey',
 		short_description:
-			meta.description || 'This is a vanilla Sharkey Instance. It doesn\'t seem to have a description.',
+			meta.description || 'This is a vanilla Rosekey Instance. It doesn\'t seem to have a description.',
 		description:
 			meta.description ||
-			'This is a vanilla Sharkey Instance. It doesn\'t seem to have a description.',
+			'This is a vanilla Rosekey Instance. It doesn\'t seem to have a description.',
 		email: response.email || '',
-		version: `3.0.0 (compatible; Sharkey ${config.version})`,
+		version: `3.0.0 (compatible; Rosekey ${config.version})`,
 		urls: response.urls,
 		stats: {
 			user_count: response.stats.user_count,

@@ -1,7 +1,7 @@
 <!-- 💖 Thanks for taking the time to fill out this bug report!
 💁 Having trouble with deployment? [Ask the support chat.](https://discord.gg/4qUhaeeHmm)
-🔒 Found a security vulnerability? [Please disclose it responsibly.](https://activitypub.software/TransFem-org/Sharkey/-/blob/develop/SECURITY.md)
-🤝 By submitting this feature request, you agree to follow our [Contribution Guidelines.](https://activitypub.software/TransFem-org/Sharkey/-/blob/develop/CONTRIBUTING.md) -->
+🔒 Found a security vulnerability? [Please disclose it responsibly.](https://code.16439s.dev/16439s/rosekey/-/blob/develop/SECURITY.md)
+🤝 By submitting this feature request, you agree to follow our [Contribution Guidelines.](https://code.16439s.dev/16439s/rosekey/-/blob/develop/CONTRIBUTING.md) -->
 
 **What happened?** _(Please give us a brief description of what happened.)_
 
@@ -24,6 +24,6 @@
 **Relevant log output** _(Please copy and paste any relevant log output. You can find your log by inspecting the page, and going to the "console" tab. This will be automatically formatted into code, so no need for backticks.)_
 
 **Contribution Guidelines**
-By submitting this issue, you agree to follow our [Contribution Guidelines](https://activitypub.software/TransFem-org/Sharkey/-/blob/develop/CONTRIBUTING.md)
+By submitting this issue, you agree to follow our [Contribution Guidelines](https://code.16439s.dev/16439s/rosekey/-/blob/develop/CONTRIBUTING.md)
 - [ ] I agree to follow this project's Contribution Guidelines
 - [ ] I have searched the issue tracker for similar issues, and this is not a duplicate.

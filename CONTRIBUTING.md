@@ -68,14 +68,14 @@ Be willing to comment on the good points and not just the things you want fixed 
 
 ## Release
 ### Release Instructions
-1. Commit version changes in the `develop` branch ([package.json](https://activitypub.software/TransFem-org/Sharkey/-/blob/develop/package.json))
+1. Commit version changes in the `develop` branch ([package.json](https://code.16439s.dev/16439s/rosekey/-/blob/develop/package.json))
 2. Create a release PR.
 	- Into `stable` from `develop` branch.
 	- The title must be in the format `Release: x.y.z`.
 		- `x.y.z` is the new version you are trying to release.
 3. Deploy and perform a simple QA check. Also verify that the tests passed.
 4. Merge it. (Do not squash commit)
-5. Create a [release](https://activitypub.software/TransFem-org/Sharkey/-/releases)
+5. Create a [release](https://code.16439s.dev/16439s/rosekey/-/releases)
 	- The target branch must be `stable`
 	- The tag name must be the version
 

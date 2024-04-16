@@ -98,7 +98,7 @@ export function genOpenapiSpec(config: Config, includeSelfRef = false) {
 			description: desc,
 			externalDocs: {
 				description: 'Source code',
-				url: `https://activitypub.software/TransFem-org/Sharkey/-/tree/develop/packages/backend/src/server/api/endpoints/${endpoint.name}.ts`,
+				url: `https://code.16439s.dev/16439s/rosekey/-/tree/develop/packages/backend/src/server/api/endpoints/${endpoint.name}.ts`,
 			},
 			...(endpoint.meta.tags ? {
 				tags: [endpoint.meta.tags[0]],
