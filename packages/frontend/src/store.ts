@@ -529,6 +529,31 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: { type: 'syuilo/bubble2', volume: 1 } as SoundStore,
 	},
+	// - Settings/Sounds & Vibrations
+	vibrate: {
+		where: 'device',
+		default: !/ipad|iphone/.test(navigator.userAgent.toLowerCase()) && window.navigator.vibrate,
+	},
+	vibrateNote: {
+		where: 'device',
+		default: true,
+	},
+	vibrateNotification: {
+		where: 'device',
+		default: true,
+	},
+	vibrateChat: {
+		where: 'device',
+		default: true,
+	},
+	vibrateChatBg: {
+		where: 'device',
+		default: true,
+	},
+	vibrateSystem: {
+		where: 'device',
+		default: true,
+	},
 }));
 
 // TODO: 他のタブと永続化されたstateを同期
