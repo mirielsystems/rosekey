@@ -2044,6 +2044,9 @@ _time:
   hour: "時間"
   day: "日"
 
+_messaging:
+  direct: "ダイレクトメッセージ"
+
 _2fa:
   alreadyRegistered: "既に設定は完了しています。"
   registerTOTP: "認証アプリの設定を開始"

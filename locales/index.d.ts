@@ -7789,6 +7789,12 @@ export interface Locale extends ILocale {
          */
         "day": string;
     };
+    "_messaging": {
+        /**
+         * ダイレクトメッセージ
+         */
+        "direct": string;
+    };
     "_2fa": {
         /**
          * 既に設定は完了しています。

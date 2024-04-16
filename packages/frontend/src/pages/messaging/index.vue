@@ -141,10 +141,6 @@ const headerTabs = computed(() => [{
 	key: 'direct',
 	title: i18n.ts._messaging.direct,
 	icon: 'ti ti-users',
-}, {
-	key: 'groups',
-	title: i18n.ts.groups,
-	icon: 'ti ti-users-group',
 }]);
 	
 definePageMetadata(() => ({
