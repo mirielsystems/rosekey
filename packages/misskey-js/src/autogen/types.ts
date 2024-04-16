@@ -3840,6 +3840,7 @@ export type components = {
       hasUnreadAnnouncement: boolean;
       unreadAnnouncements: components['schemas']['Announcement'][];
       hasUnreadAntenna: boolean;
+      hasUnreadMessagingMessage: boolean;
       hasUnreadChannel: boolean;
       hasUnreadNotification: boolean;
       hasPendingReceivedFollowRequest: boolean;

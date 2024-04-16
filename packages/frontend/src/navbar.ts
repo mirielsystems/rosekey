@@ -34,7 +34,7 @@ export const navbarItemDef = reactive({
 	},
 	messaging: {
 		title: i18n.ts.messaging,
-		icon: 'ti ti-messages',
+		icon: 'ph-messages ph-bold ph-lg',
 		show: computed(() => $i != null),
 		indicated: computed(() => $i != null && $i.hasUnreadMessagingMessage),
 		to: '/my/messaging',
@@ -81,14 +81,12 @@ export const navbarItemDef = reactive({
 		show: computed(() => $i != null),
 		to: '/my/lists',
 	},
-	/*
 	groups: {
 		title: i18n.ts.groups,
 		icon: 'ti ti-users',
 		show: computed(() => $i != null),
 		to: '/my/groups',
 	},
-	*/
 	antennas: {
 		title: i18n.ts.antennas,
 		icon: 'ph-flying-saucer ph-bold ph-lg',

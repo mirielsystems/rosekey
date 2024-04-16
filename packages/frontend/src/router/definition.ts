@@ -526,6 +526,29 @@ const routes: RouteDef[] = [{
 	component: page(() => import('@/pages/my-antennas/index.vue')),
 	loginRequired: true,
 }, {
+	path: '/my/messaging',
+	name: 'messaging',
+	component: page(() => import('@/pages/messaging/index.vue')),
+	loginRequired: true,
+}, {
+	path: '/my/messaging/@:userAcct',
+	name: 'messaging-room',
+	component: page(() => import('@/pages/messaging/messaging-room.vue')),
+	loginRequired: true,
+}, {
+	path: '/my/messaging/group/:groupId',
+	name: 'messaging-room-group',
+	component: page(() => import('@/pages/messaging/messaging-room.vue')),
+	loginRequired: true,
+}, {
+	path: '/my/groups',
+	component: page(() => import('@/pages/my-groups/index.vue')),
+	loginRequired: true,
+}, {
+	path: '/my/groups/:groupId',
+	component: page(() => import('@/pages/my-groups/group.vue')),
+	loginRequired: true,
+}, {
 	path: '/timeline/list/:listId',
 	component: page(() => import('@/pages/user-list-timeline.vue')),
 	loginRequired: true,
