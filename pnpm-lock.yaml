@@ -789,6 +789,9 @@ importers:
       matter-js:
         specifier: 0.19.0
         version: 0.19.0
+      mfm-js:
+        specifier: ^0.24.0
+        version: 0.24.0
       misskey-bubble-game:
         specifier: workspace:*
         version: link:../misskey-bubble-game
@@ -14913,6 +14916,12 @@ packages:
   /methods@1.1.2:
     resolution: {integrity: sha512-iclAHeNqNm68zFtnZ0e+1L2yUIdvzNoauKU4WBA3VvH/vPFieF7qfRlwUZU+DA9P9bPXIS90ulxoUoCH23sV2w==}
     engines: {node: '>= 0.6'}
+
+  /mfm-js@0.24.0:
+    resolution: {integrity: sha512-6m8N0ElH9/4CA1izhVqmxTfLj5Z9RspdqM/lMew4xU/UTgm4Pf//VpDunpasxbRFjeJSVW+zoVwL4ZPfPtfiQg==}
+    dependencies:
+      '@twemoji/parser': 15.0.0
+    dev: false
 
   /microformats-parser@2.0.2:
     resolution: {integrity: sha512-tUf9DmN4Jq/tGyp1YH2V6D/Cud+9Uc0WhjjUFirqVeHTRkkfLDacv6BQFT7h7HFsD0Z8wja5eKkRgzZU8bv0Fw==}
