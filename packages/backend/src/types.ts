@@ -31,11 +31,11 @@ export const notificationTypes = [
 	'edited',
 	'receiveFollowRequest',
 	'followRequestAccepted',
+	'groupInvited',
 	'roleAssigned',
 	'achievementEarned',
 	'app',
 	'test',
-	'groupInvited',
 ] as const;
 
 export const groupedNotificationTypes = [
@@ -44,7 +44,7 @@ export const groupedNotificationTypes = [
 	'renote:grouped',
 ] as const;
 
-export const obsoleteNotificationTypes = ['pollVote', 'groupInvited'] as const;
+export const obsoleteNotificationTypes = ['pollVote'/*, 'groupInvited'*/] as const;
 
 export const noteVisibilities = ['public', 'home', 'followers', 'specified'] as const;
 
