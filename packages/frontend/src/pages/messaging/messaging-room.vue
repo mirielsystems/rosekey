@@ -58,7 +58,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 	
 <script lang="ts" setup>
 import { computed, onMounted, nextTick, onBeforeUnmount, watch, shallowRef, ref } from 'vue';
-import * as Misskey from 'cherrypick-js';
+import * as Misskey from 'misskey-js';
 import XMessage from './messaging-room.message.vue';
 import XForm from './messaging-room.form.vue';
 import MkDateSeparatedList from '@/components/MkDateSeparatedList.vue';
