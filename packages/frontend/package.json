@@ -75,7 +75,8 @@
 		"vite": "5.1.4",
 		"vue": "3.4.21",
 		"vuedraggable": "next",
-		"mfm-js": "^0.24.0"
+		"mfm-js": "^0.24.0",
+		"autosize": "^6.0.1"
 	},
 	"devDependencies": {
 		"@misskey-dev/eslint-plugin": "1.0.0",
