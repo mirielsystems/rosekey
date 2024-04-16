@@ -1,13 +1,20 @@
+<!--
+SPDX-FileCopyrightText: syuilo and misskey-project & noridev and cherrypick-project
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <div class="thvuemwp" :class="{ isMe }">
 	<MkAvatar class="avatar" :user="message.user" indicator link preview/>
 	<div class="content">
 		<div class="balloon" :class="{ noText: message.text == null }">
-			<button v-if="isMe" class="delete-button" :title="$ts.delete" @click="del">
+			<button v-if="isMe" class="delete-button" :title="i18n.ts.delete" @click="del">
 				<img src="/client-assets/remove.png" alt="Delete"/>
 			</button>
 			<div v-if="!message.isDeleted" class="content">
-				<Mfm v-if="message.text" ref="text" class="text" :text="message.text" :i="$i"/>
+				<div v-if="message.text" class="text">
+					<Mfm :text="message.text" :nyaize="false" :enableEmojiMenu="true" :enableEmojiMenuReaction="true"/>
+				</div>
 				<div v-if="message.file" class="file">
 					<a :href="message.file.url" rel="noopener" target="_blank" :title="message.file.name">
 						<img v-if="message.file.type.split('/')[0] == 'image'" :src="message.file.url" :alt="message.file.name"/>
@@ -16,19 +23,25 @@
 				</div>
 			</div>
 			<div v-else class="content">
-				<p class="is-deleted">{{ $ts.deleted }}</p>
+				<p class="is-deleted">{{ i18n.ts.deleted }}</p>
 			</div>
 		</div>
 		<div></div>
 		<MkUrlPreview v-for="url in urls" :key="url" :url="url" style="margin: 8px 0;"/>
 		<footer>
-			<template v-if="isGroup">
-				<span v-if="message.reads.length > 0" class="read">{{ $ts.messageRead }} {{ message.reads.length }}</span>
-			</template>
-			<template v-else>
-				<span v-if="isMe && message.isRead" class="read">{{ $ts.messageRead }}</span>
-			</template>
 			<MkTime :time="message.createdAt"/>
+			<template v-if="isGroup">
+				<span v-if="message.reads.length > 0" class="read">
+					<span style="margin-right: 4px;">•</span>
+					<I18n :src="i18n.ts.nUsersRead" textTag="span">
+						<template #n>{{ message.reads.length }}</template>
+					</I18n>
+				</span>
+			</template>
+			<template v-else-if="isMe">
+				<span v-if="!message.isRead" class="read"><span style="margin-right: 4px;">•</span>{{ i18n.ts.messageSend }}</span>
+				<span v-else class="read"><span style="margin-right: 4px;">•</span>{{ i18n.ts.messageRead }}</span>
+			</template>
 			<template v-if="message.is_edited"><i class="ti ti-pencil"></i></template>
 		</footer>
 	</div>
@@ -36,24 +49,28 @@
 </template>
 
 <script lang="ts" setup>
-import { } from 'vue';
-import * as mfm from 'mfm-js';
-import * as Misskey from 'misskey-js';
-import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm';
+import { computed } from 'vue';
+import * as mfm from 'cherrypick-mfm-js';
+import * as Misskey from 'cherrypick-js';
+import * as os from '@/os.js';
 import MkUrlPreview from '@/components/MkUrlPreview.vue';
-import * as os from '@/os';
-import { $i } from '@/account';
+import MkAvatar from '@/components/global/MkAvatar.vue';
+import MkTime from '@/components/global/MkTime.vue';
+import { extractUrlFromMfm } from '@/scripts/extract-url-from-mfm.js';
+import { i18n } from '@/i18n.js';
+import { $i } from '@/account.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
 
 const props = defineProps<{
 	message: Misskey.entities.MessagingMessage;
 	isGroup?: boolean;
 }>();
 
-const isMe = $computed(() => props.message.userId === $i?.id);
-const urls = $computed(() => props.message.text ? extractUrlFromMfm(mfm.parse(props.message.text)) : []);
+const isMe = computed(() => props.message.userId === $i?.id);
+const urls = computed(() => props.message.text ? extractUrlFromMfm(mfm.parse(props.message.text)) : []);
 
 function del(): void {
-	os.api('messaging/messages/delete', {
+	misskeyApi('messaging/messages/delete', {
 		messageId: props.message.id,
 	});
 }
@@ -71,8 +88,8 @@ function del(): void {
 		position: sticky;
 		top: calc(var(--stickyTop, 0px) + 16px);
 		display: block;
-		width: 54px;
-		height: 54px;
+		width: 48px;
+		height: 48px;
 		transition: all 0.1s ease;
 	}
 
@@ -145,7 +162,7 @@ function del(): void {
 				> .text {
 					display: block;
 					margin: 0;
-					padding: 12px 18px;
+					padding: 8px 12px;
 					overflow: hidden;
 					overflow-wrap: break-word;
 					word-break: break-word;
@@ -201,7 +218,7 @@ function del(): void {
 			font-size: 0.65em;
 
 			> .read {
-				margin: 0 8px;
+				margin: 0 4px;
 			}
 
 			> i {
@@ -249,7 +266,7 @@ function del(): void {
 	&.isMe {
 		flex-direction: row-reverse;
 		padding-right: var(--margin);
-		right: var(--margin); // 削除時にposition: absoluteになったときに使う
+		//right: var(--margin); // 削除時にposition: absoluteになったときに使う
 
 		> .content {
 			padding-right: 16px;
@@ -263,7 +280,7 @@ function del(): void {
 				::selection {
 					color: var(--accent);
 					background-color: #fff;
-				} 
+				}
 
 				&.noText {
 					background: transparent;
@@ -279,7 +296,6 @@ function del(): void {
 				}
 
 				> .content {
-
 					> p.is-deleted {
 						color: rgba(#fff, 0.5);
 					}
@@ -303,13 +319,8 @@ function del(): void {
 	}
 }
 
-@container (max-width: 400px) {
+@container (max-width: 500px) {
 	.thvuemwp {
-		> .avatar {
-			width: 48px;
-			height: 48px;
-		}
-
 		> .content {
 			> .balloon {
 				> .content {
@@ -319,20 +330,14 @@ function del(): void {
 				}
 			}
 		}
-	}
-}
 
-@container (max-width: 500px) {
-	.thvuemwp {
-		> .content {
-			> .balloon {
-				> .content {
-					> .text {
-						padding: 8px 16px;
-					}
-				}
-			}
-		}
+    &:not(.isMe) {
+      padding-left: initial;
+    }
+
+    &.isMe {
+      padding-right: initial;
+    }
 	}
 }
 </style>

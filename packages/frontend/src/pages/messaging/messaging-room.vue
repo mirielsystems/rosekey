@@ -1,154 +1,157 @@
+<!--
+SPDX-FileCopyrightText: syuilo and misskey-project & noridev and cherrypick-project
+SPDX-License-Identifier: AGPL-3.0-only
+-->
+
 <template>
 <MkStickyContainer>
-<template #header>
-	<MkPageHeader />
-</template>
-<div
-	ref="rootEl"
-	:class="$style['root']"
-	@dragover.prevent.stop="onDragover"
-	@drop.prevent.stop="onDrop"
->
-	<div :class="$style['body']">
-		<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
-			<template #empty>
-				<div class="_fullinfo">
-					<img src="https://xn--931a.moe/assets/info.jpg" class="_ghost"/>
-					<div>{{ i18n.ts.noMessagesYet }}</div>
-				</div>
-			</template>
-			<template #default="{ items: messages, fetching: pFetching }">
-				<MkDateSeparatedList
-					v-if="messages.length > 0"
-					v-slot="{ item: message }"
-					:class="{ [$style['messages']]: true, 'deny-move-transition': pFetching }"
-					:items="messages"
-					direction="up"
-					reversed
-				>
-					<XMessage :key="message.id" :message="message" :is-group="group != null"/>
-				</MkDateSeparatedList>
-			</template>
-		</MkPagination>
-	</div>
-	<footer :class="$style['footer']">
-		<div v-if="typers.length > 0" :class="$style['typers']">
-			<I18n :src="i18n.ts.typingUsers" text-tag="span">
-				<template #users>
-					<b v-for="typer in typers" :key="typer.id" :class="$style['user']">{{ typer.username }}</b>
-				</template>
-			</I18n>
-			<MkEllipsis/>
-		</div>
-		<Transition :name="animation ? 'fade' : ''">
-			<div v-show="showIndicator" :class="$style['new-message']">
-				<button class="_buttonPrimary" @click="onIndicatorClick" :class="$style['new-message-button']">
-					<i class="fas ti-fw fa-arrow-circle-down" :class="$style['new-message-icon']"></i>{{ i18n.ts.newMessageExists }}
-				</button>
+	<template #header><MkPageHeader/></template>
+	<div
+		ref="rootEl"
+		:class="$style.root"
+		@dragover.prevent.stop="onDragover"
+		@drop.prevent.stop="onDrop"
+	>
+		<MkSpacer :contentMax="800">
+			<div :class="$style.body">
+				<MkPagination v-if="pagination" ref="pagingComponent" :key="userAcct || groupId" :pagination="pagination">
+					<template #default="{ items: messages, fetching: pFetching }">
+						<MkDateSeparatedList
+							v-if="messages.length > 0"
+							v-slot="{ item: message }"
+							:class="{ [$style.messages]: true, 'deny-move-transition': pFetching }"
+							:items="messages"
+							direction="up"
+							reversed
+						>
+							<XMessage :key="message.id" :message="message" :isGroup="group != null"/>
+						</MkDateSeparatedList>
+					</template>
+				</MkPagination>
 			</div>
-		</Transition>
-		<XForm v-if="!fetching" ref="formEl" :user="user" :group="group" :class="$style['form']"/>
-	</footer>
-</div>
+		</MkSpacer>
+		<footer>
+			<div :class="$style.footerSpacer">
+				<div :class="[$style.footer, { [$style.friendly]: isFriendly }]">
+					<div v-if="typers.length > 0" :class="$style.typers">
+						<I18n :src="i18n.ts.typingUsers" textTag="span">
+							<template #users>
+								<b v-for="typer in typers" :key="typer.id" :class="$style.user">{{ typer.username }}</b>
+							</template>
+						</I18n>
+						<MkEllipsis/>
+					</div>
+					<Transition :name="animation ? 'fade' : ''">
+						<div v-show="showIndicator" :class="$style.newMessage">
+							<button class="_buttonPrimary" :class="$style.newMessageButton" @click="onIndicatorClick">
+								<i class="ti ti-circle-arrow-down-filled" :class="$style.newMessageIcon"></i>{{ i18n.ts.newMessageExists }}
+							</button>
+						</div>
+					</Transition>
+					<XForm v-if="!fetching" ref="formEl" :user="user" :group="group" :class="$style.form"/>
+				</div>
+			</div>
+		</footer>
+	</div>
 </MkStickyContainer>
 </template>
 
 <script lang="ts" setup>
-import { computed, watch, onMounted, nextTick, onBeforeUnmount } from 'vue';
-import * as Misskey from 'misskey-js';
-import * as Acct from 'misskey-js/built/acct';
+import { computed, onMounted, nextTick, onBeforeUnmount, watch, shallowRef, ref } from 'vue';
+import * as Misskey from 'cherrypick-js';
 import XMessage from './messaging-room.message.vue';
 import XForm from './messaging-room.form.vue';
 import MkDateSeparatedList from '@/components/MkDateSeparatedList.vue';
 import MkPagination, { Paging } from '@/components/MkPagination.vue';
-import { isBottomVisible, onScrollBottom, scrollToBottom } from '@/scripts/scroll';
-import * as os from '@/os';
-import { stream } from '@/stream';
-import * as sound from '@/scripts/sound';
-import { i18n } from '@/i18n';
-import { $i } from '@/account';
-import { defaultStore } from '@/store';
-import { definePageMetadata } from '@/scripts/page-metadata';
+import { isBottomVisible, onScrollBottom, scrollToBottom } from '@/scripts/scroll.js';
+import * as os from '@/os.js';
+import { useStream } from '@/stream.js';
+import * as sound from '@/scripts/sound.js';
+import { i18n } from '@/i18n.js';
+import { $i } from '@/account.js';
+import { defaultStore } from '@/store.js';
+import { definePageMetadata } from '@/scripts/page-metadata.js';
+import { vibrate } from '@/scripts/vibrate.js';
+import { miLocalStorage } from '@/local-storage.js';
+import { misskeyApi } from '@/scripts/misskey-api.js';
+
+const isFriendly = ref(miLocalStorage.getItem('ui') === 'friendly');
 
 const props = defineProps<{
 	userAcct?: string;
 	groupId?: string;
 }>();
 
-let rootEl = $shallowRef<HTMLDivElement>();
-let formEl = $shallowRef<InstanceType<typeof XForm>>();
-let pagingComponent = $shallowRef<InstanceType<typeof MkPagination>>();
+const rootEl = shallowRef<HTMLDivElement>();
+const formEl = shallowRef<InstanceType<typeof XForm>>();
+const pagingComponent = shallowRef<InstanceType<typeof MkPagination>>();
 
-let fetching = $ref(true);
-let user: Misskey.entities.UserDetailed | null = $ref(null);
-let group: Misskey.entities.UserGroup | null = $ref(null);
-let typers: Misskey.entities.User[] = $ref([]);
-let connection: Misskey.ChannelConnection<Misskey.Channels['messaging']> | null = $ref(null);
-let showIndicator = $ref(false);
-const {
-	animation,
-} = defaultStore.reactiveState;
+const fetching = ref(true);
+const user = ref<Misskey.entities.UserDetailed | null>(null);
+const group = ref<Misskey.entities.UserGroup | null>(null);
+const typers = ref<Misskey.entities.User[]>([]);
+const connection = ref<Misskey.ChannelConnection<Misskey.Channels['messaging']> | null>(null);
+const showIndicator = ref(false);
+const animation = defaultStore.reactiveState;
 
-let pagination: Paging | null = $ref(null);
+const pagination = ref<Paging | null>(null);
 
 watch([() => props.userAcct, () => props.groupId], () => {
-	if (connection) connection.dispose();
+	if (connection.value) connection.value.dispose();
 	fetch();
 });
 
 async function fetch() {
-	fetching = true;
+	fetching.value = true;
 
 	if (props.userAcct) {
-		const acct = Acct.parse(props.userAcct);
-		user = await os.api('users/show', { username: acct.username, host: acct.host || undefined });
-		group = null;
-		
-		pagination = {
+		const acct = Misskey.acct.parse(props.userAcct);
+		user.value = await misskeyApi('users/show', { username: acct.username, host: acct.host || undefined });
+		group.value = null;
+
+		pagination.value = {
 			endpoint: 'messaging/messages',
 			limit: 20,
 			params: {
-				userId: user.id,
+				userId: user.value.id,
 			},
 			reversed: true,
-			pageEl: $$(rootEl).value,
+			pageEl: rootEl.value,
 		};
-		connection = stream.useChannel('messaging', {
-			otherparty: user.id,
+		connection.value = useStream().useChannel('messaging', {
+			otherparty: user.value.id,
 		});
 	} else {
-		user = null;
-		group = await os.api('users/groups/show', { groupId: props.groupId });
+		user.value = null;
+		group.value = await misskeyApi('users/groups/show', { groupId: props.groupId });
 
-		pagination = {
+		pagination.value = {
 			endpoint: 'messaging/messages',
 			limit: 20,
 			params: {
-				groupId: group?.id,
+				groupId: group.value.id,
 			},
 			reversed: true,
-			pageEl: $$(rootEl).value,
+			pageEl: rootEl.value,
 		};
-		connection = stream.useChannel('messaging', {
-			group: group?.id,
+		connection.value = useStream().useChannel('messaging', {
+			group: group.value.id,
 		});
 	}
 
-	connection.on('message', onMessage);
-	connection.on('read', onRead);
-	connection.on('deleted', onDeleted);
-	connection.on('typers', _typers => {
-		typers = _typers.filter(u => u.id !== $i?.id);
+	connection.value.on('message', onMessage);
+	connection.value.on('read', onRead);
+	connection.value.on('deleted', onDeleted);
+	connection.value.on('typers', _typers => {
+		typers.value = _typers.filter(u => u.id !== $i?.id);
 	});
 
 	document.addEventListener('visibilitychange', onVisibilitychange);
 
 	nextTick(() => {
-		pagingComponent.inited.then(() => {
-			thisScrollToBottom();
-		});
+		thisScrollToBottom();
 		window.setTimeout(() => {
-			fetching = false;
+			fetching.value = false;
 		}, 300);
 	});
 }
@@ -163,9 +166,9 @@ function onDragover(ev: DragEvent) {
 		switch (ev.dataTransfer.effectAllowed) {
 			case 'all':
 			case 'uninitialized':
-			case 'copy': 
-			case 'copyLink': 
-			case 'copyMove': 
+			case 'copy':
+			case 'copyLink':
+			case 'copyMove':
 				ev.dataTransfer.dropEffect = 'copy';
 				break;
 			case 'linkMove':
@@ -186,7 +189,7 @@ function onDrop(ev: DragEvent): void {
 
 	// ファイルだったら
 	if (ev.dataTransfer.files.length === 1) {
-		formEl.upload(ev.dataTransfer.files[0]);
+		formEl.value.upload(ev.dataTransfer.files[0]);
 		return;
 	} else if (ev.dataTransfer.files.length > 1) {
 		os.alert({
@@ -199,20 +202,20 @@ function onDrop(ev: DragEvent): void {
 	//#region ドライブのファイル
 	const driveFile = ev.dataTransfer.getData(_DATA_TRANSFER_DRIVE_FILE_);
 	if (driveFile != null && driveFile !== '') {
-		const file = JSON.parse(driveFile);
-		formEl.file = file;
+		formEl.value.file = JSON.parse(driveFile);
 	}
 	//#endregion
 }
 
 function onMessage(message) {
-	sound.play('chat');
+	sound.playMisskeySfx('chat');
+	vibrate(defaultStore.state.vibrateChat ? [30, 30, 30] : []);
 
-	const _isBottom = isBottomVisible(rootEl, 64);
+	const _isBottom = isBottomVisible(rootEl.value, 64);
 
-	pagingComponent.prepend(message);
+	pagingComponent.value.prepend(message);
 	if (message.userId !== $i?.id && !document.hidden) {
-		connection?.send('read', {
+		connection.value?.send('read', {
 			id: message.id,
 		});
 	}
@@ -229,24 +232,24 @@ function onMessage(message) {
 }
 
 function onRead(x) {
-	if (user) {
+	if (user.value) {
 		if (!Array.isArray(x)) x = [x];
 		for (const id of x) {
-			if (pagingComponent.items.some(y => y.id === id)) {
-				const exist = pagingComponent.items.map(y => y.id).indexOf(id);
-				pagingComponent.items[exist] = {
-					...pagingComponent.items[exist],
+			if (pagingComponent.value.items.some(y => y.id === id)) {
+				const exist = pagingComponent.value.items.map(y => y.id).indexOf(id);
+				pagingComponent.value.items[exist] = {
+					...pagingComponent.value.items[exist],
 					isRead: true,
 				};
 			}
 		}
-	} else if (group) {
+	} else if (group.value) {
 		for (const id of x.ids) {
-			if (pagingComponent.items.some(y => y.id === id)) {
-				const exist = pagingComponent.items.map(y => y.id).indexOf(id);
-				pagingComponent.items[exist] = {
-					...pagingComponent.items[exist],
-					reads: [...pagingComponent.items[exist].reads, x.userId],
+			if (pagingComponent.value.items.some(y => y.id === id)) {
+				const exist = pagingComponent.value.items.map(y => y.id).indexOf(id);
+				pagingComponent.value.items[exist] = {
+					...pagingComponent.value.items[exist],
+					reads: [...pagingComponent.value.items[exist].reads, x.userId],
 				};
 			}
 		}
@@ -254,37 +257,36 @@ function onRead(x) {
 }
 
 function onDeleted(id) {
-	const msg = pagingComponent.items.find(m => m.id === id);
-	if (msg) {
-		pagingComponent.items = pagingComponent.items.filter(m => m.id !== msg.id);
-	}
+	pagingComponent.value.items.delete(id);
 }
 
 function thisScrollToBottom() {
-	scrollToBottom($$(rootEl).value, { behavior: 'smooth' });
+	if (window.location.href.includes('my/messaging/')) {
+		scrollToBottom(rootEl.value, { behavior: 'smooth' });
+	}
 }
 
 function onIndicatorClick() {
-	showIndicator = false;
+	showIndicator.value = false;
 	thisScrollToBottom();
 }
 
-let scrollRemove: (() => void) | null = $ref(null);
+const scrollRemove = ref<(() => void) | null>(null);
 
 function notifyNewMessage() {
-	showIndicator = true;
+	showIndicator.value = true;
 
-	scrollRemove = onScrollBottom(rootEl, () => {
-		showIndicator = false;
-		scrollRemove = null;
+	scrollRemove.value = onScrollBottom(rootEl.value, () => {
+		showIndicator.value = false;
+		scrollRemove.value = null;
 	});
 }
 
 function onVisibilitychange() {
 	if (document.hidden) return;
-	for (const message of pagingComponent.items) {
+	for (const message of pagingComponent.value.items) {
 		if (message.userId !== $i?.id && !message.isRead) {
-			connection?.send('read', {
+			connection.value?.send('read', {
 				id: message.id,
 			});
 		}
@@ -296,27 +298,34 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
-	connection?.dispose();
+	connection.value?.dispose();
 	document.removeEventListener('visibilitychange', onVisibilitychange);
-	if (scrollRemove) scrollRemove();
+	if (scrollRemove.value) scrollRemove();
 });
 
-definePageMetadata(computed(() => !fetching ? user ? {
+definePageMetadata(computed(() => !fetching.value ? user.value ? {
+	title: '',
+	icon: null,
 	userName: user,
 	avatar: user,
 } : {
-	title: group?.name,
+	title: group.value?.name,
 	icon: 'ti ti-users',
 } : null));
 </script>
 
 <style lang="scss" module>
-.root {
-	display: content;
+.fade-enter-active, .fade-leave-active {
+	transition: opacity 0.1s;
+}
+
+.fade-enter-from, .fade-leave-to {
+	transition: opacity 0.5s;
+	opacity: 0;
 }
 
 .body {
-	min-height: 80%;
+	min-height: 80dvh;
 }
 
 .more {
@@ -327,12 +336,15 @@ definePageMetadata(computed(() => !fetching ? user ? {
 	color: #fff;
 	background: rgba(#000, 0.3);
 	border-radius: 12px;
+
 	&:hover {
 		background: rgba(#000, 0.4);
 	}
+
 	&:active {
 		background: rgba(#000, 0.5);
 	}
+
 	> i {
 		margin-right: 4px;
 	}
@@ -350,21 +362,24 @@ definePageMetadata(computed(() => !fetching ? user ? {
 	}
 }
 
+.footerSpacer {
+  padding: 20px;
+}
+
 .footer {
 	width: 100%;
 	position: sticky;
 	z-index: 2;
 	padding-top: 8px;
-	bottom: var(--minBottomSpacing);
 }
 
-.new-message {
+.newMessage {
 	width: 100%;
 	padding-bottom: 8px;
 	text-align: center;
 }
 
-.new-message-button {
+.newMessageButton {
 	display: inline-block;
 	margin: 0;
 	padding: 0 12px;
@@ -373,7 +388,7 @@ definePageMetadata(computed(() => !fetching ? user ? {
 	border-radius: 16px;
 }
 
-.new-message-icon {
+.newMessageIcon {
 	display: inline-block;
 	margin-right: 8px;
 }
@@ -385,7 +400,6 @@ definePageMetadata(computed(() => !fetching ? user ? {
 	font-size: 0.9em;
 	color: var(--fgTransparentWeak);
 }
-
 
 .user + .user:before {
 	content: ", ";
@@ -399,17 +413,25 @@ definePageMetadata(computed(() => !fetching ? user ? {
 .form {
 	max-height: 12em;
 	overflow-y: scroll;
-	border-top: solid 0.5px var(--divider);
-	border-bottom-left-radius: 0;
-	border-bottom-right-radius: 0;
+	// border-top: solid 0.5px var(--divider);
+	// border-bottom-left-radius: 0;
+	// border-bottom-right-radius: 0;
+  border-radius: 15px;
 }
 
-.fade-enter-active, .fade-leave-active {
-	transition: opacity 0.1s;
-}
+@container (max-width: 500px) {
+  .footerSpacer {
+    padding: initial;
+  }
 
-.fade-enter-from, .fade-leave-to {
-	transition: opacity 0.5s;
-	opacity: 0;
+	.footer {
+    &.friendly {
+      margin-bottom: calc(50px + env(safe-area-inset-bottom));
+    }
+	}
+
+  .form {
+    border-radius: 0;
+  }
 }
 </style>
