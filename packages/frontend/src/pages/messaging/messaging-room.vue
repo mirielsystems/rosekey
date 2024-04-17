@@ -22,7 +22,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 							:class="{ [$style.messages]: true, 'deny-move-transition': pFetching }"
 							:items="messages"
 							direction="up"
-							reversed
 						>
 							<XMessage :key="message.id" :message="message" :isGroup="group != null"/>
 						</MkDateSeparatedList>
@@ -210,16 +209,16 @@ function onDrop(ev: DragEvent): void {
 function onMessage(message) {
 	sound.playMisskeySfx('chat');
 	vibrate(defaultStore.state.vibrateChat ? [30, 30, 30] : []);
-	
+
 	const _isBottom = isBottomVisible(rootEl.value, 64);
-	
-	pagingComponent.value.prepend(message);
+
+	pagingComponent.value.append(message); // append to add to the end
 	if (message.userId !== $i?.id && !document.hidden) {
 		connection.value?.send('read', {
 			id: message.id,
 		});
 	}
-	
+
 	if (_isBottom) {
 		// Scroll to bottom
 		nextTick(() => {
