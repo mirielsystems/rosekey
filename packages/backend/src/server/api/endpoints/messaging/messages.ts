@@ -1,14 +1,19 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { Inject, Injectable } from '@nestjs/common';
 import { Brackets } from 'typeorm';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { UsersRepository, UserGroupsRepository, MessagingMessagesRepository, UserGroupJoiningsRepository } from '@/models/index.js';
+import type { UserGroupsRepository, MessagingMessagesRepository, UserGroupJoiningsRepository } from '@/models/_.js';
 import { QueryService } from '@/core/QueryService.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { MessagingMessageEntityService } from '@/core/entities/MessagingMessageEntityService.js';
 import { MessagingService } from '@/core/MessagingService.js';
 import { DI } from '@/di-symbols.js';
-import { ApiError } from '../../error.js';
 import { GetterService } from '@/server/api/GetterService.js';
+import { ApiError } from '../../error.js';
 
 export const meta = {
 	tags: ['messaging'],
@@ -51,30 +56,21 @@ export const meta = {
 export const paramDef = {
 	type: 'object',
 	properties: {
+		userId: { type: 'string', format: 'misskey:id' },
+		groupId: { type: 'string', format: 'misskey:id' },
 		limit: { type: 'integer', minimum: 1, maximum: 100, default: 10 },
 		sinceId: { type: 'string', format: 'misskey:id' },
 		untilId: { type: 'string', format: 'misskey:id' },
 		markAsRead: { type: 'boolean', default: true },
 	},
 	anyOf: [
-		{
-			properties: {
-				userId: { type: 'string', format: 'misskey:id' },
-			},
-			required: ['userId'],
-		},
-		{
-			properties: {
-				groupId: { type: 'string', format: 'misskey:id' },
-			},
-			required: ['groupId'],
-		},
+		{ required: ['userId'] },
+		{ required: ['groupId'] },
 	],
 } as const;
 
-// eslint-disable-next-line import/no-default-export
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.messagingMessagesRepository)
 		private messagingMessagesRepository: MessagingMessagesRepository,
@@ -100,28 +96,35 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				});
 
 				const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
-					.andWhere(new Brackets(qb => { qb
-						.where(new Brackets(qb => { qb
-							.where('message.userId = :meId')
-							.andWhere('message.recipientId = :recipientId');
-						}))
-						.orWhere(new Brackets(qb => { qb
-							.where('message.userId = :recipientId')
-							.andWhere('message.recipientId = :meId');
-						}));
+					.andWhere(new Brackets(qb => {
+						qb
+							.where(new Brackets(qb => {
+								qb
+									.where('message.userId = :meId')
+									.andWhere('message.recipientId = :recipientId');
+							}))
+							.orWhere(new Brackets(qb => {
+								qb
+									.where('message.userId = :recipientId')
+									.andWhere('message.recipientId = :meId');
+							}));
 					}))
 					.setParameter('meId', me.id)
 					.setParameter('recipientId', recipient.id);
 
-				const messages = await query.take(ps.limit).getMany();
+				const messages = await query.limit(ps.limit).getMany();
+
+				if (ps.sinceId !== undefined) {
+					messages.reverse();
+				}
 
 				// Mark all as read
 				if (ps.markAsRead) {
-					this.messagingService.readUserMessagingMessage(me.id, recipient.id, messages.filter(m => m.recipientId === me.id).map(x => x.id));
+					await this.messagingService.readUserMessagingMessage(me.id, recipient.id, messages.filter(m => m.recipientId === me.id).map(x => x.id));
 
 					// リモートユーザーとのメッセージだったら既読配信
 					if (this.userEntityService.isLocalUser(me) && this.userEntityService.isRemoteUser(recipient)) {
-						this.messagingService.deliverReadActivity(me, recipient, messages);
+						await this.messagingService.deliverReadActivity(me, recipient, messages);
 					}
 				}
 
@@ -149,7 +152,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 				const query = this.queryService.makePaginationQuery(this.messagingMessagesRepository.createQueryBuilder('message'), ps.sinceId, ps.untilId)
 					.andWhere('message.groupId = :groupId', { groupId: recipientGroup.id });
 
-				const messages = await query.take(ps.limit).getMany();
+				const messages = await query.limit(ps.limit).getMany();
+
+				if (ps.sinceId) {
+					messages.reverse();
+				}
 
 				// Mark all as read
 				if (ps.markAsRead) {

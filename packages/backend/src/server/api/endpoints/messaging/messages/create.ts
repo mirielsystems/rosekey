@@ -1,9 +1,14 @@
-import { Inject, Injectable } from '@nestjs/common';
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import ms from 'ms';
+import { Inject, Injectable } from '@nestjs/common';
 import { Endpoint } from '@/server/api/endpoint-base.js';
-import type { BlockingsRepository, UserGroupJoiningsRepository, DriveFilesRepository, UserGroupsRepository } from '@/models/index.js';
-import type { User } from '@/models/entities/User.js';
-import type { UserGroup } from '@/models/entities/UserGroup.js';
+import type { BlockingsRepository, UserGroupJoiningsRepository, DriveFilesRepository, UserGroupsRepository } from '@/models/_.js';
+import type { MiUser } from '@/models/User.js';
+import type { UserGroup } from '@/models/UserGroup.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { MessagingService } from '@/core/MessagingService.js';
 import { DI } from '@/di-symbols.js';
@@ -12,14 +17,14 @@ import { ApiError } from '../../../error.js';
 export const meta = {
 	tags: ['messaging'],
 
-	requireCredential: true,
-
-	kind: 'write:messaging',
-
 	limit: {
 		duration: ms('1hour'),
 		max: 120,
 	},
+
+	requireCredential: true,
+
+	kind: 'write:messaging',
 
 	res: {
 		type: 'object',
@@ -75,28 +80,19 @@ export const meta = {
 export const paramDef = {
 	type: 'object',
 	properties: {
+		userId: { type: 'string', format: 'misskey:id' },
+		groupId: { type: 'string', format: 'misskey:id' },
 		text: { type: 'string', nullable: true, maxLength: 3000 },
 		fileId: { type: 'string', format: 'misskey:id' },
 	},
 	anyOf: [
-		{
-			properties: {
-				userId: { type: 'string', format: 'misskey:id' },
-			},
-			required: ['userId'],
-		},
-		{
-			properties: {
-				groupId: { type: 'string', format: 'misskey:id' },
-			},
-			required: ['groupId'],
-		},
+		{ required: ['userId'] },
+		{ required: ['groupId'] },
 	],
 } as const;
 
-// eslint-disable-next-line import/no-default-export
 @Injectable()
-export default class extends Endpoint<typeof meta, typeof paramDef> {
+export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-disable-line import/no-default-export
 	constructor(
 		@Inject(DI.userGroupsRepository)
 		private userGroupsRepository: UserGroupsRepository,
@@ -114,8 +110,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> {
 		private messagingService: MessagingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
-			let recipientUser: User | null;
-			let recipientGroup: UserGroup | null;
+			let recipientUser: MiUser | null = null;
+			let recipientGroup: UserGroup | null = null;
 
 			if (ps.userId != null) {
 				// Myself
