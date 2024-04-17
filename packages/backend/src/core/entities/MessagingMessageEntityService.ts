@@ -1,15 +1,19 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and 16439s and other misskey, cherrypick, rosekey contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { Inject, Injectable } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import type { MessagingMessagesRepository } from '@/models/index.js';
-import { awaitAll } from '@/misc/prelude/await-all.js';
-import type { Packed } from '@/misc/schema.js';
-import type { } from '@/models/entities/Blocking.js';
-import type { User } from '@/models/entities/User.js';
-import type { MessagingMessage } from '@/models/entities/MessagingMessage.js';
+import type { MessagingMessagesRepository } from '@/models/_.js';
+import type { Packed } from '@/misc/json-schema.js';
+import type { MiUser } from '@/models/User.js';
+import type { MessagingMessage } from '@/models/MessagingMessage.js';
+import { bindThis } from '@/decorators.js';
+import { IdService } from '@/core/IdService.js';
 import { UserEntityService } from './UserEntityService.js';
 import { DriveFileEntityService } from './DriveFileEntityService.js';
 import { UserGroupEntityService } from './UserGroupEntityService.js';
-import { bindThis } from '@/decorators.js';
 
 @Injectable()
 export class MessagingMessageEntityService {
@@ -17,6 +21,7 @@ export class MessagingMessageEntityService {
 		@Inject(DI.messagingMessagesRepository)
 		private messagingMessagesRepository: MessagingMessagesRepository,
 
+		private idService: IdService,
 		private userEntityService: UserEntityService,
 		private userGroupEntityService: UserGroupEntityService,
 		private driveFileEntityService: DriveFileEntityService,
@@ -26,7 +31,7 @@ export class MessagingMessageEntityService {
 	@bindThis
 	public async pack(
 		src: MessagingMessage['id'] | MessagingMessage,
-		me?: { id: User['id'] } | null | undefined,
+		me?: { id: MiUser['id'] } | null | undefined,
 		options?: {
 			populateRecipient?: boolean,
 			populateGroup?: boolean,
@@ -41,7 +46,7 @@ export class MessagingMessageEntityService {
 
 		return {
 			id: message.id,
-			createdAt: message.createdAt.toISOString(),
+			createdAt: this.idService.parse(message.id).date.toISOString(),
 			text: message.text,
 			userId: message.userId,
 			user: await this.userEntityService.pack(message.user ?? message.userId, me),
@@ -56,4 +61,3 @@ export class MessagingMessageEntityService {
 		};
 	}
 }
-
