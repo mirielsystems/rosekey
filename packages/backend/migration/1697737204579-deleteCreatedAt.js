@@ -9,11 +9,9 @@ async up(queryRunner) {
         await queryRunner.query(`ALTER TABLE "user_group_invitation" DROP COLUMN "createdAt"`);
         await queryRunner.query(`ALTER TABLE "user_group_invite" DROP COLUMN "createdAt"`);
         await queryRunner.query(`ALTER TABLE "user_group_joining" DROP COLUMN "createdAt"`);
-        await queryRunner.query(`ALTER TABLE "abuse_report_resolver" DROP COLUMN "createdAt"`);
 }
 
 async down(queryRunner) {
-        await queryRunner.query(`ALTER TABLE "abuse_report_resolver" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user_group_joining" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user_group_invite" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL`);
         await queryRunner.query(`ALTER TABLE "user_group_invitation" ADD "createdAt" TIMESTAMP WITH TIME ZONE NOT NULL`);
