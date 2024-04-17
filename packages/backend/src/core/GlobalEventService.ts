@@ -26,9 +26,9 @@ import { DI } from '@/di-symbols.js';
 import type { Config } from '@/config.js';
 import { bindThis } from '@/decorators.js';
 import { Serialized } from '@/types.js';
+import type { MessagingMessage } from '@/models/MessagingMessage.js';
 import type Emitter from 'strict-event-emitter-types';
 import type { EventEmitter } from 'events';
-import type { MessagingMessage } from '@/models/MessagingMessage.js';
 
 //#region Stream type-body definitions
 export interface BroadcastTypes {
@@ -78,6 +78,9 @@ export interface MainEventTypes {
 	unreadSpecifiedNote: MiNote['id'];
 	readAllUnreadSpecifiedNotes: undefined;
 	readAllAntennas: undefined;
+	readAllMessagingMessages: undefined;
+	messagingMessage: Packed<'MessagingMessage'>;
+	unreadMessagingMessage: Packed<'MessagingMessage'>;
 	unreadAntenna: MiAntenna;
 	readAllAnnouncements: undefined;
 	myTokenRegenerated: undefined;
@@ -409,11 +412,6 @@ export class GlobalEventService {
 	}
 
 	@bindThis
-	public publishRoleTimelineStream<K extends keyof RoleTimelineEventTypes>(roleId: MiRole['id'], type: K, value?: RoleTimelineEventTypes[K]): void {
-		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
-	}
-
-	@bindThis
 	public publishMessagingStream<K extends keyof MessagingEventTypes>(userId: MiUser['id'], otherpartyId: MiUser['id'], type: K, value?: MessagingEventTypes[K]): void {
 		this.publish(`messagingStream:${userId}-${otherpartyId}`, type, typeof value === 'undefined' ? null : value);
 	}
@@ -426,6 +424,11 @@ export class GlobalEventService {
 	@bindThis
 	public publishMessagingIndexStream<K extends keyof MessagingIndexEventTypes>(userId: MiUser['id'], type: K, value?: MessagingIndexEventTypes[K]): void {
 		this.publish(`messagingIndexStream:${userId}`, type, typeof value === 'undefined' ? null : value);
+	}
+
+	@bindThis
+	public publishRoleTimelineStream<K extends keyof RoleTimelineEventTypes>(roleId: MiRole['id'], type: K, value?: RoleTimelineEventTypes[K]): void {
+		this.publish(`roleTimelineStream:${roleId}`, type, typeof value === 'undefined' ? null : value);
 	}
 
 	@bindThis
