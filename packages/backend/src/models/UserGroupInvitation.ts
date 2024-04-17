@@ -1,18 +1,18 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 import { UserGroup } from './UserGroup.js';
 
-@Entity()
+@Entity('user_group_invitation')
 @Index(['userId', 'userGroupId'], { unique: true })
 export class UserGroupInvitation {
 	@PrimaryColumn(id())
 	public id: string;
-
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the UserGroupInvitation.',
-	})
-	public createdAt: Date;
 
 	@Index()
 	@Column({
