@@ -78,6 +78,8 @@ export const operationTypes = [
 	'channel',
 	'notification',
 	'reaction',
+	'chat',
+	'chatBg',
 ] as const;
 
 /** サウンドの種類 */
