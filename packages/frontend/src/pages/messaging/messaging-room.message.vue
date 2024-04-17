@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div v-for="message in messages" :key="message.id" class="thvuemwp" :class="{ 'isMe': isMe(message) }">
+<div v-for="message in sortedMessages" :key="message.id" :class="getMessageProperties(message).isMe ? 'isMe' : ''">
 	<MkAvatar class="avatar" :user="message.user" indicator link preview/>
 	<div class="content">
 		<div class="balloon" :class="{ noText: message.text == null }">
