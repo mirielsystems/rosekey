@@ -1,19 +1,18 @@
+/*
+ * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-License-Identifier: AGPL-3.0-only
+ */
+
 import { PrimaryColumn, Entity, Index, JoinColumn, Column, ManyToOne } from 'typeorm';
 import { id } from './util/id.js';
 import { MiUser } from './User.js';
 import { MiDriveFile } from './DriveFile.js';
 import { UserGroup } from './UserGroup.js';
 
-@Entity()
+@Entity('messaging_message')
 export class MessagingMessage {
 	@PrimaryColumn(id())
 	public id: string;
-
-	@Index()
-	@Column('timestamp with time zone', {
-		comment: 'The created date of the MessagingMessage.',
-	})
-	public createdAt: Date;
 
 	@Index()
 	@Column({
