@@ -4,11 +4,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div class="thvuemwp" :class="{ isMe }">
+<div v-for="message in messages" :key="message.id" class="thvuemwp" :class="{ 'isMe': isMe(message) }">
 	<MkAvatar class="avatar" :user="message.user" indicator link preview/>
 	<div class="content">
 		<div class="balloon" :class="{ noText: message.text == null }">
-			<button v-if="isMe" class="delete-button" :title="i18n.ts.delete" @click="del">
+			<button v-if="isMe(message)" class="delete-button" :title="i18n.ts.delete" @click="() => del(message.id)">
 				<img src="/client-assets/remove.png" alt="Delete"/>
 			</button>
 			<div v-if="!message.isDeleted" class="content">
@@ -27,7 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</div>
 		</div>
 		<div></div>
-		<MkUrlPreview v-for="url in urls" :key="url" :url="url" style="margin: 8px 0;"/>
+		<MkUrlPreview v-for="url in urls(message.text)" :key="url" :url="url" style="margin: 8px 0;"/>
 		<footer>
 			<MkTime :time="message.createdAt"/>
 			<template v-if="isGroup">
@@ -38,7 +38,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					</I18n>
 				</span>
 			</template>
-			<template v-else-if="isMe">
+			<template v-else-if="isMe(message)">
 				<span v-if="!message.isRead" class="read"><span style="margin-right: 4px;">•</span>{{ i18n.ts.messageSend }}</span>
 				<span v-else class="read"><span style="margin-right: 4px;">•</span>{{ i18n.ts.messageRead }}</span>
 			</template>
@@ -46,7 +46,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		</footer>
 	</div>
 </div>
-</template>
+</template>	
 	
 <script lang="ts" setup>
 import { computed } from 'vue';
@@ -61,17 +61,28 @@ import { i18n } from '@/i18n.js';
 import { $i } from '@/account.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 	
+// propsの定義を配列に変更
 const props = defineProps<{
-		message: Misskey.entities.MessagingMessage;
-		isGroup?: boolean;
-	}>();
-	
-const isMe = computed(() => props.message.userId === $i?.id);
-const urls = computed(() => props.message.text ? extractUrlFromMfm(mfm.parse(props.message.text)) : []);
-	
-function del(): void {
+  messages: Misskey.entities.MessagingMessage[];
+  isGroup?: boolean;
+}>();
+
+// sortedMessagesの計算
+const sortedMessages = computed(() => {
+	return props.messages.slice().sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+});
+
+// 個々のメッセージに対するisMeとurlsを計算
+function getMessageProperties(message) {
+	const isMe = message.userId === $i?.id;
+	const urls = message.text ? extractUrlFromMfm(mfm.parse(message.text)) : [];
+	return { isMe, urls };
+}
+
+// 削除機能
+function del(messageId) {
 	misskeyApi('messaging/messages/delete', {
-		messageId: props.message.id,
+		messageId: messageId,
 	});
 }
 </script>
