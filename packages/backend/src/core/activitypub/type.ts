@@ -188,6 +188,8 @@ export interface IActor extends IObject {
 	'vcard:Address'?: string;
 	isIndexable?: boolean;
 	listenbrainz?: string;
+	oshi?: string;
+	oshistartdate?: string;
 }
 
 export const isCollection = (object: IObject): object is ICollection =>
