@@ -45,6 +45,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #prefix><i class="ti ti-headphones"></i></template>
 	</MkInput>
 
+	<MkInput v-model="profile.oshi" manualSave>
+		<template #label>推し/stan</template>
+		<template #prefix><i class="ti ti-user"></i></template>
+	</MkInput>
+
+	<MkInput v-model="profile.oshistartdate" type="date" manualSave>
+		<template #label>推し活開始日/day I started stanning</template>
+		<template #prefix><i class="ti ti-time"></i></template>
+	</MkInput>
+
 	<MkSelect v-model="profile.lang">
 		<template #label>{{ i18n.ts.language }}</template>
 		<option v-for="x in Object.keys(langmap)" :key="x" :value="x">{{ langmap[x].nativeName }}</option>
@@ -150,7 +160,9 @@ const profile = reactive({
 	description: $i.description,
 	location: $i.location,
 	birthday: $i.birthday,
-	listenbrainz: $i.listenbrainz,
+	listenbrainz: $i.ListenBrainz,
+	oshi: $i.oshi,
+	oshistartdate: $i.oshistartdate,
 	lang: $i.lang,
 	isBot: $i.isBot ?? false,
 	isCat: $i.isCat ?? false,
@@ -220,6 +232,8 @@ function save() {
 		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		birthday: profile.birthday || null,
 		listenbrainz: profile.listenbrainz || null,
+		oshi: profile.oshi || null,
+		oshistartdate: profile.oshistartdate || null,
 		// eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
 		lang: profile.lang || null,
 		isBot: !!profile.isBot,
