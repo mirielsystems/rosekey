@@ -36,12 +36,26 @@ export class MiUserProfile {
 	})
 	public birthday: string | null;
 
-	@Column("varchar", {
+	@Column('varchar', {
 		length: 128,
 		nullable: true,
-		comment: "The ListenBrainz username of the User.",
+		comment: 'The ListenBrainz username of the User.',
 	})
 	public listenbrainz: string | null;
+
+	@Column('varchar', {
+		length: 128,
+		nullable: true,
+		comment: 'The Oshi of the User.',
+	})
+	public oshi: string | null;
+
+	@Index()
+	@Column('char', {
+		length: 10, nullable: true,
+		comment: 'The oshi start date (YYYY-MM-DD) of the User.',
+	})
+	public oshistartdate: string | null;
 
 	@Index() // USING pgroonga pgroonga_varchar_full_text_search_ops_v2
 	@Column('varchar', {
