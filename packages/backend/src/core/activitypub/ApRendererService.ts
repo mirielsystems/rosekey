@@ -545,6 +545,14 @@ export class ApRendererService {
 			person['vcard:Address'] = profile.location;
 		}
 
+		if (profile.oshi) {
+			person.oshi = profile.oshi;
+		}
+
+		if (profile.oshistartdate) {
+			person.oshistartdate = profile.oshistartdate;
+		}
+
 		if (profile.listenbrainz) {
 			person.listenbrainz = profile.listenbrainz;
 		}
@@ -686,12 +694,14 @@ export class ApRendererService {
 					'_misskey_talk': 'misskey:_misskey_talk',
 					'isCat': 'misskey:isCat',
 					// Firefish
-					firefish: "https://joinfirefish.org/ns#",
-					speakAsCat: "firefish:speakAsCat",
+					firefish: 'https://joinfirefish.org/ns#',
+					speakAsCat: 'firefish:speakAsCat',
 					// vcard
 					vcard: 'http://www.w3.org/2006/vcard/ns#',
 					// rosekey＆sharkey
-					listenbrainz: "sharkey:listenbrainz",
+					listenbrainz: 'sharkey:listenbrainz',
+					oshi: 'rosekey:oshi',
+					oshistartdate: 'rosekey:oshistartdate',
 				},
 			],
 		}, x as T & { id: string });

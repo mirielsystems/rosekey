@@ -7,6 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import promiseLimit from 'promise-limit';
 import { DataSource } from 'typeorm';
 import { ModuleRef } from '@nestjs/core';
+import { getNextMillis } from 'bullmq';
 import { DI } from '@/di-symbols.js';
 import type { FollowingsRepository, InstancesRepository, UserProfilesRepository, UserPublickeysRepository, UsersRepository } from '@/models/_.js';
 import type { Config } from '@/config.js';
@@ -442,6 +443,8 @@ export class ApPersonService implements OnModuleInit {
 					birthday: bday?.[0] ?? null,
 					location: person['vcard:Address'] ?? null,
 					userHost: host,
+					oshi: person.oshi ?? null,
+					oshistartdate: person.oshistartdate ?? null,
 					listenbrainz: person.listenbrainz ?? null,
 				}));
 
