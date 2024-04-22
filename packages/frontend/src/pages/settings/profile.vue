@@ -50,7 +50,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<template #prefix><i class="ti ti-user"></i></template>
 	</MkInput>
 
-	<MkInput v-model="profile.oshistartdate" manualSave>
+	<MkInput v-model="profile.birthday" :min="birthdayMin" :max="birthdayMax" type="date" manualSave>
 		<template #label>推し活開始日/day I started stanning</template>
 		<template #prefix><i class="ti ti-time"></i></template>
 	</MkInput>
