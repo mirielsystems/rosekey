@@ -3,6 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
+import { oshistartdateSchema } from '../User.js';
+
 export const notificationRecieveConfig = {
 	type: 'object',
 	oneOf: [
@@ -272,11 +274,22 @@ export const packedUserDetailedNotMeOnlySchema = {
 			nullable: true, optional: false,
 			example: '2018-03-12',
 		},
-		ListenBrainz: {
-			type: "string",
+		oshistartdate: {
+			type: 'string',
+			nullable: true, optional: false,
+			example: '2018-03-12',
+		},
+		oshi: {
+			type: 'string',
 			nullable: true,
 			optional: false,
-			example: "Steve",
+			example: 'Steve',
+		},
+		ListenBrainz: {
+			type: 'string',
+			nullable: true,
+			optional: false,
+			example: 'Steve',
 		},
 		lang: {
 			type: 'string',
