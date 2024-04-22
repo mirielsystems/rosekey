@@ -106,6 +106,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 							<dt class="name"><i class="ti ti-cake ti-fw"></i> {{ i18n.ts.birthday }}</dt>
 							<dd class="value">{{ birthdayParts.join("/") }}<span v-if="birthdayParts.length === 3"> ({{ i18n.t('yearsOld', { age }) }})</span></dd>
 						</dl>
+						<dl v-if="user.oshi" class="field">
+							<dt class="name"><i class="ti ti-user"></i> {{ i18n.ts.oshi }}</dt>
+							<dd class="value">{{ user.oshi }}</dd>
+						</dl>
+						<dl v-if="user.oshistartdate" class="field">
+							<dt class="name"><i class="ti ti-time"></i> {{ i18n.ts.oshistartdate }}</dt>
+							<dd class="value">{{ user.oshistartdate }}</dd>
+						</dl>
 						<dl class="field">
 							<dt class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
 							<dd class="value">{{ dateString(user.createdAt) }} (<MkTime :time="user.createdAt"/>)</dd>
