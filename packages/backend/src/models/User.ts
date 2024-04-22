@@ -5,9 +5,9 @@
 
 import { Entity, Column, Index, OneToOne, JoinColumn, PrimaryColumn } from 'typeorm';
 import { subscriptionStatus } from '@/types.js';
+import { MiSubscriptionPlan } from '@/models/SubscriptionPlan.js';
 import { id } from './util/id.js';
 import { MiDriveFile } from './DriveFile.js';
-import { MiSubscriptionPlan } from "@/models/SubscriptionPlan.js";
 
 @Entity('user')
 @Index(['usernameLower', 'host'], { unique: true })
@@ -324,5 +324,7 @@ export const passwordSchema = { type: 'string', minLength: 1 } as const;
 export const nameSchema = { type: 'string', minLength: 1, maxLength: 50 } as const;
 export const descriptionSchema = { type: 'string', minLength: 1, maxLength: 1500 } as const;
 export const locationSchema = { type: 'string', minLength: 1, maxLength: 50 } as const;
-export const listenbrainzSchema = { type: "string", minLength: 1, maxLength: 128 } as const;
+export const listenbrainzSchema = { type: 'string', minLength: 1, maxLength: 128 } as const;
 export const birthdaySchema = { type: 'string', pattern: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.toString().slice(1, -1) } as const;
+export const oshiSchema = { type: 'string', minLength: 1, maxLength: 128 } as const;
+export const oshistartdateSchema = { type: 'string', pattern: /^([0-9]{4})-([0-9]{2})-([0-9]{2})$/.toString().slice(1, -1) } as const;

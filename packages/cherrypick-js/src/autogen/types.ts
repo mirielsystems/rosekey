@@ -3987,6 +3987,9 @@ export type components = {
       birthday: string | null;
       /** @example Steve */
       ListenBrainz: string | null;
+      /** Oshi機能 */
+      oshi: string | null;
+      oshistartdate: string | null;
       /** @example ja-JP */
       lang: string | null;
       fields: {
