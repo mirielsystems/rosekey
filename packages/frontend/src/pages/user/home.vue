@@ -112,7 +112,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</dl>
 						<dl v-if="user.oshistartdate" class="field">
 							<dt class="name"><i class="ti ti-time"></i> {{ i18n.ts.oshistartdate }}</dt>
-							<dd class="value">{{ user.oshistartdate }}</dd>
+							<dd class="value">{{ user.oshistartdate.split('T')[0] }}</dd>
 						</dl>
 						<dl class="field">
 							<dt class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
