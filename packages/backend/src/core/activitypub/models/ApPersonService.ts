@@ -695,6 +695,8 @@ export class ApPersonService implements OnModuleInit {
 			description: _description,
 			birthday: bday?.[0] ?? null,
 			location: person['vcard:Address'] ?? null,
+			oshi: person.oshi ?? null,
+			oshistartdate: person.oshistartdate ?? null,
 			listenbrainz: person.listenbrainz ?? null,
 		});
 
