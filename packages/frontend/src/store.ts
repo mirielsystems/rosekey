@@ -464,6 +464,10 @@ export const defaultStore = markRaw(new Storage('base', {
 		where: 'device',
 		default: false,
 	},
+	keepOriginalFilename: {
+		where: 'device',
+		default: true,
+	},
 	showUnreadNotificationsCount: {
 		where: 'deviceAccount',
 		default: false,
@@ -672,7 +676,7 @@ export const defaultStore = markRaw(new Storage('base', {
 	},
 	expandOnNoteClick: {
 		where: 'device',
-		default: true,
+		default: false,
 	},
 	expandOnNoteClickBehavior: {
 		where: 'device',

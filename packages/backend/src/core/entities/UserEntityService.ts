@@ -23,6 +23,8 @@ import {
 	nameSchema,
 	passwordSchema,
 	listenbrainzSchema,
+	oshiSchema,
+	oshistartdateSchema,
 } from '@/models/User.js';
 import type {
 	BlockingsRepository,
@@ -166,6 +168,8 @@ export class UserEntityService implements OnModuleInit {
 	public validateLocation = ajv.compile(locationSchema);
 	public validateBirthday = ajv.compile(birthdaySchema);
 	public validateListenBrainz = ajv.compile(listenbrainzSchema);
+	public validateOshi = ajv.compile(oshiSchema);
+	public validateOshistartdate = ajv.compile(oshistartdateSchema);
 	//#endregion
 
 	public isLocalUser = isLocalUser;
@@ -560,6 +564,8 @@ export class UserEntityService implements OnModuleInit {
 				location: profile!.location,
 				birthday: profile!.birthday,
 				listenbrainz: profile!.listenbrainz,
+				oshi: profile!.oshi,
+				oshistartdate: profile!.oshistartdate,
 				lang: profile!.lang,
 				fields: profile!.fields,
 				verifiedLinks: profile!.verifiedLinks,

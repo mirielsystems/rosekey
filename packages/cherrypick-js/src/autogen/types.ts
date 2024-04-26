@@ -3987,6 +3987,9 @@ export type components = {
       birthday: string | null;
       /** @example Steve */
       ListenBrainz: string | null;
+      /** Oshi機能 */
+      oshi: string | null;
+      oshistartdate: string | null;
       /** @example ja-JP */
       lang: string | null;
       fields: {
@@ -4883,6 +4886,7 @@ export type components = {
       isPublic: boolean;
       favoritedCount: number;
       isFavorited?: boolean;
+      notesCount?: number;
     };
     FederationInstance: {
       /** Format: id */
@@ -5104,6 +5108,7 @@ export type components = {
       gtlAvailable: boolean;
       ltlAvailable: boolean;
       canPublicNote: boolean;
+      mentionLimit: number;
       canInvite: boolean;
       inviteLimit: number;
       inviteLimitCycle: number;

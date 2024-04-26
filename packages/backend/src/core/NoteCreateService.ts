@@ -425,6 +425,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 		}
 
+		if (mentionedUsers.length > 0 && mentionedUsers.length > (await this.roleService.getUserPolicies(user.id)).mentionLimit) {
+			throw new IdentifiableError('9f466dab-c856-48cd-9e65-ff90ff750580', 'Note contains too many mentions');
+		}
+
 		const note = await this.insertNote(user, data, tags, emojis, mentionedUsers);
 
 		setImmediate('post created', { signal: this.#shutdownController.signal }).then(
@@ -858,7 +862,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 			}
 
 			// If it is renote
-			if (data.renote) {
+			if (this.isRenote(data)) {
 				const type = this.isQuote(data) ? 'quote' : 'renote';
 
 				// Notify
@@ -939,6 +943,11 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// Register to search database
 		if (user.isIndexable) this.index(note);
+	}
+
+	@bindThis
+	private isRenote(note: Option): note is Option & { renote: MiNote } {
+		return note.renote != null;
 	}
 
 	@bindThis

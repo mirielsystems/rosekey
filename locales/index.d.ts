@@ -1023,6 +1023,14 @@ export interface Locale extends ILocale {
      */
     "flagAsCatDescription": string;
     /**
+     * 猫語で話す
+     */
+    "flagSpeakAsCat": string;
+    /**
+     * 有効にすると、あなたの投稿の 「な」を「にゃ」にします。
+     */
+    "flagSpeakAsCatDescription": string;
+    /**
      * タイムラインにノートへの返信を表示する
      */
     "flagShowTimelineReplies": string;
@@ -1546,6 +1554,14 @@ export interface Locale extends ILocale {
      * 誕生日
      */
     "birthday": string;
+    /**
+     * 推し
+     */
+    "oshi": string;
+    /**
+     * 推し活開始日
+     */
+    "oshistartdate": string;
     /**
      * {age}歳
      */
@@ -3468,14 +3484,17 @@ export interface Locale extends ILocale {
      */
     "makeExplorableDescription": string;
     /**
+     * 公開ノートをインデックス化
+     */
+    "makeIndexable": string;
+    /**
+     * ノート検索で公開ノートにインデックスを付けられるようにする。
+     */
+    "makeIndexableDescription": string;
+    /**
      * タイムラインのノートを離して表示
      */
     "showGapBetweenNotesInTimeline": string;
-    /**
-     * MAKEINDEXABLE
-     */
-    "makeIndexable": string;
-    "makeIndexableDescription": string;
     /**
      * 複製
      */
@@ -5428,6 +5447,18 @@ export interface Locale extends ILocale {
      * 動画・音声の再生にブラウザのUIを使用する
      */
     "useNativeUIForVideoAudioPlayer": string;
+    /**
+     * オリジナルのファイル名を保持
+     */
+    "keepOriginalFilename": string;
+    /**
+     * この設定をオフにすると、アップロード時にファイル名が自動でランダム文字列に置き換えられます。
+     */
+    "keepOriginalFilenameDescription": string;
+    /**
+     * 説明文はありません
+     */
+    "noDescription": string;
     /**
      * 未読の通知の数を表示する
      */
@@ -7430,21 +7461,45 @@ export interface Locale extends ILocale {
              */
             "canPublicNote": string;
             /**
-             * メンション、リプライ、引用の許可
-             */
-            "canInitiateConversation": string;
-            /**
              * ノートの編集
              */
             "canEditNote": string;
             /**
+             * ノートのインポートが可能
+             */
+            "canImportNotes": string;
+            /**
+             * メンション、リプライ、引用の許可
+             */
+            "canInitiateConversation": string;
+            /**
+             * コンテンツの作成
+             */
+            "canCreateContent": string;
+            /**
+             * コンテンツの編集
+             */
+            "canUpdateContent": string;
+            /**
+             * コンテンツの削除
+             */
+            "canDeleteContent": string;
+            /**
+             * アイコンの変更
+             */
+            "canUpdateAvatar": string;
+            /**
+             * バナーの変更
+             */
+            "canUpdateBanner": string;
+            /**
+             * ノート内の最大メンション数
+             */
+            "mentionMax": string;
+            /**
              * サーバー招待コードの発行
              */
             "canInvite": string;
-            /**
-             * ノートインポート
-             */
-            "canImportNotes": string;
             /**
              * 招待コードの作成可能数
              */
@@ -8986,6 +9041,10 @@ export interface Locale extends ILocale {
          * バックアップコードが全て使用されました。認証アプリを利用できない場合、これ以上アカウントにアクセスできなくなります。認証アプリを再登録してください。
          */
         "backupCodesExhaustedWarning": string;
+        /**
+         * 詳細なガイドはこちら
+         */
+        "moreDetailedGuideHere": string;
     };
     "_permissions": {
         /**
