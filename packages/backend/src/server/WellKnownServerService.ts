@@ -89,9 +89,11 @@ export class WellKnownServerService {
 			return { links: this.nodeinfoServerService.getLinks() };
 		});
 
+		/*
 		fastify.get('/.well-known/oauth-authorization-server', async () => {
 			return this.oauth2ProviderService.generateRFC8414();
 		});
+		*/
 
 		/* TODO
 fastify.get('/.well-known/change-password', async (request, reply) => {
