@@ -60,6 +60,9 @@ temp
 /packages/frontend/src/**/*.stories.ts
 tsdoc-metadata.json
 
+# Sharkey
+/packages/megalodon/lib
+
 # blender backups
 *.blend1
 *.blend2
