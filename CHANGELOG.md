@@ -24,6 +24,7 @@
 ### General
 - Misskey 2024.3.1 (CherryPick 4.8.0)に追従
 - 決済サービス(Stripe)がサーバー内でできるように。
+- Mastodon APIを搭載
 - ListenBrainzに対応
 - PGroongaに対応
 - メンションの最大数をロールごとに設定可能にする (misskey-dev/misskey #13343)
@@ -46,3 +47,5 @@
 - fix(backend): リノート時のHTLへのストリーミングの意図しない挙動を修正 (misskey-dev/misskey #13425)
 - fix(backend): ダイレクトなノートに対してはダイレクトでしか返信できないように (misskey-dev/misskey #13477)
 - fix: 型エラーを全修正
+- fix(backend/UserSuspendService): 凍結・解凍の処理でfollowingテーブルの全てのデータをfetchしてしまいOOMになる問題を修正（MisskeyIO/misskey #598）
+- fix(backend): 登録にメール認証が必須になっている場合、登録されているメールアドレスを削除できないように （MisskeyIO/misskey #606）
