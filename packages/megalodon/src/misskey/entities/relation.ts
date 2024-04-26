@@ -8,5 +8,5 @@ namespace MisskeyEntity {
     isBlocking: boolean
     isBlocked: boolean
     isMuted: boolean
-  }
+  }[]
 }

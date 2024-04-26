@@ -220,22 +220,23 @@ namespace MisskeyAPI {
     }
 
     export const relation = (r: Entity.Relation): MegalodonEntity.Relationship => {
+      let r1 = r[0]
       return {
-        id: r.id,
-        following: r.isFollowing,
-        followed_by: r.isFollowed,
-        blocking: r.isBlocking,
-        blocked_by: r.isBlocked,
-        muting: r.isMuted,
+        id: r1.id,
+        following: r1.isFollowing,
+        followed_by: r1.isFollowed,
+        blocking: r1.isBlocking,
+        blocked_by: r1.isBlocked,
+        muting: r1.isMuted,
         muting_notifications: false,
-        requested: r.hasPendingFollowRequestFromYou,
+        requested: r1.hasPendingFollowRequestFromYou,
         domain_blocking: false,
         showing_reblogs: true,
         endorsed: false,
         notifying: false,
         note: null
-      }
-    }
+      };
+    } 
 
     export const choice = (c: Entity.Choice): MegalodonEntity.PollOption => {
       return {
