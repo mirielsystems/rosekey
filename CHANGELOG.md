@@ -17,6 +17,10 @@
 
 ## 1.0.0 (unreleased)
 
+### Security Fix
+-  Merge pull request from GHSA-m9qf-3pfj-2r86「misskey-dev/misskey」 
+- この変更は必ず、アップデートしてください。
+
 ### Note (Important Information)
 - （EN-US）PGroonga installation is mandatory from this version.
 - （JA-JP）このバージョンから PGroongaのインストールが必須化されました。
