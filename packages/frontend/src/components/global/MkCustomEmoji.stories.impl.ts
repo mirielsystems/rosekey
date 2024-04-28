@@ -29,7 +29,7 @@ export const Default = {
 	},
 	args: {
 		name: 'mi',
-		url: 'https://github.com/kokonect-link/cherrypick/blob/master/packages/frontend/assets/about-icon.png?raw=true',
+		url: 'https://code.rosekey.dev/miriel/rosekey/blob/master/packages/frontend/assets/about-icon.png?raw=true',
 	},
 	parameters: {
 		layout: 'centered',

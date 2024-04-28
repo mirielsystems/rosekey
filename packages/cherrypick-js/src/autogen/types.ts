@@ -5217,9 +5217,9 @@ export type components = {
       description: string | null;
       langs: string[];
       tosUrl: string | null;
-      /** @default https://github.com/kokonect-link/cherrypick */
+      /** @default https://code.rosekey.dev/miriel/rosekey
       repositoryUrl: string | null;
-      /** @default https://github.com/kokonect-link/cherrypick/issues/new */
+      /** @default https://code.rosekey.dev/miriel/rosekey/issues/new */
       feedbackUrl: string | null;
       defaultDarkTheme: string | null;
       defaultLightTheme: string | null;

@@ -398,14 +398,14 @@ export class MiMeta {
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://code.16439s.dev/16439s/rosekey',
+		default: 'https://code.rosekey.dev/miriel/rosekey',
 		nullable: true,
 	})
 	public repositoryUrl: string | null;
 
 	@Column('varchar', {
 		length: 1024,
-		default: 'https://code.16439s.dev/16439s/rosekey/issues/new',
+		default: 'https://code.rosekey.dev/miriel/rosekey/issues/new',
 		nullable: true,
 	})
 	public feedbackUrl: string | null;

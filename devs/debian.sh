@@ -48,6 +48,6 @@ sudo apt-get install -y redis
 
 # Step 5: Misskey Setup
 echo "5/5 ステップ5: Misskeyのセットアップを実行中..."
-sudo su - rose -c "git clone -b master https://code.16439s.dev/16439s/rosekey.git --recurse-submodules; pnpm install --frozen-lockfile; cp .config/example.yml .config/default.yml"
+sudo su - rose -c "git clone -b master https://code.rosekey.dev/miriel/rosekey.git --recurse-submodules; pnpm install --frozen-lockfile; cp .config/example.yml .config/default.yml"
 
 echo "すべてのセットアップが完了しました。あとは default.yml の編集などを行ってください。"
