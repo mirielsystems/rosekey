@@ -112,7 +112,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						</dl>
 						<dl v-if="user.oshistartdate" class="field">
 							<dt class="name"><i class="ti ti-time"></i> {{ i18n.ts.oshistartdate }}</dt>
-							<dd class="value">{{ user.oshistartdate.split('T')[0] }}</dd>
+							<dd class="value">{{ user.oshistartdate.split('T')[0] }} (推し始めてから{{ calcDaysSince(user.oshistartdate) }}日)</dd>
 						</dl>
 						<dl class="field">
 							<dt class="name"><i class="ti ti-calendar ti-fw"></i> {{ i18n.ts.registeredDate }}</dt>
@@ -326,6 +326,12 @@ function adjustMemoTextarea() {
 	if (!memoTextareaEl.value) return;
 	memoTextareaEl.value.style.height = '0px';
 	memoTextareaEl.value.style.height = `${memoTextareaEl.value.scrollHeight}px`;
+}
+
+function calcDaysSince(dateStr: string): number {
+	const startDate = new Date(dateStr);
+	const now = new Date();
+	return Math.floor((now.getTime() - startDate.getTime()) / (1000 * 3600 * 24));
 }
 
 async function updateMemo() {
