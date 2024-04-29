@@ -39,4 +39,4 @@ jobs:
     - name: Copy Configure
       run: cp .github/cherrypick/test.yml .config/default.yml
     - name: Build
-      run: pnpm build
+      run: NODE_ENV=production pnpm run build
