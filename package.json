@@ -1,6 +1,6 @@
 {
 	"name": "rosekey",
-	"version": "R6.0501.rc",
+	"version": "R6.0501",
 	"basedMisskeyVersion": "2024.3.1",
 	"basedCherryPickVersion": "4.8.0-beta.2",
 	"codename": "nasubi",
