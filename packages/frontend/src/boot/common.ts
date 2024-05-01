@@ -70,10 +70,10 @@ export async function common(createVue: () => App<Element>) {
 	}
 
 	function parseCustomVersion(version) {
-	// パターンにマッチする正規表現
-		const match = version.match(/R(\d+)\.(\d+)(?:\.(\w+))?/);
+		// 正規表現をアップデートして、パッチが複雑な文字列を含むケースに対応
+		const match = version.match(/R(\d+)\.(\d+)(?:\.([a-z]+\d*))?/i);
 		if (!match) {
-			throw new Error('Invalid version format');
+			throw new Error('Invalid version format: ' + version);
 		}
 		return {
 			year: parseInt(match[1], 10),
@@ -81,23 +81,23 @@ export async function common(createVue: () => App<Element>) {
 			patch: match[3] || '', // パッチがない場合、空文字列として扱う
 		};
 	}
- 
+
 	function compareCustomVersions(v1, v2) {
 		const parsedV1 = parseCustomVersion(v1);
 		const parsedV2 = parseCustomVersion(v2);
-	
+
 		// 年の比較
 		if (parsedV1.year > parsedV2.year) return 1;
 		if (parsedV1.year < parsedV2.year) return -1;
-	
+
 		// 日付の比較
 		if (parsedV1.date > parsedV2.date) return 1;
 		if (parsedV1.date < parsedV2.date) return -1;
-	
+
 		// パッチの比較（辞書順）
 		if (parsedV1.patch > parsedV2.patch) return 1;
 		if (parsedV1.patch < parsedV2.patch) return -1;
-	
+
 		// 完全に等しい場合
 		return 0;
 	}
