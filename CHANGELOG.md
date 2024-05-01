@@ -15,7 +15,7 @@
 
 -->
 
-## R6.0501 (unreleased)
+## R6.0501
 
 ### Security Fix
 -  Merge pull request from GHSA-m9qf-3pfj-2r86「misskey-dev/misskey」 
@@ -25,6 +25,7 @@
 ### Note (Important Information)
 - （EN-US）PGroonga installation is mandatory from this version.
 - （JA-JP）このバージョンから PGroongaのインストールが必須化されました。
+- バージョン管理形態の変更
 
 ### General
 - Misskey 2024.3.1 (CherryPick 4.8.0)に追従
