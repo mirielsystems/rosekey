@@ -71,7 +71,7 @@ export async function common(createVue: () => App<Element>) {
 
 	function parseCustomVersion(version) {
 		// 正規表現をアップデートして、パッチが複雑な文字列を含むケースに対応
-		const match = version.match(/R(\d+)\.(\d+)(?:\.([a-z]+\d*))?/i);
+		const match = version.match(/R(\d+)\.(\d+)(?:\.(.+))?/i);
 		if (!match) {
 			throw new Error('Invalid version format: ' + version);
 		}
