@@ -40,9 +40,9 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
-						<a href="https://code.16439s.dev/16439s" target="_blank" :class="$style.contributor">
-							<img src="https://code.16439s.dev/uploads/-/system/user/avatar/1/avatar.png?width=512" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@master
+						<a href="https://code.rosekey.dev/miriel" target="_blank" :class="$style.contributor">
+							<img src="https://code.rosekey.dev/avatars/534dda6a9e11531f40be7a47320fa2fdeed0a2cd4a0c0bd32c827d6d7d003321?size=512" :class="$style.contributorAvatar">
+							<span :class="$style.contributorUsername">@miriel
 								<span :class="$style.contributorClient">
 									<span :class="$style.rosekey">Rosekey</span>
 								</span>
