@@ -547,6 +547,8 @@ const extension_context_definition = {
 	schema: 'http://schema.org#',
 	PropertyValue: 'schema:PropertyValue',
 	value: 'schema:value',
+	// vcard
+	vcard: 'http://www.w3.org/2006/vcard/ns#',
 	// Misskey
 	misskey: 'https://misskey-hub.net/ns#',
 	'_misskey_content': 'misskey:_misskey_content',
@@ -554,9 +556,15 @@ const extension_context_definition = {
 	'_misskey_reaction': 'misskey:_misskey_reaction',
 	'_misskey_votes': 'misskey:_misskey_votes',
 	'_misskey_summary': 'misskey:_misskey_summary',
+	'_misskey_talk': 'misskey:_misskey_talk',
 	'isCat': 'misskey:isCat',
-	// vcard
-	vcard: 'http://www.w3.org/2006/vcard/ns#',
+	// Firefish
+	firefish: 'https://joinfirefish.org/ns#',
+	speakAsCat: 'firefish:speakAsCat',
+	// rosekey＆sharkey
+	listenbrainz: 'sharkey:listenbrainz',
+	oshi: 'rosekey:oshi',
+	oshistartdate: 'rosekey:oshistartdate',
 } satisfies Context;
 
 export const CONTEXT: (string | Context)[] = [...context_iris, extension_context_definition];
