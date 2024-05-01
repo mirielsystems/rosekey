@@ -69,22 +69,71 @@ export async function common(createVue: () => App<Element>) {
 		popup(defineAsyncComponent(() => import('@/components/MkPushNotification.vue')), {}, {}, 'closed');
 	}
 
+	function parseCustomVersion(version) {
+	// パターンにマッチする正規表現
+		const match = version.match(/R(\d+)\.(\d+)(?:\.(\w+))?/);
+		if (!match) {
+			throw new Error('Invalid version format');
+		}
+		return {
+			year: parseInt(match[1], 10),
+			date: parseInt(match[2], 10),
+			patch: match[3] || '', // パッチがない場合、空文字列として扱う
+		};
+	}
+ 
+	function compareCustomVersions(v1, v2) {
+		const parsedV1 = parseCustomVersion(v1);
+		const parsedV2 = parseCustomVersion(v2);
+	
+		// 年の比較
+		if (parsedV1.year > parsedV2.year) return 1;
+		if (parsedV1.year < parsedV2.year) return -1;
+	
+		// 日付の比較
+		if (parsedV1.date > parsedV2.date) return 1;
+		if (parsedV1.date < parsedV2.date) return -1;
+	
+		// パッチの比較（辞書順）
+		if (parsedV1.patch > parsedV2.patch) return 1;
+		if (parsedV1.patch < parsedV2.patch) return -1;
+	
+		// 完全に等しい場合
+		return 0;
+	}
+
 	//#region クライアントが更新されたかチェック
 	const lastVersion = miLocalStorage.getItem('lastVersion');
 	const lastBasedMisskeyVersion = miLocalStorage.getItem('lastBasedMisskeyVersion');
+
 	if (lastVersion !== version || lastBasedMisskeyVersion !== basedMisskeyVersion) {
-		if (lastVersion == null) miLocalStorage.setItem('lastVersion', version);
-		else if (compareVersions(version, lastVersion) === 0 || compareVersions(version, lastVersion) === 1) miLocalStorage.setItem('lastVersion', version);
+		if (lastVersion == null) {
+			miLocalStorage.setItem('lastVersion', version);
+		} else {
+			try {
+				if (compareCustomVersions(version, lastVersion) >= 0) {
+					miLocalStorage.setItem('lastVersion', version);
+				}
+			} catch (err) {
+				console.error('Failed to compare versions', err);
+				// バージョン形式が予想外の場合、デフォルトとして最新バージョンを設定
+				miLocalStorage.setItem('lastVersion', version);
+			}
+		}
+
 		miLocalStorage.setItem('lastBasedMisskeyVersion', basedMisskeyVersion);
+		miLocalStorage.removeItem('theme'); // テーマリビルド
 
-		// テーマリビルドするため
-		miLocalStorage.removeItem('theme');
-
-		try { // 変なバージョン文字列来るとcompareVersionsでエラーになるため
-			if ((lastVersion != null && compareVersions(version, lastVersion) === 1) || (lastBasedMisskeyVersion != null && compareVersions(basedMisskeyVersion, lastBasedMisskeyVersion) === 1)) {
+		try {
+			if ((lastVersion != null && compareCustomVersions(version, lastVersion) > 0) ||
+            (lastBasedMisskeyVersion != null && compareCustomVersions(basedMisskeyVersion, lastBasedMisskeyVersion) > 0)) {
 				isClientUpdated = true;
-			} else if (lastVersion != null && compareVersions(version, lastVersion) === -1) isClientMigrated = true;
-		} catch (err) { /* empty */ }
+			} else if (lastVersion != null && compareCustomVersions(version, lastVersion) < 0) {
+				isClientMigrated = true;
+			}
+		} catch (err) {
+			console.error('Error during version comparison', err);
+		}
 	}
 	//#endregion
 
