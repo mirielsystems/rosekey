@@ -15,10 +15,11 @@
 
 -->
 
-## 1.0.0 (unreleased)
+## R6.0501 (unreleased)
 
 ### Security Fix
 -  Merge pull request from GHSA-m9qf-3pfj-2r86「misskey-dev/misskey」 
+-  Merge pull request from GHSA-2vxv-pv3m-3wvj「misskey-dev/misskey」
 - この変更は必ず、アップデートしてください。
 
 ### Note (Important Information)
