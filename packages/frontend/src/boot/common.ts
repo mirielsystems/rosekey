@@ -125,8 +125,7 @@ export async function common(createVue: () => App<Element>) {
 		miLocalStorage.removeItem('theme'); // テーマリビルド
 
 		try {
-			if ((lastVersion != null && compareCustomVersions(version, lastVersion) > 0) ||
-            (lastBasedMisskeyVersion != null && compareCustomVersions(basedMisskeyVersion, lastBasedMisskeyVersion) > 0)) {
+			if ((lastVersion != null && compareCustomVersions(version, lastVersion) > 0)) {
 				isClientUpdated = true;
 			} else if (lastVersion != null && compareCustomVersions(version, lastVersion) < 0) {
 				isClientMigrated = true;
