@@ -33,7 +33,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 						<FormLink to="https://code.rosekey.dev/miriel/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
-							<template #suffix>GitLab</template>
+							<template #suffix>Gitea</template>
 						</FormLink>
 					</div>
 				</FormSection>
