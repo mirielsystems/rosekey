@@ -15,6 +15,20 @@
 
 -->
 
+## R6.05xx 
+
+### Note (Important Information)
+- Node.js v20.12.2, 21.7.3 以降でしか動かないように。
+
+### General
+-
+
+### Client(Frontend)
+- 
+
+### Server(Backend)
+-
+
 ## R6.0501
 
 ### Security Fix
