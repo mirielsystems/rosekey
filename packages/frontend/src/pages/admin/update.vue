@@ -140,11 +140,11 @@ onMounted(() => {
 });
 
 const whatIsNewCherryPick = () => {
-	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/master/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewLatestCherryPick = () => {
-	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG.md#${releasesCherryPick.value[0].tag_name.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/release/CHANGELOG.md#${releasesCherryPick.value[0].tag_name.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewMisskey = () => {
