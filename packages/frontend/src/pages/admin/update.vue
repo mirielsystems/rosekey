@@ -36,7 +36,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</FormSection>
 
 				<FormSection @click="whatIsNewLatestCherryPick">
-					<template #label>CherryPick <i class="ti ti-external-link"></i></template>
+					<template #label>Rosekey <i class="ti ti-external-link"></i></template>
 					<MkKeyValue>
 						<template #key>{{ i18n.ts.latestVersion }}</template>
 						<template v-if="releasesCherryPick" #value>{{ releasesCherryPick[0].tag_name }}</template>
@@ -118,7 +118,7 @@ function skipThisVersion() {
 }
 
 onMounted(() => {
-	fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases', {
+	fetch('https://code.rosekey.dev/api/v1/repos/miriel/rosekey/releases', {
 		method: 'GET',
 	}).then(res => res.json())
 		.then(res => {
@@ -140,11 +140,11 @@ onMounted(() => {
 });
 
 const whatIsNewCherryPick = () => {
-	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG_CHERRYPICK.md#${version.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG.md#${version.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewLatestCherryPick = () => {
-	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG_CHERRYPICK.md#${releasesCherryPick.value[0].tag_name.replace(/\./g, '')}`, '_blank');
+	window.open(`https://code.rosekey.dev/miriel/rosekey/blob/develop/CHANGELOG.md#${releasesCherryPick.value[0].tag_name.replace(/\./g, '')}`, '_blank');
 };
 
 const whatIsNewMisskey = () => {
