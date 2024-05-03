@@ -425,7 +425,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			// 投稿を作成
 			try {
-				const note : MiNoteCreateOption  = {
+				const note : MiNoteCreateOption = {
 					createdAt: new Date(),
 					files: files,
 					poll: ps.poll ? {
