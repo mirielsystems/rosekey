@@ -2691,9 +2691,6 @@ type NotesRequest = operations['notes']['requestBody']['content']['application/j
 type NotesResponse = operations['notes']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
-type NotesSearchByTagRequest = operations['notes___search-by-tag']['requestBody']['content']['application/json'];
-
-// @public (undocumented)
 type NotesScheduleDeleteRequest = operations['notes/schedule/delete']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
@@ -2703,7 +2700,7 @@ type NotesScheduleListRequest = operations['notes/schedule/list']['requestBody']
 type NotesScheduleListResponse = operations['notes/schedule/list']['responses']['200']['content']['application/json'];
 
 // @public (undocumented)
-type NotesSearchByTagRequest = operations['notes/search-by-tag']['requestBody']['content']['application/json'];
+type NotesSearchByTagRequest = operations['notes___search-by-tag']['requestBody']['content']['application/json'];
 
 // @public (undocumented)
 type NotesSearchByTagResponse = operations['notes___search-by-tag']['responses']['200']['content']['application/json'];
