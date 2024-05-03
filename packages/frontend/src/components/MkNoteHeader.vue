@@ -36,9 +36,11 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</span>
 			<span v-if="note.localOnly" style="margin-right: 0.5em;"><i v-tooltip="i18n.ts._visibility['disableFederation']" class="ti ti-rocket-off"></i></span>
 			<span v-if="note.channel" style="margin-right: 0.5em;"><i v-tooltip="note.channel.name" class="ti ti-device-tv"></i></span>
+			<i v-if="note.isScheduled" style="margin-right: 0.5em;" class="ti ti-clock"></i>
 			<div v-if="mock">
 				<MkTime :time="note.createdAt" colored/>
 			</div>
+			<MkTime v-else-if="note.isSchedule" mode="absolute" :time="note.createdAt" colored/>
 			<MkA v-else :class="$style.time" :to="notePage(note)">
 				<MkTime :time="note.createdAt" :mode="defaultStore.state.enableAbsoluteTime ? 'absolute' : 'relative'" colored/>
 			</MkA>
@@ -59,7 +61,8 @@ import { useRouter } from '@/router/supplier.js';
 import MkInstanceTicker from '@/components/MkInstanceTicker.vue';
 
 const props = defineProps<{
-	note: Misskey.entities.Note;
+	note: Misskey.entities.Note & {isSchedule? : boolean, isScheduled? : boolean};
+    scheduled?: boolean;
 }>();
 
 const mock = inject<boolean>('mock', false);

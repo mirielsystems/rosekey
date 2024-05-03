@@ -36,18 +36,13 @@ SPDX-License-Identifier: AGPL-3.0-only
 				<span v-if="!localOnly"><i class="ti ti-rocket"></i></span>
 				<span v-else><i class="ti ti-rocket-off"></i></span>
 			</button>
-			<button v-click-anime v-tooltip="i18n.ts.reactionAcceptance" class="_button" :class="[$style.headerRightItem, { [$style.danger]: reactionAcceptance === 'likeOnly' }]" @click="toggleReactionAcceptance">
-				<span v-if="reactionAcceptance === 'likeOnly'"><i class="ti ti-heart"></i></span>
-				<span v-else-if="reactionAcceptance === 'likeOnlyForRemote'"><i class="ti ti-heart-plus"></i></span>
-				<span v-else><i class="ti ti-icons"></i></span>
-			</button>
-			<button v-tooltip="i18n.ts._mfm.cheatSheet" class="_button" :class="$style.headerRightItem" @click="openMfmCheatSheet"><i class="ti ti-help-circle"></i></button>
+			<button v-tooltip="i18n.ts.otherSettings" class="_button" :class="[$style.headerRightItem]" @click="openOtherSettingsMenu"><i class="ti ti-dots"></i></button>
 			<button v-click-anime class="_button" :class="$style.submit" :disabled="!canPost" data-cy-open-post-form-submit @click="post">
 				<div :class="$style.submitInner">
 					<template v-if="posted"></template>
 					<template v-else-if="posting"><MkEllipsis/></template>
 					<template v-else>{{ submitText }}</template>
-					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : updateMode ? 'ti ti-pencil' : defaultStore.state.renameTheButtonInPostFormToNya ? 'ti ti-paw-filled' : 'ti ti-send'"></i>
+					<i style="margin-left: 6px;" :class="posted ? 'ti ti-check' : reply ? 'ti ti-arrow-back-up' : renote ? 'ti ti-quote' : updateMode ? 'ti ti-pencil' : defaultStore.state.renameTheButtonInPostFormToNya ? 'ti ti-paw-filled' : schedule ? 'ti ti-clock-hour-4' : 'ti ti-send'"></i>
 				</div>
 			</button>
 		</div>
@@ -75,7 +70,10 @@ SPDX-License-Identifier: AGPL-3.0-only
 	</div>
 	<input v-show="withHashtags" ref="hashtagsInputEl" v-model="hashtags" :class="$style.hashtags" :placeholder="i18n.ts.hashtags" list="hashtags">
 	<XPostFormAttaches v-model="files" @detach="detachFile" @changeSensitive="updateFileSensitive" @changeName="updateFileName" @replaceFile="replaceFile"/>
-	<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
+	<div :class="$style.postOptionsRoot">
+		<MkPollEditor v-if="poll" v-model="poll" @destroyed="poll = null"/>
+		<MkScheduleEditor v-if="schedule" v-model="schedule" @destroyed="schedule = null"/>
+	</div>
 	<MkNotePreview v-if="showPreview" :class="$style.preview" :text="text" :files="files" :poll="poll ?? undefined" :useCw="useCw" :cw="cw" :user="postAccount ?? $i" :showProfile="showProfilePreview"/>
 	<div v-if="showingOptions" style="padding: 8px 16px;">
 	</div>
@@ -122,6 +120,7 @@ import { Autocomplete } from '@/scripts/autocomplete.js';
 import * as os from '@/os.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { selectFiles } from '@/scripts/select-file.js';
+import { dateTimeFormat } from '@/scripts/intl-const.js';
 import { defaultStore, notePostInterruptors, postFormActions } from '@/store.js';
 import MkInfo from '@/components/MkInfo.vue';
 import { i18n } from '@/i18n.js';
@@ -132,6 +131,8 @@ import { deepClone } from '@/scripts/clone.js';
 import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { miLocalStorage } from '@/local-storage.js';
 import { claimAchievement } from '@/scripts/achievements.js';
+import MkScheduleEditor from '@/components/MkScheduleEditor.vue';
+import { listSchedulePost } from '@/os.js';
 import { emojiPicker } from '@/scripts/emoji-picker.js';
 import { vibrate } from '@/scripts/vibrate.js';
 import * as sound from '@/scripts/sound.js';
@@ -187,11 +188,14 @@ const posted = ref(false);
 const text = ref(props.initialText ?? '');
 const files = ref(props.initialFiles ?? []);
 const poll = ref<PollEditorModelValue | null>(null);
-const event = ref<{
+	const event = ref<{
 	title: string;
 	start: string;
 	end: string | null;
 	metadata: Record<string, string>;
+} | null>(null);
+const schedule = ref<{
+	scheduledAt: string | null;
 } | null>(null);
 const useCw = ref<boolean>(!!props.initialCw);
 const showPreview = ref(defaultStore.state.showPreview);
@@ -264,7 +268,9 @@ const submitText = computed((): string => {
 				? i18n.ts.edit
 				: defaultStore.state.renameTheButtonInPostFormToNya
 					? i18n.ts.nya
-					: i18n.ts.note;
+			: schedule.value
+				? i18n.ts._schedulePost.addSchedule
+				: i18n.ts.note;
 });
 
 const textLength = computed((): number => {
@@ -447,6 +453,16 @@ function toggleEvent() {
 	}
 }
 
+function toggleSchedule() {
+	if (schedule.value) {
+		schedule.value = null;
+	} else {
+		schedule.value = {
+			scheduledAt: null,
+		};
+	}
+}
+
 function addTag(tag: string) {
 	insertTextAtCursor(textareaEl.value, ` #${tag} `);
 }
@@ -602,6 +618,7 @@ function clear() {
 	poll.value = null;
 	event.value = null;
 	quoteId.value = null;
+	schedule.value = null;
 }
 
 function onKeydown(ev: KeyboardEvent) {
@@ -809,6 +826,7 @@ async function post(ev?: MouseEvent) {
 		replyId: props.reply ? props.reply.id : undefined,
 		renoteId: props.renote ? props.renote.id : quoteId.value ? quoteId.value : undefined,
 		channelId: props.channel ? props.channel.id : undefined,
+		schedule: schedule.value,
 		poll: poll.value,
 		event: event.value,
 		cw: useCw.value ? cw.value ?? '' : null,
@@ -879,6 +897,13 @@ async function post(ev?: MouseEvent) {
 			incNotesCount();
 			if (notesCount === 1) {
 				claimAchievement('notes1');
+			}
+			poll.value = null;
+
+			if (postData.schedule?.scheduledAt) {
+				const d = new Date(postData.schedule.scheduledAt);
+				const str = dateTimeFormat.format(d);
+				os.toast(i18n.t('_schedulePost.willBePostedAtX', { date: str }));
 			}
 
 			const text = postData.text ?? '';
@@ -1018,6 +1043,45 @@ function showPreviewMenu(ev: MouseEvent) {
 	}], ev.currentTarget ?? ev.target);
 }
 
+function openOtherSettingsMenu(ev: MouseEvent) {
+	let reactionAcceptanceIcon: string;
+	switch (reactionAcceptance.value) {
+		case 'likeOnly':
+			reactionAcceptanceIcon = 'ti ti-heart';
+			break;
+		case 'likeOnlyForRemote':
+			reactionAcceptanceIcon = 'ti ti-heart-plus';
+			break;
+		default:
+			reactionAcceptanceIcon = 'ti ti-icons';
+			break;
+	}
+
+	os.popupMenu([{
+		type: 'button',
+		text: i18n.ts.reactionAcceptance,
+		icon: reactionAcceptanceIcon,
+		action: toggleReactionAcceptance,
+	}, ($i.policies.canScheduleNote) ? {
+		type: 'button',
+		text: i18n.ts.schedulePost,
+		icon: 'ti ti-calendar-time',
+		indicate: (schedule.value != null),
+		action: toggleSchedule,
+	} : undefined, ...(($i.policies.canScheduleNote) ? [{ type: 'divider' }, {
+		type: 'button',
+		text: i18n.ts._schedulePost.list,
+		icon: 'ti ti-calendar-event',
+		action: () => {
+			// 投稿フォームが二重に出ないようにとじておく
+			emit('cancel');
+			listSchedulePost();
+		},
+	}] : [])], ev.currentTarget ?? ev.target, {
+		align: 'right',
+	});
+}
+
 onMounted(() => {
 	if (props.autofocus) {
 		focus();
@@ -1069,6 +1133,11 @@ onMounted(() => {
 			files.value = init.files ?? [];
 			cw.value = init.cw ?? null;
 			useCw.value = init.cw != null;
+			if (init.isSchedule) {
+				schedule.value = {
+					scheduledAt: init.createdAt,
+				};
+			}
 			if (init.poll) {
 				poll.value = {
 					choices: init.poll.choices.map(x => x.text),
@@ -1222,6 +1291,10 @@ defineExpose({
 		background: none;
 	}
 
+  &.headerRightButtonActive {
+    color: var(--accent);
+  }
+
 	&.danger {
 		color: #ff2a2a;
 	}
@@ -1328,6 +1401,15 @@ defineExpose({
 	border-bottom: solid 0.5px var(--divider);
 }
 
+.postOptionsRoot {
+	>* {
+		border-bottom: solid 0.5px var(--divider);
+	}
+	>:last-child {
+		border-bottom: none;
+	}
+}
+
 .hashtags {
 	z-index: 1;
 	padding-top: 8px;
@@ -1398,6 +1480,7 @@ defineExpose({
 	grid-template-columns: repeat(auto-fill, minmax(42px, 1fr));
 	grid-auto-rows: 40px;
 	direction: rtl;
+
 }
 
 .footerButton {

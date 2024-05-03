@@ -4,10 +4,11 @@
  */
 
 import { Inject, Injectable } from '@nestjs/common';
-import type { UserProfilesRepository } from '@/models/_.js';
+import type { UserProfilesRepository, ScheduledNotesRepository } from '@/models/_.js';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { DI } from '@/di-symbols.js';
+import { NoteScheduleService } from '@/core/NoteScheduleService.js';
 import { ApiError } from '../error.js';
 
 export const meta = {
@@ -43,8 +44,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 	constructor(
 		@Inject(DI.userProfilesRepository)
 		private userProfilesRepository: UserProfilesRepository,
-
 		private userEntityService: UserEntityService,
+		private noteScheduleService: NoteScheduleService,
 	) {
 		super(meta, paramDef, async (ps, user, token, flashToken) => {
 			const isSecure = token == null && flashToken == null;
@@ -70,6 +71,8 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				});
 				userProfile.loggedInDates = [...userProfile.loggedInDates, today];
 			}
+
+			await this.noteScheduleService.notifyExpiredItems(user.id);
 
 			return await this.userEntityService.pack(userProfile.user!, userProfile.user!, {
 				schema: 'MeDetailed',

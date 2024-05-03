@@ -4,7 +4,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
-<div :class="$style.root" :style="{ cursor: expandOnNoteClick && enableNoteClick ? 'pointer' : '' }" @click.stop="noteClick" @dblclick.stop="noteDblClick">
+<div v-show="!isDeleted" :class="$style.root"  :tabindex="!isDeleted ? '-1' : undefined" :style="{ cursor: expandOnNoteClick && enableNoteClick ? 'pointer' : '' }" @click.stop="noteClick" @dblclick.stop="noteDblClick">
 	<div style="display: flex; padding-bottom: 10px;">
 		<MkAvatar v-if="!defaultStore.state.hideAvatarsInNote" :class="[$style.avatar, { [$style.showEl]: (showEl && ['hideHeaderOnly', 'hideHeaderFloatBtn', 'hide'].includes(<string>defaultStore.state.displayHeaderNavBarWhenScroll)) && mainRouter.currentRoute.value.name === 'index', [$style.showElTab]: (showEl && ['hideHeaderOnly', 'hideHeaderFloatBtn', 'hide'].includes(<string>defaultStore.state.displayHeaderNavBarWhenScroll)) && mainRouter.currentRoute.value.name !== 'index' }]" :user="note.user" link preview/>
 		<div :class="$style.main">
@@ -27,6 +27,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 <script lang="ts" setup>
 import { onMounted, ref } from 'vue';
 import * as Misskey from 'cherrypick-js';
+import { i18n } from '../i18n.js';
 import MkNoteHeader from '@/components/MkNoteHeader.vue';
 import MkSubNoteContent from '@/components/MkSubNoteContent.vue';
 import MkCwButton from '@/components/MkCwButton.vue';
@@ -36,15 +37,61 @@ import { mainRouter } from '@/router/main.js';
 import { useRouter } from '@/router/supplier.js';
 import { defaultStore } from '@/store.js';
 import { notePage } from '@/filters/note.js';
+import MkButton from '@/components/MkButton.vue';
+import * as os from '@/os.js';
 
 const props = withDefaults(defineProps<{
-	note: Misskey.entities.Note;
+	note: Misskey.entities.Note & {
+		id: string | null;
+		isSchedule?: boolean;
+		scheduledNoteId?: string;
+	};
 	enableNoteClick?: boolean,
 }>(), {
 	enableNoteClick: true,
 });
 
 const showEl = ref(false);
+const isDeleted = ref(false);
+
+const emit = defineEmits<{
+  (ev: 'editScheduleNote'): void;
+}>();
+
+async function deleteScheduleNote() {
+	if (!props.note.isSchedule || !props.note.scheduledNoteId) return;
+
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.ts._schedulePost.deleteAreYouSure,
+	});
+	if (canceled) return;
+
+	await os.apiWithDialog('notes/schedule/delete', { scheduledNoteId: props.note.scheduledNoteId })
+		.then(() => {
+			isDeleted.value = true;
+		});
+}
+
+async function editScheduleNote() {
+	if (!props.note.isSchedule || !props.note.scheduledNoteId) return;
+
+	const { canceled } = await os.confirm({
+		type: 'warning',
+		text: i18n.ts._schedulePost.deleteAndEditConfirm,
+	});
+
+	if (canceled) return;
+
+	await os.api('notes/schedule/delete', { scheduledNoteId: props.note.scheduledNoteId })
+		.then(() => {
+			isDeleted.value = true;
+		});
+
+	await os.post({ initialNote: props.note, renote: props.note.renote, reply: props.note.reply, channel: props.note.channel });
+
+	emit('editScheduleNote');
+}
 
 const showContent = ref(false);
 const expandOnNoteClick = defaultStore.state.expandOnNoteClick;
@@ -73,8 +120,12 @@ function noteDblClick(ev: MouseEvent) {
 	padding: 0;
 	font-size: 0.95em;
 	-webkit-tap-highlight-color: transparent;
+    border-bottom: solid 0.5px var(--divider);
 }
-
+.button{
+  margin-right: var(--margin);
+  margin-bottom: var(--margin);
+}
 .avatar {
 	flex-shrink: 0;
 	display: block;
