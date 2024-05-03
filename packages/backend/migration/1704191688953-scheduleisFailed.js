@@ -1,4 +1,4 @@
-module.exports = class ScheduleisFailed1704191688953 {
+export class ScheduleisFailed1704191688953 {
     name = 'ScheduleisFailed1704191688953'
 
     async up(queryRunner) {
