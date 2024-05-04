@@ -43,6 +43,7 @@ export type RolePolicies = {
 	canUpdateAvatar: boolean;
 	canUpdateBanner: boolean;
 	mentionLimit: number;
+	canScheduleNote: boolean;
 	canInvite: boolean;
 	inviteLimit: number;
 	inviteLimitCycle: number;
@@ -80,6 +81,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	canUpdateAvatar: true,
 	canUpdateBanner: true,
 	mentionLimit: 20,
+	canScheduleNote: true,
 	canInvite: false,
 	inviteLimit: 0,
 	inviteLimitCycle: 60 * 24 * 7,
@@ -356,6 +358,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			canUpdateAvatar: calc('canUpdateAvatar', vs => vs.some(v => v === true)),
 			canUpdateBanner: calc('canUpdateBanner', vs => vs.some(v => v === true)),
 			mentionLimit: calc('mentionLimit', vs => Math.max(...vs)),
+			canScheduleNote: calc('canScheduleNote', vs => vs.some(v => v === true)),
 			canInvite: calc('canInvite', vs => vs.some(v => v === true)),
 			inviteLimit: calc('inviteLimit', vs => Math.max(...vs)),
 			inviteLimitCycle: calc('inviteLimitCycle', vs => Math.max(...vs)),
