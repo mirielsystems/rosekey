@@ -739,15 +739,20 @@ onUnmounted(() => {
 
 				> .title {
 					display: block;
+					padding-top: 16px;
+					text-align: left;
+					font-weight: 700;
+					border-bottom: none;
+					margin-left: unquote("calc(5% + 92px)"); //コンパイルエラー対策
 				}
 
 				> .avatar {
-					top: 90px;
+					top: 110px;
 					left: 0;
 					right: 0;
 					width: 92px;
 					height: 92px;
-					margin: auto;
+					margin-left: 5%;
 				}
 
 				> .roles {
@@ -772,6 +777,7 @@ onUnmounted(() => {
 				> .description {
 					padding: 16px;
 					text-align: center;
+					border-top: solid 0.5px var(--divider);
 
 					div {
 						> .translateButton {
