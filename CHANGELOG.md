@@ -15,19 +15,24 @@
 
 -->
 
+## Description
+- CP or CherryPick: Modification of CherryPick(UPSTREAM)
+- Mi or Misskey or misskey-dev/misskey: Significant changes to Misskey
+- Cherry-Picked: Cherry-Picked from some project.
+
 ## R6.05xx 
 
 ### Note (Important Information)
 - Node.js v20.12.2, 21.7.3 以降でしか動かないように。
 
 ### General
--
+- Feat: 予約投稿機能
 
 ### Client(Frontend)
-- 
+- Feat: モバイルUI変更 ([Cherry-Picked Yoiyami](https://github.com/yoiyami-dev/yoiyami/commit/7fb8eda97c4e9ed70a54836eee259dc5272aa010))
 
 ### Server(Backend)
--
+- fix(backend)： Mastodonユーザーに会話を送るときに[#objectobject]タグが追加されることがある問題を修正 (CP)
 
 ## R6.0501
 

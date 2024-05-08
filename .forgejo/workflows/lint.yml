@@ -3,7 +3,7 @@ name: Lint
 on:
   push:
     branches:
-      - stable
+      - release
       - master
     paths:
       - packages/**
