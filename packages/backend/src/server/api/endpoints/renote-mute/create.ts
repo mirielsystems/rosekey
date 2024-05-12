@@ -9,6 +9,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import { IdService } from '@/core/IdService.js';
 import type { RenoteMutingsRepository } from '@/models/_.js';
 import type { MiRenoteMuting } from '@/models/RenoteMuting.js';
+import { RoleService } from '@/core/RoleService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
@@ -44,6 +45,12 @@ export const meta = {
 			code: 'ALREADY_MUTING',
 			id: 'ccfecbe4-1f1c-4fc2-8a3d-c3ffee61cb7b',
 		},
+
+		cannotRenoteMuteModerator: {
+			message: 'Cannot renote mute a user with moderator or higher permissions.',
+			code: 'CANNOT_RENOTEMUTE_MODERATOR',
+			id: 'b0e8a3d9-eb97-4c82-b7a2-f7d05dab1f12',
+		},
 	},
 } as const;
 
@@ -61,6 +68,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.renoteMutingsRepository)
 		private renoteMutingsRepository: RenoteMutingsRepository,
 
+		private roleService: RoleService,
 		private getterService: GetterService,
 		private idService: IdService,
 	) {
@@ -83,6 +91,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				muterId: muter.id,
 				muteeId: mutee.id,
 			});
+
+			if (!await this.roleService.isModerator(me) && (me.id)) {
+				throw new ApiError(meta.errors.cannotRenoteMuteModerator);
+			  }
 
 			if (exist != null) {
 				throw new ApiError(meta.errors.alreadyMuting);
