@@ -235,7 +235,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 
 		// policies.canPublicNote が false の場合、どの visibility でも投稿を許可しない
 		if (policies.canPublicNote === false) {
-			throw new IdentifiableError('4f2d4f3b-99c7-4c3e-bde5-2d49b4fe761a', 'You are not allowed to post notes with visibility.');
+			throw new IdentifiableError('4f2d4f3b-99c7-4c3e-bde5-2d49b4fe761a', 'You are not allowed to post notes with visibility');
 		}
 
 		if (data.visibility === 'public' && data.channel == null) {
