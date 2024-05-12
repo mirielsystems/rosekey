@@ -1920,7 +1920,7 @@ _role:
   _options:
     gtlAvailable: "Can view the global timeline"
     ltlAvailable: "Can view the local timeline"
-    canPublicNote: "Can send public notes"
+    canPublicNote: "Can send notes"
     canEditNote: "Note editing"
     canImportNotes: "Can import notes"
     canInitiateConversation: "Can mention, reply or quote"

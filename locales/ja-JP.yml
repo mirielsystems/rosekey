@@ -1934,7 +1934,7 @@ _role:
   _options:
     gtlAvailable: "グローバルタイムラインの閲覧"
     ltlAvailable: "ローカルタイムラインの閲覧"
-    canPublicNote: "パブリック投稿の許可"
+    canPublicNote: "投稿の許可"
     canEditNote: "ノートの編集"
     canImportNotes: "ノートのインポートが可能"
     canInitiateConversation: "メンション、リプライ、引用の許可"
