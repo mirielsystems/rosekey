@@ -7,6 +7,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import ms from 'ms';
 import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { MutingsRepository } from '@/models/_.js';
+import { RoleService } from '@/core/RoleService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { UserMutingService } from '@/core/UserMutingService.js';
@@ -43,6 +44,12 @@ export const meta = {
 			code: 'ALREADY_MUTING',
 			id: '7e7359cb-160c-4956-b08f-4d1c653cd007',
 		},
+
+		cannotMuteModerator: {
+			message: 'Cannot mute a user with moderator or higher permissions.',
+			code: 'CANNOT_MUTE_MODERATOR',
+			id: 'a34f1e2b-c291-44bb-84e8-9c15fe736600',
+		},
 	},
 } as const;
 
@@ -65,6 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.mutingsRepository)
 		private mutingsRepository: MutingsRepository,
 
+		private roleService: RoleService,
 		private getterService: GetterService,
 		private userMutingService: UserMutingService,
 	) {
@@ -89,6 +97,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					muteeId: mutee.id,
 				},
 			});
+
+			if (!await this.roleService.isModerator(me) && (me.id)) {
+				throw new ApiError(meta.errors.cannotMuteModerator);
+			  }
 
 			if (exist) {
 				throw new ApiError(meta.errors.alreadyMuting);
