@@ -9,6 +9,7 @@ import { Endpoint } from '@/server/api/endpoint-base.js';
 import type { UsersRepository, BlockingsRepository } from '@/models/_.js';
 import { UserEntityService } from '@/core/entities/UserEntityService.js';
 import { UserBlockingService } from '@/core/UserBlockingService.js';
+import { RoleService } from '@/core/RoleService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
@@ -43,6 +44,12 @@ export const meta = {
 			code: 'ALREADY_BLOCKING',
 			id: '787fed64-acb9-464a-82eb-afbd745b9614',
 		},
+
+		cannotBlockModerator: {
+			message: 'Cannot block a user with moderator or higher permissions.',
+			code: 'CANNOT_BLOCK_MODERATOR',
+			id: 'e21b05b1-58e5-4bee-82e1-9874249c8621',
+		  },
 	},
 
 	res: {
@@ -69,6 +76,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		@Inject(DI.blockingsRepository)
 		private blockingsRepository: BlockingsRepository,
 
+		private roleService: RoleService,
 		private userEntityService: UserEntityService,
 		private getterService: GetterService,
 		private userBlockingService: UserBlockingService,
@@ -94,6 +102,10 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 					blockeeId: blockee.id,
 				},
 			});
+
+			if (!await this.roleService.isModerator(me) && (me.id)) {
+				throw new ApiError(meta.errors.cannotBlockModerator);
+			  }
 
 			if (exist) {
 				throw new ApiError(meta.errors.alreadyBlocking);
