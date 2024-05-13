@@ -94,7 +94,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (!await this.roleService.isModerator(me) && (me.id)) {
 				throw new ApiError(meta.errors.cannotRenoteMuteModerator);
-			  }
+			}
 
 			if (exist != null) {
 				throw new ApiError(meta.errors.alreadyMuting);

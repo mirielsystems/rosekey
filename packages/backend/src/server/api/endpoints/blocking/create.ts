@@ -49,7 +49,7 @@ export const meta = {
 			message: 'Cannot block a user with moderator or higher permissions.',
 			code: 'CANNOT_BLOCK_MODERATOR',
 			id: 'e21b05b1-58e5-4bee-82e1-9874249c8621',
-		  },
+		},
 	},
 
 	res: {
@@ -105,7 +105,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (!await this.roleService.isModerator(me) && (me.id)) {
 				throw new ApiError(meta.errors.cannotBlockModerator);
-			  }
+			}
 
 			if (exist) {
 				throw new ApiError(meta.errors.alreadyBlocking);

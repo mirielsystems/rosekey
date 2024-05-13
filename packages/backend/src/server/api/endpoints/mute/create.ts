@@ -100,7 +100,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 			if (!await this.roleService.isModerator(me) && (me.id)) {
 				throw new ApiError(meta.errors.cannotMuteModerator);
-			  }
+			}
 
 			if (exist) {
 				throw new ApiError(meta.errors.alreadyMuting);
