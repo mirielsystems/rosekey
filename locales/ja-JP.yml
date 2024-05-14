@@ -1968,7 +1968,7 @@ _role:
     canUseTranslator: "翻訳機能の利用"
     canUseDriveFileInSoundSettings: "サウンド設定でドライブのファイルを利用"
     avatarDecorationLimit: "アイコンデコレーションの最大取付個数"
-    cannotBlockModerator: "モデレーター以上の権限を持つ人をブロックできないようにする。"
+    cannotBlockModerator: "モデレーター以上の権限を持つ人を(RN)ミュート/ブロックできないようにする。"
   _condition:
     roleAssignedTo: "マニュアルロールにアサイン済み"
     isLocal: "ローカルユーザー"
