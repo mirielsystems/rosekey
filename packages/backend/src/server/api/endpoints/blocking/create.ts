@@ -103,7 +103,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 				},
 			});
 
-			if ((!await this.roleService.isModerator(me) && me.id) || (await this.roleService.getUserPolicies(me.id)).cannotBlockModerator) {
+			if ((!await this.roleService.isModerator(me) && me.id) && (await this.roleService.getUserPolicies(me.id)).cannotBlockModerator) {
 				throw new ApiError(meta.errors.cannotBlockModerator);
 			}
 
