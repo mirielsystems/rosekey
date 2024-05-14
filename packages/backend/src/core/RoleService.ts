@@ -67,6 +67,7 @@ export type RolePolicies = {
 	rateLimitFactor: number;
 	avatarDecorationLimit: number;
 	canImportNotes: boolean;
+	cannotBlockModerator: boolean;
 };
 
 export const DEFAULT_POLICIES: RolePolicies = {
@@ -105,6 +106,7 @@ export const DEFAULT_POLICIES: RolePolicies = {
 	rateLimitFactor: 1,
 	avatarDecorationLimit: 1,
 	canImportNotes: true,
+	cannotBlockModerator: true,
 };
 
 @Injectable()
@@ -382,6 +384,7 @@ export class RoleService implements OnApplicationShutdown, OnModuleInit {
 			rateLimitFactor: calc('rateLimitFactor', vs => Math.max(...vs)),
 			avatarDecorationLimit: calc('avatarDecorationLimit', vs => Math.max(...vs)),
 			canImportNotes: calc('canImportNotes', vs => vs.some(v => v === true)),
+			cannotBlockModerator: calc('cannotBlockModerator', vs => vs.some(v => v === true)),
 		};
 	}
 

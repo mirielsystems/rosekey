@@ -108,6 +108,7 @@ export const ROLE_POLICIES = [
 	'userEachUserListsLimit',
 	'rateLimitFactor',
 	'avatarDecorationLimit',
+	'cannotBlockModerator',
 ] as const;
 
 // なんか動かない

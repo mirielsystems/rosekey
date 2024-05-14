@@ -1952,6 +1952,7 @@ _role:
     canUseTranslator: "Translator usage"
     canUseDriveFileInSoundSettings: "Use drive's files in sound settings"
     avatarDecorationLimit: "Maximum number of avatar decorations that can be applied"
+    cannotBlockModerator: "Disable blocking anyone with more than moderator privileges"
   _condition:
     roleAssignedTo: "Assigned to manual roles"
     isLocal: "Local user"
