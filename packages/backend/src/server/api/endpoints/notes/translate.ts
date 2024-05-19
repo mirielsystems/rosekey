@@ -135,13 +135,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			} else {
 				throw new Error('Unsupported translator type');
 			}
-		
 			return Promise.resolve({
 				sourceLang: translationResult.sourceLang || '',
 				text: translationResult.text || '',
 				translator: translationResult.translator || [],
 			});
-		});		
+		});
 	}
 
 	private async translateDeepL(text: string, targetLang: string, authKey: string, isPro: boolean, provider: string) {
@@ -162,11 +161,11 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 		});
 
 		const json = (await res.json()) as {
-      translations: {
-        detected_source_language: string;
-        text: string;
-      }[];
-    };
+			translations: {
+				detected_source_language: string;
+				text: string;
+			}[];
+		};
 
 		return {
 			sourceLang: json.translations[0].detected_source_language,

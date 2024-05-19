@@ -85,6 +85,7 @@ export const ROLE_POLICIES = [
 	'canUpdateAvatar',
 	'canUpdateBanner',
 	'mentionLimit',
+	'canScheduleNote',
 	'canInvite',
 	'inviteLimit',
 	'inviteLimitCycle',
@@ -107,6 +108,7 @@ export const ROLE_POLICIES = [
 	'userEachUserListsLimit',
 	'rateLimitFactor',
 	'avatarDecorationLimit',
+	'cannotBlockModerator',
 ] as const;
 
 // なんか動かない

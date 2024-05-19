@@ -6,10 +6,14 @@
 import type { Antenna } from '@/server/api/endpoints/i/import-antennas.js';
 import type { MiDriveFile } from '@/models/DriveFile.js';
 import type { MiNote } from '@/models/Note.js';
-import type { MiUser } from '@/models/User.js';
+import type { MiUser, MiLocalUser } from '@/models/User.js';
 import type { MiAbuseUserReport } from '@/models/AbuseUserReport.js';
 import type { MiWebhook } from '@/models/Webhook.js';
 import type { IActivity } from '@/core/activitypub/type.js';
+import { IPoll } from '@/models/Poll.js';
+import { MiScheduledNote } from '@/models/ScheduledNote.js';
+import { MiChannel } from '@/models/Channel.js';
+import { MiApp } from '@/models/App.js';
 import type httpSignature from '@peertube/http-signature';
 
 export type DeliverJobData = {
@@ -124,6 +128,17 @@ export type ObjectStorageFileJobData = {
 
 export type EndedPollNotificationJobData = {
 	noteId: MiNote['id'];
+};
+
+export type ScheduleNotePostJobData = {
+  scheduledNoteId: MiNote['id'];
+}
+
+type MinimumUser = {
+	id: MiUser['id'];
+	host: MiUser['host'];
+	username: MiUser['username'];
+	uri: MiUser['uri'];
 };
 
 export type WebhookDeliverJobData = {

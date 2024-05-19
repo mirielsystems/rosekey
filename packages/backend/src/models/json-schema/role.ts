@@ -167,6 +167,10 @@ export const packedRolePoliciesSchema = {
 			type: 'integer',
 			optional: false, nullable: false,
 		},
+		canScheduleNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
 		canInvite: {
 			type: 'boolean',
 			optional: false, nullable: false,
@@ -252,6 +256,10 @@ export const packedRolePoliciesSchema = {
 			optional: false, nullable: false,
 		},
 		canEditNote: {
+			type: 'boolean',
+			optional: false, nullable: false,
+		},
+		cannotBlockModerator: {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},

@@ -17,19 +17,16 @@ import { MiNote } from '@/models/Note.js';
 import { MiEvent } from '@/models/Event.js';
 import type { IEvent } from '@/models/Event.js';
 import type { ChannelFollowingsRepository, ChannelsRepository, FollowingsRepository, InstancesRepository, MiFollowing, MutingsRepository, NotesRepository, NoteThreadMutingsRepository, UserListMembershipsRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
-import type { MiDriveFile } from '@/models/DriveFile.js';
-import type { MiApp } from '@/models/App.js';
 import { concat } from '@/misc/prelude/array.js';
 import { IdService } from '@/core/IdService.js';
 import type { MiUser, MiLocalUser, MiRemoteUser } from '@/models/User.js';
-import type { IPoll } from '@/models/Poll.js';
 import { MiPoll } from '@/models/Poll.js';
 import { isDuplicateKeyValueError } from '@/misc/is-duplicate-key-value-error.js';
 import { checkWordMute } from '@/misc/check-word-mute.js';
-import type { MiChannel } from '@/models/Channel.js';
 import { normalizeForSearch } from '@/misc/normalize-for-search.js';
 import { MemorySingleCache } from '@/misc/cache.js';
 import type { MiUserProfile } from '@/models/UserProfile.js';
+import type { MiNoteCreateOption as Option, MiMinimumUser as MinimumUser } from '@/types.js';
 import { RelayService } from '@/core/RelayService.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { DI } from '@/di-symbols.js';
@@ -123,38 +120,6 @@ class NotificationManager {
 		}
 	}
 }
-
-type MinimumUser = {
-	id: MiUser['id'];
-	host: MiUser['host'];
-	username: MiUser['username'];
-	uri: MiUser['uri'];
-};
-
-type Option = {
-	createdAt?: Date | null;
-	updatedAt?: Date | null;
-	name?: string | null;
-	text?: string | null;
-	reply?: MiNote | null;
-	renote?: MiNote | null;
-	files?: MiDriveFile[] | null;
-	poll?: IPoll | null;
-	event?: IEvent | null;
-	localOnly?: boolean | null;
-	reactionAcceptance?: MiNote['reactionAcceptance'];
-	disableRightClick?: boolean | null;
-	cw?: string | null;
-	visibility?: string;
-	visibleUsers?: MinimumUser[] | null;
-	channel?: MiChannel | null;
-	apMentions?: MinimumUser[] | null;
-	apHashtags?: string[] | null;
-	apEmojis?: string[] | null;
-	uri?: string | null;
-	url?: string | null;
-	app?: MiApp | null;
-};
 
 @Injectable()
 export class NoteCreateService implements OnApplicationShutdown {
@@ -268,11 +233,10 @@ export class NoteCreateService implements OnApplicationShutdown {
 		const meta = await this.metaService.fetch();
 		const policies = await this.roleService.getUserPolicies(user.id);
 
+		// policies.canPublicNote が false の場合、どの visibility でも投稿を許可しない
 		if (policies.canPublicNote === false) {
-			// policies.canPublicNote が false の場合、どの visibility でも投稿を許可しない
-			const errorName = 'NoteNotAllowedError';
-			const errorMessage = 'You are not allowed to post notes with visibility.';
-			throw new IdentifiableError(errorName, errorMessage);
+			this.logger.error('You are not authorized to make a posts',);
+			throw new IdentifiableError('4f2d4f3b-99c7-4c3e-bde5-2d49b4fe761a', 'You are not allowed to post notes with visibility');
 		}
 
 		if (data.visibility === 'public' && data.channel == null) {
@@ -589,7 +553,6 @@ export class NoteCreateService implements OnApplicationShutdown {
 				data.visibleUsers.push(await this.usersRepository.findOneByOrFail({ id: data.reply!.userId }));
 			}
 		}
-
 		const note = await this.insertNote(user, data, tags, emojis, mentionedUsers);
 
 		setImmediate('post created', { signal: this.#shutdownController.signal }).then(
@@ -630,7 +593,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 					? data.visibleUsers.map(u => u.id)
 					: []
 				: [],
-
+			isScheduled: data.isScheduled != null,
 			attachedFileTypes: data.files ? data.files.map(file => file.type) : [],
 
 			// 以下非正規化データ

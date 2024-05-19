@@ -1,5 +1,5 @@
 /*
- * SPDX-FileCopyrightText: syuilo and noridev and other misskey, cherrypick contributors
+ * SPDX-FileCopyrightText: syuilo and misskey-project & noridev and cherrypick-project
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
@@ -124,13 +124,12 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			} else {
 				throw new Error('Unsupported translator type');
 			}
-		
 			return Promise.resolve({
 				sourceLang: translationResult.sourceLang || '',
 				text: translationResult.text || '',
 				translator: translationResult.translator || [],
 			});
-		});		
+		});
 	}
 
 	private async translateDeepL(text: string, targetLang: string, authKey: string, isPro: boolean, provider: string) {

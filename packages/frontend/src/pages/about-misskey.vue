@@ -30,18 +30,18 @@ SPDX-License-Identifier: AGPL-3.0-only
 				</div>
 				<FormSection>
 					<div class="_gaps_s">
-						<FormLink to="https://code.rosekey.dev/miriel/rosekey" external>
+						<FormLink to="https://github.com/mirielsystems/rosekey" external>
 							<template #icon><i class="ti ti-code"></i></template>
 							{{ i18n.ts._aboutMisskey.source }}
-							<template #suffix>GitLab</template>
+							<template #suffix>GitHub</template>
 						</FormLink>
 					</div>
 				</FormSection>
 				<FormSection>
 					<template #label>{{ i18n.ts._aboutMisskey.projectMembers }}</template>
 					<div :class="$style.contributors">
-						<a href="https://code.rosekey.dev/miriel" target="_blank" :class="$style.contributor">
-							<img src="https://code.rosekey.dev/avatars/534dda6a9e11531f40be7a47320fa2fdeed0a2cd4a0c0bd32c827d6d7d003321?size=512" :class="$style.contributorAvatar">
+						<a href="https://github.com/mirielnet" target="_blank" :class="$style.contributor">
+							<img src="https://avatars.githubusercontent.com/u/168396067?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@miriel
 								<span :class="$style.contributorClient">
 									<span :class="$style.rosekey">Rosekey</span>

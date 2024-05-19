@@ -45,23 +45,7 @@ SPDX-License-Identifier: AGPL-3.0-only
 					<span v-else-if="emailState === 'error'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.error }}</span>
 				</template>
 			</MkInput>
-			<MkInput v-model="password" type="password" autocomplete="new-password" required data-cy-signup-password @update:modelValue="onChangePassword">
-				<template #label>{{ i18n.ts.password }}</template>
-				<template #prefix><i class="ti ti-lock"></i></template>
-				<template #caption>
-					<span v-if="passwordStrength == 'low'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.weakPassword }}</span>
-					<span v-if="passwordStrength == 'medium'" style="color: var(--warn)"><i class="ti ti-check ti-fw"></i> {{ i18n.ts.normalPassword }}</span>
-					<span v-if="passwordStrength == 'high'" style="color: var(--success)"><i class="ti ti-check ti-fw"></i> {{ i18n.ts.strongPassword }}</span>
-				</template>
-			</MkInput>
-			<MkInput v-model="retypedPassword" type="password" autocomplete="new-password" required data-cy-signup-password-retype @update:modelValue="onChangePasswordRetype">
-				<template #label>{{ i18n.ts.password }} ({{ i18n.ts.retype }})</template>
-				<template #prefix><i class="ti ti-lock"></i></template>
-				<template #caption>
-					<span v-if="passwordRetypeState == 'match'" style="color: var(--success)"><i class="ti ti-check ti-fw"></i> {{ i18n.ts.passwordMatched }}</span>
-					<span v-if="passwordRetypeState == 'not-match'" style="color: var(--error)"><i class="ti ti-alert-triangle ti-fw"></i> {{ i18n.ts.passwordNotMatched }}</span>
-				</template>
-			</MkInput>
+			<MkNewPassword ref="password" :label="i18n.ts.password"/>
 			<MkCaptcha v-if="instance.enableHcaptcha" ref="hcaptcha" v-model="hCaptchaResponse" :class="$style.captcha" provider="hcaptcha" :sitekey="instance.hcaptchaSiteKey"/>
 			<MkCaptcha v-if="instance.enableMcaptcha" ref="mcaptcha" v-model="mCaptchaResponse" :class="$style.captcha" provider="mcaptcha" :sitekey="instance.mcaptchaSiteKey" :instanceUrl="instance.mcaptchaInstanceUrl"/>
 			<MkCaptcha v-if="instance.enableRecaptcha" ref="recaptcha" v-model="reCaptchaResponse" :class="$style.captcha" provider="recaptcha" :sitekey="instance.recaptchaSiteKey"/>
@@ -81,11 +65,12 @@ SPDX-License-Identifier: AGPL-3.0-only
 </template>
 
 <script lang="ts" setup>
-import { ref, computed } from 'vue';
+import { ref, computed, shallowRef } from 'vue';
 import { toUnicode } from 'punycode/';
 import * as Misskey from 'cherrypick-js';
 import MkButton from './MkButton.vue';
 import MkInput from './MkInput.vue';
+import MkNewPassword from '@/components/MkNewPassword.vue';
 import MkCaptcha, { type Captcha } from '@/components/MkCaptcha.vue';
 import * as config from '@/config.js';
 import * as os from '@/os.js';
@@ -113,14 +98,11 @@ const recaptcha = ref<Captcha | undefined>();
 const turnstile = ref<Captcha | undefined>();
 
 const username = ref<string>('');
-const password = ref<string>('');
-const retypedPassword = ref<string>('');
+const password = shallowRef<InstanceType<typeof MkNewPassword> | null>(null);
 const invitationCode = ref<string>('');
 const email = ref('');
 const usernameState = ref<null | 'wait' | 'ok' | 'unavailable' | 'error' | 'invalid-format' | 'min-range' | 'max-range'>(null);
 const emailState = ref<null | 'wait' | 'ok' | 'unavailable:used' | 'unavailable:format' | 'unavailable:disposable' | 'unavailable:banned' | 'unavailable:mx' | 'unavailable:smtp' | 'unavailable' | 'error'>(null);
-const passwordStrength = ref<'' | 'low' | 'medium' | 'high'>('');
-const passwordRetypeState = ref<null | 'match' | 'not-match'>(null);
 const submitting = ref<boolean>(false);
 const hCaptchaResponse = ref<string | null>(null);
 const mCaptchaResponse = ref<string | null>(null);
@@ -128,8 +110,6 @@ const reCaptchaResponse = ref<string | null>(null);
 const turnstileResponse = ref<string | null>(null);
 const usernameAbortController = ref<null | AbortController>(null);
 const emailAbortController = ref<null | AbortController>(null);
-
-const back = ref<boolean>(false);
 
 const shouldDisableSubmitting = computed((): boolean => {
 	return submitting.value ||
@@ -139,32 +119,8 @@ const shouldDisableSubmitting = computed((): boolean => {
 		instance.enableTurnstile && !turnstileResponse.value ||
 		instance.emailRequiredForSignup && emailState.value !== 'ok' ||
 		usernameState.value !== 'ok' ||
-		passwordRetypeState.value !== 'match';
+		!password.value?.isValid;
 });
-
-function getPasswordStrength(source: string): number {
-	let strength = 0;
-	let power = 0.018;
-
-	// 英数字
-	if (/[a-zA-Z]/.test(source) && /[0-9]/.test(source)) {
-		power += 0.020;
-	}
-
-	// 大文字と小文字が混ざってたら
-	if (/[a-z]/.test(source) && /[A-Z]/.test(source)) {
-		power += 0.015;
-	}
-
-	// 記号が混ざってたら
-	if (/[!\x22\#$%&@'()*+,-./_]/.test(source)) {
-		power += 0.02;
-	}
-
-	strength = power * source.length;
-
-	return Math.max(0, Math.min(1, strength));
-}
 
 function onChangeUsername(): void {
 	if (username.value === '') {
@@ -232,50 +188,32 @@ function onChangeEmail(): void {
 	});
 }
 
-function onChangePassword(): void {
-	if (password.value === '') {
-		passwordStrength.value = '';
-		return;
-	}
-
-	const strength = getPasswordStrength(password.value);
-	passwordStrength.value = strength > 0.7 ? 'high' : strength > 0.3 ? 'medium' : 'low';
-}
-
-function onChangePasswordRetype(): void {
-	if (retypedPassword.value === '') {
-		passwordRetypeState.value = null;
-		return;
-	}
-
-	passwordRetypeState.value = password.value === retypedPassword.value ? 'match' : 'not-match';
-}
-
-function goBack() {
-	back.value = true;
-	emit('back');
-}
-
 async function onSubmit(): Promise<void> {
-	if (submitting.value) return;
+	if (!password.value?.isValid || submitting.value) return;
 	submitting.value = true;
 
 	try {
-		if (back.value) {
-			submitting.value = false;
-			hcaptcha.value?.reset?.();
-			recaptcha.value?.reset?.();
-			turnstile.value?.reset?.();
+		await misskeyApi('signup', {
+			username: username.value,
+			password: password.value.password,
+			emailAddress: email.value,
+			invitationCode: invitationCode.value,
+			'hcaptcha-response': hCaptchaResponse.value,
+			'm-captcha-response': mCaptchaResponse.value,
+			'g-recaptcha-response': reCaptchaResponse.value,
+			'turnstile-response': turnstileResponse.value,
+		});
+		if (instance.emailRequiredForSignup) {
+			os.alert({
+				type: 'success',
+				title: i18n.ts._signup.almostThere,
+				text: i18n.tsx._signup.emailSent({ email: email.value }),
+			});
+			emit('signupEmailPending');
 		} else {
 			await misskeyApi('signup', {
 				username: username.value,
-				password: password.value,
-				emailAddress: email.value,
-				invitationCode: invitationCode.value,
-				'hcaptcha-response': hCaptchaResponse.value,
-				'm-captcha-response': mCaptchaResponse.value,
-				'g-recaptcha-response': reCaptchaResponse.value,
-				'turnstile-response': turnstileResponse.value,
+				password: password.value.password,
 			});
 			if (instance.emailRequiredForSignup) {
 				os.alert({

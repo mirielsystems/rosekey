@@ -5,6 +5,7 @@
 
 import { Module } from '@nestjs/common';
 import { FanoutTimelineEndpointService } from '@/core/FanoutTimelineEndpointService.js';
+import { NoteScheduleService } from '@/core/NoteScheduleService.js';
 import { AccountMoveService } from './AccountMoveService.js';
 import { AccountUpdateService } from './AccountUpdateService.js';
 import { AiService } from './AiService.js';
@@ -183,6 +184,7 @@ const $NoteUpdateService: Provider = { provide: 'NoteUpdateService', useExisting
 const $NoteDeleteService: Provider = { provide: 'NoteDeleteService', useExisting: NoteDeleteService };
 const $NotePiningService: Provider = { provide: 'NotePiningService', useExisting: NotePiningService };
 const $NoteReadService: Provider = { provide: 'NoteReadService', useExisting: NoteReadService };
+const $NoteScheduleService: Provider = { provide: 'NoteScheduleService', useExisting: NoteScheduleService };
 const $NotificationService: Provider = { provide: 'NotificationService', useExisting: NotificationService };
 const $PollService: Provider = { provide: 'PollService', useExisting: PollService };
 const $ProxyAccountService: Provider = { provide: 'ProxyAccountService', useExisting: ProxyAccountService };
@@ -400,6 +402,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		MutingEntityService,
 		RenoteMutingEntityService,
 		NoteEntityService,
+		NoteScheduleService,
 		NoteFavoriteEntityService,
 		NoteReactionEntityService,
 		NotificationEntityService,
@@ -545,6 +548,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$NoteEntityService,
 		$NoteFavoriteEntityService,
 		$NoteReactionEntityService,
+		$NoteScheduleService,
 		$NotificationEntityService,
 		$PageEntityService,
 		$PageLikeEntityService,
@@ -617,6 +621,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		NoteDeleteService,
 		NotePiningService,
 		NoteReadService,
+		NoteScheduleService,
 		NotificationService,
 		PollService,
 		ProxyAccountService,
@@ -830,6 +835,7 @@ const $ApEventService: Provider = { provide: 'ApEventService', useExisting: ApEv
 		$NoteEntityService,
 		$NoteFavoriteEntityService,
 		$NoteReactionEntityService,
+		$NoteScheduleService,
 		$NotificationEntityService,
 		$PageEntityService,
 		$PageLikeEntityService,

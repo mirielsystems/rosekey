@@ -2903,6 +2903,10 @@ export interface Locale extends ILocale {
      */
     "poll": string;
     /**
+     * 予約投稿
+     */
+    "schedulePost": string;
+    /**
      * 内容を隠す
      */
     "useCw": string;
@@ -7457,7 +7461,7 @@ export interface Locale extends ILocale {
              */
             "ltlAvailable": string;
             /**
-             * パブリック投稿の許可
+             * 投稿の許可
              */
             "canPublicNote": string;
             /**
@@ -7496,6 +7500,10 @@ export interface Locale extends ILocale {
              * ノート内の最大メンション数
              */
             "mentionMax": string;
+            /**
+             * 予約投稿の許可
+             */
+            "canScheduleNote": string;
             /**
              * サーバー招待コードの発行
              */
@@ -7588,6 +7596,10 @@ export interface Locale extends ILocale {
              * アイコンデコレーションの最大取付個数
              */
             "avatarDecorationLimit": string;
+            /**
+             * モデレーター以上の権限を持つ人を(RN)ミュート/ブロックできないようにする。
+             */
+            "cannotBlockModerator": string;
         };
         "_condition": {
             /**
@@ -10350,6 +10362,10 @@ export interface Locale extends ILocale {
          */
         "achievementEarned": string;
         /**
+         * 予約投稿に失敗しました
+         */
+        "noteSchedulingFailed": string;
+        /**
          * 通知テスト
          */
         "testNotification": string;
@@ -10442,6 +10458,10 @@ export interface Locale extends ILocale {
              * 実績の獲得
              */
             "achievementEarned": string;
+            /**
+             * 予約投稿に失敗した
+             */
+            "noteSchedulingFailed": string;
             /**
              * 連携アプリからの通知
              */
@@ -11003,6 +11023,44 @@ export interface Locale extends ILocale {
                 "description": string;
             };
         };
+    };
+    "_schedulePost": {
+        /**
+         * 予約投稿一覧
+         */
+        "list": string;
+        /**
+         * 日付
+         */
+        "postDate": string;
+        /**
+         * 時刻
+         */
+        "postTime": string;
+        /**
+         * 端末に設定されているタイムゾーンの時刻で投稿されます。
+         */
+        "localTime": string;
+        /**
+         * 予約設定
+         */
+        "addSchedule": string;
+        /**
+         * {date}に投稿予約しました。
+         */
+        "willBePostedAtX": ParameterizedString<"date">;
+        /**
+         * 予約投稿を削除しますか？
+         */
+        "deleteAreYouSure": string;
+        /**
+         * 予約投稿を削除して編集しますか？
+         */
+        "deleteAndEditConfirm": string;
+        /**
+         * 何らかの問題が発生し、正常に投稿されませんでした。
+         */
+        "somethingHappened": string;
     };
     "_dataSaver": {
         "_media": {
