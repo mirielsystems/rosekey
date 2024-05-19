@@ -20,10 +20,11 @@
 - Mi or Misskey or misskey-dev/misskey: Significant changes to Misskey
 - Cherry-Picked: Cherry-Picked from some project.
 
-## R6.05xx 
+## R6.0519 
 
 ### Note (Important Information)
 - Node.js v20.12.2, 21.7.3 以降でしか動かないように。
+- enhance(frontend): パスワード変更時にHIBPで流出パスワードをチェックするように (MisskeyIO#625)
 
 ### General
 - Feat: 予約投稿機能
@@ -33,6 +34,7 @@
 
 ### Server(Backend)
 - fix(backend)： Mastodonユーザーに会話を送るときに[#objectobject]タグが追加されることがある問題を修正 (CP)
+- Feat: モデレーターを ブロック/ミュート/RNミュートできなくするオプションを追加。
 
 ## R6.0501
 
