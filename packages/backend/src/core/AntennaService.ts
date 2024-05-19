@@ -17,8 +17,8 @@ import { UtilityService } from '@/core/UtilityService.js';
 import { bindThis } from '@/decorators.js';
 import type { GlobalEvents } from '@/core/GlobalEventService.js';
 import { FanoutTimelineService } from '@/core/FanoutTimelineService.js';
-import type { OnApplicationShutdown } from '@nestjs/common';
 import { deserializeAntenna } from './deserializeAntenna.js';
+import type { OnApplicationShutdown } from '@nestjs/common';
 
 @Injectable()
 export class AntennaService implements OnApplicationShutdown {
@@ -55,29 +55,29 @@ export class AntennaService implements OnApplicationShutdown {
     private async onRedisMessage(_: string, data: string): Promise<void> {
     const obj = JSON.parse(data);
 
-    if (obj.channel === 'internal') {
-        const { type, body } = obj.message as GlobalEvents['internal']['payload'];
-        switch (type) {
-            case 'antennaCreated':
-                this.antennas.push(deserializeAntenna(body));
-                break;
-            case 'antennaUpdated': {
-                const idx = this.antennas.findIndex(a => a.id === body.id);
-                if (idx >= 0) {
-                    this.antennas[idx] = deserializeAntenna(body);
-                } else {
-                    this.antennas.push(deserializeAntenna(body));
-                }
-            }
-                break;
-            case 'antennaDeleted':
-                this.antennas = this.antennas.filter(a => a.id !== body.id);
-                break;
-            default:
-                break;
-        }
-    }
-}
+		if (obj.channel === 'internal') {
+			const { type, body } = obj.message as GlobalEvents['internal']['payload'];
+			switch (type) {
+				case 'antennaCreated':
+					this.antennas.push(deserializeAntenna(body));
+					break;
+				case 'antennaUpdated': {
+					const idx = this.antennas.findIndex(a => a.id === body.id);
+					if (idx >= 0) {
+						this.antennas[idx] = deserializeAntenna(body);
+					} else {
+						this.antennas.push(deserializeAntenna(body));
+					}
+				}
+					break;
+				case 'antennaDeleted':
+					this.antennas = this.antennas.filter(a => a.id !== body.id);
+					break;
+				default:
+					break;
+			}
+		}
+	}
 
 	@bindThis
 	public async addNoteToAntennas(note: MiNote, noteUser: { id: MiUser['id']; username: string; host: string | null; isBot: boolean; }): Promise<void> {

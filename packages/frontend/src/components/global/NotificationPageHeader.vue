@@ -1,11 +1,12 @@
 <!--
-SPDX-FileCopyrightText: syuilo and misskey-project
+SPDX-FileCopyrightText: syuilo and misskey-project & noridev and cherrypick-project
 SPDX-License-Identifier: AGPL-3.0-only
 -->
 
 <template>
 <div v-if="show" ref="el" :class="[$style.root, { [$style.reduceBlurEffect]: !defaultStore.state.useBlurEffect }]" :style="{ background: bg }">
 	<div :class="[$style.upper, { [$style.slim]: narrow || isFriendly, [$style.thin]: thin_, [$style.hideTitle]: hideTitle && isFriendly }]">
+		<!--
 		<div v-if="!thin_ && !canBack" :class="$style.buttonsLeft">
 			<button v-vibrate="defaultStore.state.vibrateSystem ? 5 : []" class="_button" :class="[$style.button, $style.goBack]" @click.stop="goBack" @touchstart="preventDrag"><i class="ti ti-arrow-left"></i></button>
 		</div>
@@ -13,11 +14,14 @@ SPDX-License-Identifier: AGPL-3.0-only
 			<MkAvatar v-vibrate="defaultStore.state.vibrateSystem ? 5 : []" :class="$style.avatar" :user="$i"/>
 		</div>
 		<div v-else-if="!thin_ && narrow && !hideTitle && canBack" :class="$style.buttonsLeft"/>
+		-->
+		<div v-if="!thin_ && narrow && !hideTitle" :class="$style.buttonsLeft"/>
 		<div v-if="!thin_ && (actions && actions.length > 1) && isFriendly" :class="$style.buttonsLeft" style="min-width: initial; margin-right: initial;">
 			<div v-if="!narrow && canBack" style="width: 50px; margin-right: 8px;"/>
 			<div v-if="actions.length >= 3" style="width: 42px;"/>
 			<div style="width: 34px;"/>
 		</div>
+		<!--
 		<div v-if="!thin_ && !narrow && (actions && actions.length == 1) && isFriendly && mainRouter.currentRoute.value.name === 'my-notifications'">
 			<div style="width: 50px; margin-right: 8px;"/>
 		</div>
@@ -30,8 +34,19 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div v-if="pageMetadata && pageMetadata.avatar && !thin_ && mainRouter.currentRoute.value.name === 'user' && ($i != null && $i.id != pageMetadata.avatar.id)">
 			<div style="width: 50px;"/>
 		</div>
+		-->
 
-		<template v-if="pageMetadata">
+		<template v-if="props.title || props.icon">
+			<div v-if="!hideTitle" :class="[$style.titleContainer, { [$style.titleContainer_canBack]: !canBack }]" @click="top">
+				<i v-if="props.icon" :class="[$style.titleIcon, props.icon]"></i>
+
+				<div :class="$style.title">
+					<div v-if="props.title">{{ props.title }}</div>
+				</div>
+			</div>
+			<XTabs v-if="(!narrow || hideTitle) && !isFriendly" :class="[$style.tabs, { [$style.tabs_canBack]: !canBack }]" :tab="tab" :tabs="tabs" :rootEl="el" @update:tab="key => emit('update:tab', key)" @tabClick="onTabClick"/>
+		</template>
+		<template v-else-if="pageMetadata">
 			<div v-if="!hideTitle" :class="[$style.titleContainer, { [$style.titleContainer_canBack]: !canBack }]" @click="top">
 				<div v-if="pageMetadata.avatar" :class="$style.titleAvatarContainer">
 					<MkAvatar :class="$style.titleAvatar" :user="pageMetadata.avatar" indicator/>
@@ -55,13 +70,8 @@ SPDX-License-Identifier: AGPL-3.0-only
 			</template>
 		</div>
 		<div v-else-if="!thin_ && !canBack && !(actions && actions.length > 0)" :class="$style.buttonsRight"/>
-		<div v-if="pageMetadata && pageMetadata.avatar && ($i && $i.id !== pageMetadata.userName?.id) && mainRouter.currentRoute.value.name === 'user'" :class="$style.followButton">
-			<MkFollowButton :user="pageMetadata.avatar" :transparent="false" :full="!narrow"/>
-		</div>
 	</div>
-	<div v-if="((narrow && !hideTitle) || isFriendly) && hasTabs" :class="[$style.lower, { [$style.slim]: narrow && !isFriendly, [$style.thin]: thin_, [$style.lowerFriendly]: isFriendly}]">
-		<div v-if="!thin_ && isFriendly" :class="$style.buttonsLeft" style="min-width: 0; width: 0; margin-right: auto;">
-		</div>
+	<div v-if="((narrow && !hideTitle) || isFriendly) && hasTabs" :class="[$style.lower, { [$style.slim]: narrow && !isFriendly, [$style.thin]: thin_ }]">
 		<XTabs :class="$style.tabs" :tab="tab" :tabs="tabs" :rootEl="el" @update:tab="key => emit('update:tab', key)" @tabClick="onTabClick"/>
 	</div>
 </div>
@@ -92,6 +102,8 @@ const props = withDefaults(defineProps<{
 	actions?: PageHeaderItem[] | null;
 	thin?: boolean;
 	displayMyAvatar?: boolean;
+	title?: string;
+	icon?: string;
 }>(), {
 	tabs: () => ([] as Tab[]),
 });
@@ -118,9 +130,18 @@ const preventDrag = (ev: TouchEvent) => {
 	ev.stopPropagation();
 };
 
-const top = () => {
-	if (el.value) {
+const top = (ev: MouseEvent) => {
+	const pos = getScrollPosition(el.value as HTMLElement);
+	if (el.value && pos !== 0) {
 		scrollToTop(el.value as HTMLElement, { behavior: 'smooth' });
+	} else if (pos === 0) {
+		os.popupMenu([{
+			text: i18n.ts.reload,
+			icon: 'ti ti-refresh',
+			action: () => {
+				location.reload();
+			},
+		}], ev.currentTarget ?? ev.target);
 	}
 };
 
@@ -233,10 +254,6 @@ onUnmounted(() => {
 .lower {
 	--height: 40px;
 	height: var(--height);
-
-	.tabs {
-		margin-right: auto;
-	}
 }
 
 .hideTitle {
@@ -375,10 +392,6 @@ onUnmounted(() => {
 			margin-left: 6px;
 		}
 	}
-}
-
-.lowerFriendly {
-	display: flex;
 }
 
 @container (max-width: 500px) {
