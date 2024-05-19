@@ -30,8 +30,8 @@ export async function mainBoot() {
 		!$i ? defineAsyncComponent(() => import('@/ui/visitor.vue')) :
 		ui === 'deck' ? defineAsyncComponent(() => import('@/ui/deck.vue')) :
 		ui === 'classic' ? defineAsyncComponent(() => import('@/ui/classic.vue')) :
-		ui === 'friendly' ? defineAsyncComponent(() => import('@/ui/friendly.vue')) :
-		defineAsyncComponent(() => import('@/ui/universal.vue')),
+		ui === 'default' ? defineAsyncComponent(() => import('@/ui/universal.vue')) :
+		defineAsyncComponent(() => import('@/ui/friendly.vue')),
 	));
 
 	reactionPicker.init();
