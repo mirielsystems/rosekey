@@ -18,7 +18,7 @@ jobs:
     if: ${{ github.event.pull_request.mergeable == null || github.event.pull_request.mergeable == true }}
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           submodules: true
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
@@ -65,7 +65,7 @@ jobs:
     if: ${{ github.event.pull_request.mergeable == null || github.event.pull_request.mergeable == true }}
     steps:
       - name: checkout
-        uses: actions/checkout@v4.1.1
+        uses: actions/checkout@v4.1.6
         with:
           submodules: true
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
