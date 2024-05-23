@@ -1,9 +1,8 @@
 {
 	"type": "module",
 	"name": "cherrypick-js",
-	"version": "R6.0525.rc1",
+	"version": "4.8.0",
 	"basedMisskeyVersion": "2024.3.1",
-	"basedCherryPickVersion": "4.8.0",
 	"description": "CherryPick SDK for JavaScript",
 	"main": "./built/index.js",
 	"types": "./built/index.d.ts",
