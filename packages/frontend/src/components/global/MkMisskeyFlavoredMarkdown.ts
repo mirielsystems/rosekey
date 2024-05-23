@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-import { VNode, h, SetupContext } from 'vue';
+import { VNode, h, SetupContext, provide } from 'vue';
 import * as mfm from 'cherrypick-mfm-js';
 import * as Misskey from 'cherrypick-js';
 import temml from 'temml/dist/temml.mjs';
@@ -18,7 +18,7 @@ import MkCode from '@/components/MkCode.vue';
 import MkCodeInline from '@/components/MkCodeInline.vue';
 import MkGoogle from '@/components/MkGoogle.vue';
 import MkSparkle from '@/components/MkSparkle.vue';
-import MkA from '@/components/global/MkA.vue';
+import MkA, { MkABehavior } from '@/components/global/MkA.vue';
 import { host } from '@/config.js';
 import { defaultStore } from '@/store.js';
 import { nyaize as doNyaize } from '@/scripts/nyaize.js';
@@ -45,6 +45,7 @@ type MfmProps = {
 	parsedNodes?: mfm.MfmNode[] | null;
 	enableEmojiMenu?: boolean;
 	enableEmojiMenuReaction?: boolean;
+	linkNavigationBehavior?: MkABehavior;
 };
 
 type MfmEvents = {
@@ -53,6 +54,8 @@ type MfmEvents = {
 
 // eslint-disable-next-line import/no-default-export
 export default function (props: MfmProps, { emit }: { emit: SetupContext<MfmEvents>['emit'] }) {
+	provide('linkNavigationBehavior', props.linkNavigationBehavior);
+
 	const isNote = props.isNote ?? true;
 	const shouldNyaize = props.nyaize ? props.nyaize === 'respect' ? props.author?.isCat ? props.author.speakAsCat : false : false : false;
 

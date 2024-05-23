@@ -50,6 +50,7 @@ import {
 	packedRoleCondFormulaValueCreatedSchema,
 	packedRoleCondFormulaFollowersOrFollowingOrNotesSchema,
 	packedRoleCondFormulaValueSchema,
+	packedRoleCondFormulaValueUserSettingBooleanSchema,
 } from '@/models/json-schema/role.js';
 import { packedSubscriptionPlanSchema } from "@/models/json-schema/subscription-plan.js";
 import { packedAdSchema } from '@/models/json-schema/ad.js';
@@ -102,6 +103,7 @@ export const refs = {
 	RoleCondFormulaLogics: packedRoleCondFormulaLogicsSchema,
 	RoleCondFormulaValueNot: packedRoleCondFormulaValueNot,
 	RoleCondFormulaValueIsLocalOrRemote: packedRoleCondFormulaValueIsLocalOrRemoteSchema,
+	RoleCondFormulaValueUserSettingBooleanSchema: packedRoleCondFormulaValueUserSettingBooleanSchema,
 	RoleCondFormulaValueAssignedRole: packedRoleCondFormulaValueAssignedRoleSchema,
 	RoleCondFormulaValueCreated: packedRoleCondFormulaValueCreatedSchema,
 	RoleCondFormulaFollowersOrFollowingOrNotes: packedRoleCondFormulaFollowersOrFollowingOrNotesSchema,
@@ -232,7 +234,7 @@ export type SchemaTypeDef<p extends Schema> =
 			p['items']['allOf'] extends ReadonlyArray<Schema> ? UnionToIntersection<UnionSchemaType<NonNullable<p['items']['allOf']>>>[] :
 			never
 		) :
-		p['items'] extends NonNullable<Schema> ? SchemaTypeDef<p['items']>[] :
+		p['items'] extends NonNullable<Schema> ? SchemaType<p['items']>[] :
 		any[]
 	) :
 	p['anyOf'] extends ReadonlyArray<Schema> ? UnionSchemaType<p['anyOf']> & PartialIntersection<UnionSchemaType<p['anyOf']>> :

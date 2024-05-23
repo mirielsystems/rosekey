@@ -763,6 +763,10 @@ export interface Locale extends ILocale {
      */
     "renoted": string;
     /**
+     * {name} にリノートしました。
+     */
+    "renotedToX": ParameterizedString<"name">;
+    /**
      * ノートを引用しました。
      */
     "quoted": string;
@@ -790,6 +794,14 @@ export interface Locale extends ILocale {
      * チャンネル内引用
      */
     "inChannelQuote": string;
+    /**
+     * チャンネルにリノート
+     */
+    "renoteToChannel": string;
+    /**
+     * 他のチャンネルにリノート
+     */
+    "renoteToOtherChannel": string;
     /**
      * ピン留めされたノート
      */
@@ -1239,7 +1251,7 @@ export interface Locale extends ILocale {
      */
     "silencedInstances": string;
     /**
-     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになり、フォロワーでないローカルアカウントにはメンションできなくなります。ブロックしたインスタンスには影響しません。
+     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになります。ブロックしたインスタンスには影響しません。
      */
     "silencedInstancesDescription": string;
     /**
@@ -5464,6 +5476,14 @@ export interface Locale extends ILocale {
      */
     "noDescription": string;
     /**
+     * フォローの際常に確認する
+     */
+    "alwaysConfirmFollow": string;
+    /**
+     * お問い合わせ
+     */
+    "inquiry": string;
+    /**
      * 未読の通知の数を表示する
      */
     "showUnreadNotificationsCount": string;
@@ -7614,6 +7634,26 @@ export interface Locale extends ILocale {
              * リモートユーザー
              */
             "isRemote": string;
+            /**
+             * 猫ユーザー
+             */
+            "isCat": string;
+            /**
+             * botユーザー
+             */
+            "isBot": string;
+            /**
+             * サスペンド済みユーザー
+             */
+            "isSuspended": string;
+            /**
+             * 鍵アカウントユーザー
+             */
+            "isLocked": string;
+            /**
+             * 「アカウントを見つけやすくする」が有効なユーザー
+             */
+            "isExplorable": string;
             /**
              * アカウント作成から～以内
              */

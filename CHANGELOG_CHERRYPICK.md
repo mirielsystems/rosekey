@@ -23,15 +23,16 @@ Misskey의 전체 변경 사항을 확인하려면, [CHANGELOG.md#2024xx](CHANGE
 # 릴리즈 노트
 이 문서는 CherryPick의 변경 사항만 포함합니다.
 
-## 4.x.x
-출시일: unreleased<br>
-기반 Misskey 버전: 2024.x.x<br>
-Misskey의 전체 변경 사항을 확인하려면, [CHANGELOG.md#2024xx](CHANGELOG.md#2024xx) 문서를 참고하십시오.
+## 4.8.0
+출시일: 2024/5/20<br>
+기반 Misskey 버전: 2024.3.1<br>
+Misskey의 전체 변경 사항을 확인하려면, [CHANGELOG.md#202431](CHANGELOG.md#202431) 문서를 참고하십시오.
 
 ### General
 - Change: '타임라인에 다른 사람에게 보내는 답글을 포함'의 기본값을 비활성으로 설정
 
 ### Client
+- Enhance: 노트 메뉴에 '새 탭에서 열기' 추가
 - Fix: (Friendly) 타임라인 헤더와 알림 영역의 헤더 타이틀이 잘못 표시될 수 있음 (kokonect-link/cherrypick#461)
 - Fix: (Friendly) 윈도우 크기를 조정하면 타임라인 탭의 하이라이트가 잘못된 위치에 표시될 수 있음 (kokonect-link/cherrypick#415)
 - Fix: (Friendly) 일부 페이지에서 알림 영역의 디자인이 잘못 표시될 수 있음
