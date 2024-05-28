@@ -13,11 +13,13 @@ updates:
 
 # Add only the root, not each workspace item
 # https://github.com/dependabot/dependabot-core/issues/4993#issuecomment-1289133027
-- package-ecosystem: pnpm
+- package-ecosystem: npm
   directory: "/"
   schedule:
     interval: daily
   open-pull-requests-limit: 10
+  registries:
+    - type: "pnpm"
   # List dependencies required to be updated together, sharing the same version numbers.
   # Those who simply have the common owner (e.g. @fastify) don't need to be listed.
   groups:
