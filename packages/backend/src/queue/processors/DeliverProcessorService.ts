@@ -5,6 +5,7 @@
 
 import { Inject, Injectable } from '@nestjs/common';
 import * as Bull from 'bullmq';
+import { Not } from 'typeorm';
 import { DI } from '@/di-symbols.js';
 import type { InstancesRepository } from '@/models/_.js';
 import type Logger from '@/logger.js';
@@ -67,7 +68,7 @@ export class DeliverProcessorService {
 		if (suspendedHosts == null) {
 			suspendedHosts = await this.instancesRepository.find({
 				where: {
-					isSuspended: true,
+					suspensionState: Not('none'),
 				},
 			});
 			this.suspendedHostsCache.set(suspendedHosts);
@@ -84,6 +85,7 @@ export class DeliverProcessorService {
 				if (i.isNotResponding) {
 					this.federatedInstanceService.update(i.id, {
 						isNotResponding: false,
+						notRespondingSince: null,
 					});
 				}
 
@@ -103,7 +105,15 @@ export class DeliverProcessorService {
 				if (!i.isNotResponding) {
 					this.federatedInstanceService.update(i.id, {
 						isNotResponding: true,
+						notRespondingSince: new Date(),
 					});
+				} else if (i.notRespondingSince) {
+					// 1週間以上不通ならサスペンド
+					if (i.suspensionState === 'none' && i.notRespondingSince.getTime() <= Date.now() - 1000 * 60 * 60 * 24 * 7) {
+						this.federatedInstanceService.update(i.id, {
+							suspensionState: 'autoSuspendedForNotResponding',
+						});
+					}
 				}
 
 				this.apRequestChart.deliverFail();
@@ -121,7 +131,7 @@ export class DeliverProcessorService {
 					if (job.data.isSharedInbox && res.statusCode === 410) {
 						this.federatedInstanceService.fetch(host).then(i => {
 							this.federatedInstanceService.update(i.id, {
-								isSuspended: true,
+								suspensionState: 'goneSuspended',
 							});
 						});
 						throw new Bull.UnrecoverableError(`${host} is gone`);

@@ -70,6 +70,7 @@ export class MetaEntityService {
 			privacyPolicyUrl: instance.privacyPolicyUrl,
 			enableSubscriptions: instance.enableSubscriptions,
 			commerceDisclosureUrl: instance.commerceDisclosureUrl,
+			inquiryUrl: instance.inquiryUrl,
 			disableRegistration: instance.disableRegistration,
 			emailRequiredForSignup: instance.emailRequiredForSignup,
 			enableHcaptcha: instance.enableHcaptcha,
