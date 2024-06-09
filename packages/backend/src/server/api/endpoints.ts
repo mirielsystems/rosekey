@@ -93,6 +93,7 @@ import * as ep___admin_subscriptionPlans_create from './endpoints/admin/subscrip
 import * as ep___admin_subscriptionPlans_update from './endpoints/admin/subscription-plans/update.js';
 import * as ep___admin_subscriptionPlans_archive from './endpoints/admin/subscription-plans/archive.js';
 import * as ep___announcements from './endpoints/announcements.js';
+import * as ep___announcements_show from './endpoints/announcements/show.js';
 import * as ep___antennas_create from './endpoints/antennas/create.js';
 import * as ep___antennas_delete from './endpoints/antennas/delete.js';
 import * as ep___antennas_list from './endpoints/antennas/list.js';
@@ -505,6 +506,7 @@ const eps = [
 	['admin/subscription-plans/update', ep___admin_subscriptionPlans_update],
 	['admin/subscription-plans/archive', ep___admin_subscriptionPlans_archive],
 	['announcements', ep___announcements],
+	['announcements/show', ep___announcements_show],
 	['antennas/create', ep___antennas_create],
 	['antennas/delete', ep___antennas_delete],
 	['antennas/list', ep___antennas_list],

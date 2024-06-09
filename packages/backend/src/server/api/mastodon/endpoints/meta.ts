@@ -57,6 +57,12 @@ export async function getInstance(
 			},
 		},
 		contact_account: contact,
-		rules: [],
-	};
+		rules: [
+            {
+                id: '1',
+                text: `Please check the server rules for more information: ${config.host}/about`,
+                hint: `Please check the server rules for more information: ${config.host}/about`
+            },
+        ],
+    };
 }

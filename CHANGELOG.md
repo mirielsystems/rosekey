@@ -19,6 +19,19 @@
 - CP or CherryPick: Modification of CherryPick(UPSTREAM)
 - Mi or Misskey or misskey-dev/misskey: Significant changes to Misskey
 - Cherry-Picked: Cherry-Picked from some project.
+- LTS: Official stable version - future releases may not be available for a long time.
+
+## R6.0609.LTS
+
+### Note (Important Information)
+- 今回のリリースはLTS版となります。
+
+### General
+-　Misskey 2024.5.0　(CherryPick 4.9.0-beta.1) に追従
+
+### Server(Backend)
+- Megalodon (Mastodon)の ルールなどの修正
+
 
 ## R6.0519 
 

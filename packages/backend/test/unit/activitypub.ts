@@ -19,7 +19,7 @@ import { GlobalModule } from '@/GlobalModule.js';
 import { CoreModule } from '@/core/CoreModule.js';
 import { FederatedInstanceService } from '@/core/FederatedInstanceService.js';
 import { LoggerService } from '@/core/LoggerService.js';
-import type { IActor, IApDocument, ICollection, IPost } from '@/core/activitypub/type.js';
+import type { IActor, IApDocument, ICollection, IObject, IPost } from '@/core/activitypub/type.js';
 import { MiMeta, MiNote } from '@/models/_.js';
 import { secureRndstr } from '@/misc/secure-rndstr.js';
 import { DownloadService } from '@/core/DownloadService.js';
@@ -299,7 +299,7 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				imageObject,
 			);
-			assert.ok(!driveFile.isLink);
+			assert.ok(driveFile && !driveFile.isLink);
 
 			const sensitiveImageObject: IApDocument = {
 				type: 'Document',
@@ -312,7 +312,7 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				sensitiveImageObject,
 			);
-			assert.ok(!sensitiveDriveFile.isLink);
+			assert.ok(sensitiveDriveFile && !sensitiveDriveFile.isLink);
 		});
 
 		test('cacheRemoteFiles=false disables caching', async () => {
@@ -328,7 +328,7 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				imageObject,
 			);
-			assert.ok(driveFile.isLink);
+			assert.ok(driveFile && driveFile.isLink);
 
 			const sensitiveImageObject: IApDocument = {
 				type: 'Document',
@@ -341,7 +341,7 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				sensitiveImageObject,
 			);
-			assert.ok(sensitiveDriveFile.isLink);
+			assert.ok(sensitiveDriveFile && sensitiveDriveFile.isLink);
 		});
 
 		test('cacheRemoteSensitiveFiles=false only affects sensitive files', async () => {
@@ -357,7 +357,7 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				imageObject,
 			);
-			assert.ok(!driveFile.isLink);
+			assert.ok(driveFile && !driveFile.isLink);
 
 			const sensitiveImageObject: IApDocument = {
 				type: 'Document',
@@ -370,7 +370,57 @@ describe('ActivityPub', () => {
 				await createRandomRemoteUser(resolver, personService),
 				sensitiveImageObject,
 			);
-			assert.ok(sensitiveDriveFile.isLink);
+			assert.ok(sensitiveDriveFile && sensitiveDriveFile.isLink);
+		});
+
+		test('Link is not an attachment files', async () => {
+			const linkObject: IObject = {
+				type: 'Link',
+				href: 'https://example.com/',
+			};
+			const driveFile = await imageService.createImage(
+				await createRandomRemoteUser(resolver, personService),
+				linkObject,
+			);
+			assert.strictEqual(driveFile, null);
+		});
+	});
+
+	describe('JSON-LD', () => {
+		test('Compaction', async () => {
+			const jsonLd = jsonLdService.use();
+
+			const object = {
+				'@context': [
+					'https://www.w3.org/ns/activitystreams',
+					{
+						_misskey_quote: 'https://misskey-hub.net/ns#_misskey_quote',
+						unknown: 'https://example.org/ns#unknown',
+						undefined: null,
+					},
+				],
+				id: 'https://example.com/notes/42',
+				type: 'Note',
+				attributedTo: 'https://example.com/users/1',
+				to: ['https://www.w3.org/ns/activitystreams#Public'],
+				content: 'test test foo',
+				_misskey_quote: 'https://example.com/notes/1',
+				unknown: 'test test bar',
+				undefined: 'test test baz',
+			};
+			const compacted = await jsonLd.compact(object);
+
+			assert.deepStrictEqual(compacted, {
+				'@context': CONTEXT,
+				id: 'https://example.com/notes/42',
+				type: 'Note',
+				attributedTo: 'https://example.com/users/1',
+				to: 'as:Public',
+				content: 'test test foo',
+				_misskey_quote: 'https://example.com/notes/1',
+				'https://example.org/ns#unknown': 'test test bar',
+				// undefined: 'test test baz',
+			});
 		});
 	});
 

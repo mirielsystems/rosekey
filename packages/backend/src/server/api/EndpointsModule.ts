@@ -94,6 +94,7 @@ import * as ep___admin_subscriptionPlans_create from './endpoints/admin/subscrip
 import * as ep___admin_subscriptionPlans_update from './endpoints/admin/subscription-plans/update.js';
 import * as ep___admin_subscriptionPlans_archive from './endpoints/admin/subscription-plans/archive.js';
 import * as ep___announcements from './endpoints/announcements.js';
+import * as ep___announcements_show from './endpoints/announcements/show.js';
 import * as ep___antennas_create from './endpoints/antennas/create.js';
 import * as ep___antennas_delete from './endpoints/antennas/delete.js';
 import * as ep___antennas_list from './endpoints/antennas/list.js';
@@ -508,6 +509,7 @@ const $admin_subscriptionPlans_create: Provider = { provide: 'ep:admin/subscript
 const $admin_subscriptionPlans_update: Provider = { provide: 'ep:admin/subscription-plans/update', useClass: ep___admin_subscriptionPlans_update.default };
 const $admin_subscriptionPlans_archive: Provider = { provide: 'ep:admin/subscription-plans/archive', useClass: ep___admin_subscriptionPlans_archive.default };
 const $announcements: Provider = { provide: 'ep:announcements', useClass: ep___announcements.default };
+const $announcements_show: Provider = { provide: 'ep:announcements/show', useClass: ep___announcements_show.default };
 const $antennas_create: Provider = { provide: 'ep:antennas/create', useClass: ep___antennas_create.default };
 const $antennas_delete: Provider = { provide: 'ep:antennas/delete', useClass: ep___antennas_delete.default };
 const $antennas_list: Provider = { provide: 'ep:antennas/list', useClass: ep___antennas_list.default };
@@ -927,6 +929,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$admin_subscriptionPlans_update,
 		$admin_subscriptionPlans_archive,
 		$announcements,
+		$announcements_show,
 		$antennas_create,
 		$antennas_delete,
 		$antennas_list,
@@ -1339,6 +1342,7 @@ const $reversi_verify: Provider = { provide: 'ep:reversi/verify', useClass: ep__
 		$admin_subscriptionPlans_update,
 		$admin_subscriptionPlans_archive,
 		$announcements,
+		$announcements_show,
 		$antennas_create,
 		$antennas_delete,
 		$antennas_list,

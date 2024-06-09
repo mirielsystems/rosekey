@@ -71,18 +71,6 @@ export class ApiStatusMastodon {
 		});
 	}
 
-	public async getHistory() {
-		this.fastify.get<{ Params: { id: string } }>('/v1/statuses/:id/history', async (_request, reply) => {
-			try {
-				const edits = await this.mastoconverter.getEdits(_request.params.id);
-				reply.send(edits);
-			} catch (e: any) {
-				console.error(e);
-				reply.code(401).send(e.response.data);
-			}
-		});
-	}
-
 	public async getReblogged() {
 		this.fastify.get<{ Params: { id: string } }>('/v1/statuses/:id/reblogged_by', async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;

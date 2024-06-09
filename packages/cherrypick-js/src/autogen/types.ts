@@ -634,7 +634,7 @@ export type paths = {
      * admin/show-users
      * @description No description provided.
      *
-     * **Credential required**: *Yes* / **Permission**: *read:admin:show-users*
+     * **Credential required**: *Yes* / **Permission**: *read:admin:show-user*
      */
     post: operations['admin___show-users'];
   };
@@ -802,6 +802,15 @@ export type paths = {
      * **Credential required**: *No*
      */
     post: operations['announcements'];
+  };
+  '/announcements/show': {
+    /**
+     * announcements/show
+     * @description No description provided.
+     *
+     * **Credential required**: *No*
+     */
+    post: operations['announcements___show'];
   };
   '/antennas/create': {
     /**
@@ -4881,7 +4890,6 @@ export type components = {
       caseSensitive: boolean;
       /** @default false */
       localOnly: boolean;
-      notify: boolean;
       /** @default false */
       excludeBots: boolean;
       /** @default false */
@@ -4890,6 +4898,8 @@ export type components = {
       isActive: boolean;
       /** @default false */
       hasUnreadNote: boolean;
+      /** @default false */
+      notify: boolean;
     };
     Clip: {
       /**
@@ -4924,6 +4934,8 @@ export type components = {
       followersCount: number;
       isNotResponding: boolean;
       isSuspended: boolean;
+      /** @enum {string} */
+      suspensionState: 'none' | 'manuallySuspended' | 'goneSuspended' | 'autoSuspendedForNotResponding';
       isBlocked: boolean;
       /** @example cherrypick */
       softwareName: string | null;
@@ -5035,6 +5047,11 @@ export type components = {
       /** @enum {string} */
       type: 'isLocal' | 'isRemote';
     };
+    RoleCondFormulaValueUserSettingBooleanSchema: {
+      id: string;
+      /** @enum {string} */
+      type: 'isSuspended' | 'isLocked' | 'isBot' | 'isCat' | 'isExplorable';
+    };
     RoleCondFormulaValueAssignedRole: {
       id: string;
       /** @enum {string} */
@@ -5057,7 +5074,6 @@ export type components = {
       type: 'followersLessThanOrEq' | 'followersMoreThanOrEq' | 'followingLessThanOrEq' | 'followingMoreThanOrEq' | 'notesLessThanOrEq' | 'notesMoreThanOrEq';
       value: number;
     };
-    RoleCondFormulaValue: components['schemas']['RoleCondFormulaLogics'] | components['schemas']['RoleCondFormulaValueNot'] | components['schemas']['RoleCondFormulaValueIsLocalOrRemote'] | components['schemas']['RoleCondFormulaValueAssignedRole'] | components['schemas']['RoleCondFormulaValueCreated'] | components['schemas']['RoleCondFormulaFollowersOrFollowingOrNotes'];
     SubscriptionPlan: {
       /**
        * Format: id
@@ -5083,6 +5099,7 @@ export type components = {
       /** @example false */
       isArchived: boolean;
     };
+    RoleCondFormulaValue: components['schemas']['RoleCondFormulaLogics'] | components['schemas']['RoleCondFormulaValueNot'] | components['schemas']['RoleCondFormulaValueIsLocalOrRemote'] | components['schemas']['RoleCondFormulaValueUserSettingBooleanSchema'] | components['schemas']['RoleCondFormulaValueAssignedRole'] | components['schemas']['RoleCondFormulaValueCreated'] | components['schemas']['RoleCondFormulaFollowersOrFollowingOrNotes'];
     RoleLite: {
       /**
        * Format: id
@@ -5296,6 +5313,7 @@ export type components = {
       privacyPolicyUrl: string | null;
       commerceDisclosureUrl: string | null;
       enableSubscriptions: boolean;
+      inquiryUrl: string | null;
       serverRules: string[];
       themeColor: string | null;
       policies: components['schemas']['RolePolicies'];
@@ -5464,6 +5482,7 @@ export type operations = {
             objectStorageS3ForcePathStyle: boolean;
             objectStorageRemoteS3ForcePathStyle: boolean;
             privacyPolicyUrl: string | null;
+            inquiryUrl: string | null;
             repositoryUrl: string | null;
             /**
              * @deprecated
@@ -9566,7 +9585,7 @@ export type operations = {
    * admin/show-users
    * @description No description provided.
    *
-   * **Credential required**: *Yes* / **Permission**: *read:admin:show-users*
+   * **Credential required**: *Yes* / **Permission**: *read:admin:show-user*
    */
   'admin___show-users': {
     requestBody: {
@@ -9825,6 +9844,7 @@ export type operations = {
           feedbackUrl?: string | null;
           impressumUrl?: string | null;
           privacyPolicyUrl?: string | null;
+          inquiryUrl?: string | null;
           useObjectStorage?: boolean;
           objectStorageBaseUrl?: string | null;
           objectStorageBucket?: string | null;
@@ -10784,6 +10804,60 @@ export type operations = {
     };
   };
   /**
+   * announcements/show
+   * @description No description provided.
+   *
+   * **Credential required**: *No*
+   */
+  announcements___show: {
+    requestBody: {
+      content: {
+        'application/json': {
+          /** Format: misskey:id */
+          announcementId: string;
+        };
+      };
+    };
+    responses: {
+      /** @description OK (with results) */
+      200: {
+        content: {
+          'application/json': components['schemas']['Announcement'];
+        };
+      };
+      /** @description Client error */
+      400: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Authentication error */
+      401: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Forbidden error */
+      403: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description I'm Ai */
+      418: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+      /** @description Internal server error */
+      500: {
+        content: {
+          'application/json': components['schemas']['Error'];
+        };
+      };
+    };
+  };
+  /**
    * antennas/create
    * @description No description provided.
    *
@@ -10808,7 +10882,6 @@ export type operations = {
           excludeBots?: boolean;
           withReplies: boolean;
           withFile: boolean;
-          notify: boolean;
         };
       };
     };
@@ -11092,7 +11165,6 @@ export type operations = {
           excludeBots?: boolean;
           withReplies?: boolean;
           withFile?: boolean;
-          notify?: boolean;
         };
       };
     };
@@ -22766,6 +22838,8 @@ export type operations = {
           limit?: number;
           /** @default 0 */
           offset?: number;
+          /** @default false */
+          excludeChannels?: boolean;
         };
       };
     };
@@ -28938,7 +29012,52 @@ export type operations = {
       200: {
         content: {
           'application/json': {
-            items: Record<string, never>[];
+            image?: {
+              link?: string;
+              url: string;
+              title?: string;
+            };
+            paginationLinks?: {
+              self?: string;
+              first?: string;
+              next?: string;
+              last?: string;
+              prev?: string;
+            };
+            link?: string;
+            title?: string;
+            items: {
+                link?: string;
+                guid?: string;
+                title?: string;
+                pubDate?: string;
+                creator?: string;
+                summary?: string;
+                content?: string;
+                isoDate?: string;
+                categories?: string[];
+                contentSnippet?: string;
+                enclosure?: {
+                  url: string;
+                  length?: number;
+                  type?: string;
+                };
+              }[];
+            feedUrl?: string;
+            description?: string;
+            itunes?: {
+              image?: string;
+              owner?: {
+                name?: string;
+                email?: string;
+              };
+              author?: string;
+              summary?: string;
+              explicit?: string;
+              categories?: string[];
+              keywords?: string[];
+              [key: string]: unknown;
+            };
           };
         };
       };

@@ -176,6 +176,7 @@ import MkRippleEffect from '@/components/MkRippleEffect.vue';
 import { deepClone } from '@/scripts/clone.js';
 import { useInterval } from '@/scripts/use-interval.js';
 import { signinRequired } from '@/account.js';
+import { url } from '@/config.js';
 import { i18n } from '@/i18n.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import { userPage } from '@/filters/user.js';
@@ -486,7 +487,7 @@ function autoplay() {
 
 function share() {
 	os.post({
-		initialText: `#MisskeyReversi ${location.href}`,
+		initialText: `#MisskeyReversi\n${url}/reversi/g/${game.value.id}`,
 		instant: true,
 	});
 }

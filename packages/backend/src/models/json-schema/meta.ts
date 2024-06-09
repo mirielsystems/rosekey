@@ -239,6 +239,10 @@ export const packedMetaLiteSchema = {
 			type: 'boolean',
 			optional: false, nullable: false,
 		},
+		inquiryUrl: {
+			type: 'string',
+			optional: false, nullable: true,
+		},
 		serverRules: {
 			type: 'array',
 			optional: false, nullable: false,

@@ -1,5 +1,5 @@
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-# CherryPick configuration
+# Rosekey configuration
 #━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 #   ┌─────┐
@@ -15,11 +15,11 @@ url: https://example.tld/
 #───┘ Port and TLS settings └───────────────────────────────────
 
 #
-# CherryPick requires a reverse proxy to support HTTPS connections.
+# Rosekey requires a reverse proxy to support HTTPS connections.
 #
 #                 +-------- https://example.tld/ ------------+
 #   +------+      |+-------------+      +-------------------+|
-#   | User | ---> || Proxy (443) | ---> | CherryPick (3000) ||
+#   | User | ---> || Proxy (443) | ---> | Rosekey (3000) ||
 #   +------+      |+-------------+      +-------------------+|
 #                 +------------------------------------------+
 #
@@ -27,7 +27,7 @@ url: https://example.tld/
 #   An encrypted connection with HTTPS is highly recommended
 #   because tokens may be transferred in GET requests.
 
-# The port that your CherryPick server should listen on.
+# The port that your Rosekey server should listen on.
 port: 3000
 
 #   ┌──────────────────────────┐
@@ -38,11 +38,11 @@ db:
   port: 5432
 
   # Database name
-  db: cherrypick
+  db: Rosekey
 
   # Auth
-  user: example-cherrypick-user
-  pass: example-cherrypick-pass
+  user: example-Rosekey-user
+  pass: example-Rosekey-pass
 
   # Whether disable Caching queries
   #disableCache: true
@@ -58,15 +58,15 @@ dbReplications: false
 #  -
 #    host: localhost
 #    port: 5433
-#    db: cherrypick
-#    user: example-cherrypick-user
-#    pass: example-cherrypick-pass
+#    db: Rosekey
+#    user: example-Rosekey-user
+#    pass: example-Rosekey-pass
 #  -
 #    host: localhost
 #    port: 5434
-#    db: cherrypick
-#    user: example-cherrypick-user
-#    pass: example-cherrypick-pass
+#    db: Rosekey
+#    user: example-Rosekey-user
+#    pass: example-Rosekey-pass
 
 #   ┌─────────────────────┐
 #───┘ Redis configuration └─────────────────────────────────────
@@ -136,6 +136,21 @@ redis:
 
 id: 'aidx'
 
+#   ┌────────────────┐
+#───┘ Error tracking └──────────────────────────────────────────
+
+# Sentry is available for error tracking.
+# See the Sentry documentation for more details on options.
+
+#sentryForBackend:
+#  enableNodeProfiling: true
+#  options:
+#    dsn: 'https://examplePublicKey@o0.ingest.sentry.io/0'
+
+#sentryForFrontend:
+#  options:
+#    dsn: 'https://examplePublicKey@o0.ingest.sentry.io/0'
+
 #   ┌─────────────────────┐
 #───┘ Other configuration └─────────────────────────────────────
 
@@ -164,7 +179,7 @@ id: 'aidx'
 #cloudLogging:
 #  projectId: example-project-id
 #  saKeyPath: /path/to/service-account-key.json
-#  logName: cherrypick
+#  logName: Rosekey
 
 # Override the file URL rendering in ActivityPub (Object Storage file only)
 #apFileBaseUrl: https://example.tld/

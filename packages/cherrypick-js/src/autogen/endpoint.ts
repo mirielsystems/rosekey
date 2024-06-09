@@ -116,6 +116,8 @@ import type {
 	AdminSubscriptionPlansArchiveRequest,
 	AnnouncementsRequest,
 	AnnouncementsResponse,
+	AnnouncementsShowRequest,
+	AnnouncementsShowResponse,
 	AntennasCreateRequest,
 	AntennasCreateResponse,
 	AntennasDeleteRequest,
@@ -698,6 +700,7 @@ export type Endpoints = {
 	'admin/subscription-plans/update': { req: AdminSubscriptionPlansUpdateRequest; res: EmptyResponse };
 	'admin/subscription-plans/archive': { req: AdminSubscriptionPlansArchiveRequest; res: EmptyResponse };
 	'announcements': { req: AnnouncementsRequest; res: AnnouncementsResponse };
+	'announcements/show': { req: AnnouncementsShowRequest; res: AnnouncementsShowResponse };
 	'antennas/create': { req: AntennasCreateRequest; res: AntennasCreateResponse };
 	'antennas/delete': { req: AntennasDeleteRequest; res: EmptyResponse };
 	'antennas/list': { req: EmptyRequest; res: AntennasListResponse };

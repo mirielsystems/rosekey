@@ -13,7 +13,7 @@ updates:
 
 # Add only the root, not each workspace item
 # https://github.com/dependabot/dependabot-core/issues/4993#issuecomment-1289133027
-- package-ecosystem: pnpm
+- package-ecosystem: npm
   directory: "/"
   schedule:
     interval: daily
