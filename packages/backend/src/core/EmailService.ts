@@ -41,7 +41,7 @@ export class EmailService {
 
 		if (!meta.enableEmail) return;
 
-		const iconUrl = `${this.config.url}/static-assets/mi-white.png`;
+		const iconUrl = `${this.config.url}/static-assets/rosekey.webp`;
 		const emailSettingUrl = `${this.config.url}/settings/email`;
 
 		const enableAuth = meta.smtpUser != null && meta.smtpUser !== '';
@@ -59,7 +59,6 @@ export class EmailService {
 		} as any);
 
 		try {
-			// TODO: htmlサニタイズ
 			const info = await transporter.sendMail({
 				from: meta.email!,
 				to: to,
@@ -72,77 +71,70 @@ export class EmailService {
 		<title>${ subject }</title>
 		<style>
 			html {
-				background: #eee;
+				background: #f9f9f9;
 			}
-
 			body {
-				padding: 16px;
 				margin: 0;
-				font-family: sans-serif;
-				font-size: 14px;
+				padding: 0;
+				font-family: Arial, sans-serif;
+				background-color: #f9f9f9;
 			}
-
-			a {
-				text-decoration: none;
-				color: #ffbcdc;
-			}
-			a:hover {
-				text-decoration: underline;
-			}
-
-			main {
-				max-width: 500px;
+			.container {
+				max-width: 600px;
 				margin: 0 auto;
-				background: #fff;
+				background: #ffffff;
+				box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+			}
+			.header {
+				background: #ffbcdc;
+				padding: 20px;
+				text-align: center;
+			}
+			.header img {
+				max-width: 150px;
+				height: auto;
+			}
+			.content {
+				padding: 20px;
+				text-align: center;
+			}
+			.content h1 {
+				color: #333;
+				font-size: 24px;
+				margin-bottom: 20px;
+			}
+			.content p {
 				color: #555;
+				font-size: 16px;
+				line-height: 1.5;
 			}
-				main > header {
-					padding: 32px;
-					background: #ffbcdc;
-				}
-					main > header > img {
-						max-width: 128px;
-						max-height: 28px;
-						vertical-align: bottom;
-					}
-				main > article {
-					padding: 32px;
-				}
-					main > article > h1 {
-						margin: 0 0 1em 0;
-					}
-				main > footer {
-					padding: 32px;
-					border-top: solid 1px #eee;
-				}
-
-			nav {
-				box-sizing: border-box;
-				max-width: 500px;
-				margin: 16px auto 0 auto;
-				padding: 0 32px;
+			.footer {
+				background: #f1f1f1;
+				padding: 10px;
+				text-align: center;
+				font-size: 14px;
+				color: #777;
 			}
-				nav > a {
-					color: #888;
-				}
+			.footer a {
+				color: #ffbcdc;
+				text-decoration: none;
+			}
 		</style>
 	</head>
 	<body>
-		<main>
-			<header>
-				<img src="${ meta.logoImageUrl ?? meta.iconUrl ?? iconUrl }"/>
-			</header>
-			<article>
+		<div class="container">
+			<div class="header">
+				<img src="${ iconUrl }" alt="Logo">
+			</div>
+			<div class="content">
 				<h1>${ subject }</h1>
 				<div>${ html }</div>
-			</article>
-			<footer>
-				<a href="${ emailSettingUrl }">${ 'Email setting' }</a>
-			</footer>
-		</main>
-		<nav>
-			<a href="${ this.config.url }">${ this.config.host }</a>
-		</nav>
+			</div>
+			<div class="footer">
+				<p>Powered by <a href="${ this.config.url }">Rosekey</a></p>
+				<p><a href="${ emailSettingUrl }">Email setting</a></p>
+			</div>
+		</div>
 	</body>
 </html>`,
 			});
@@ -188,9 +180,9 @@ export class EmailService {
 					email: emailAddress,
 					validateRegex: true,
 					validateMx: true,
-					validateTypo: false, // TLDを見ているみたいだけどclubとか弾かれるので
-					validateDisposable: true, // 捨てアドかどうかチェック
-					validateSMTP: false, // 日本だと25ポートが殆どのプロバイダーで塞がれていてタイムアウトになるので
+					validateTypo: false,
+					validateDisposable: true,
+					validateSMTP: false,
 				});
 			}
 		}
@@ -258,7 +250,6 @@ export class EmailService {
 			related_domains: string[];
 		}>;
 
-		/* api error: when there is only one `message` attribute in the returned result */
 		if (Object.keys(json).length === 1 && Reflect.has(json, 'message')) {
 			return {
 				valid: false,
