@@ -62,7 +62,7 @@
 		"tar": "6.2.1",
 		"terser": "5.30.3",
 		"typescript": "5.4.5",
-		"esbuild": "0.20.2",
+		"esbuild": "0.21.4",
 		"glob": "10.3.12"
 	},
 	"devDependencies": {
