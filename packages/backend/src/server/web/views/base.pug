@@ -6,16 +6,14 @@ block loadClientEntry
 doctype html
 
 //
-        	____________________________________________________
-            ____
-            /    )                        /
-        ---/___ /-----__----__-----__----/-__-----__--------
-          /    |    /   )  (_ `  /___)  /(      /___)  /   /
-        _/_____|___(___/__(__)__(___ __/___\___(___ __(___/_
-                                                         /
-                                                     (_ /
-
-		Thank you for using Rosekey!
+	-
+		_________ .__                                __________.__        __
+		\_   ___ \|  |__   __________________ ___.__.\______   \__| ____ |  | __
+		/    \  \/|  |  \_/ __ \_  __ \_  __ <   |  | |     ___/  |/ ___\|  |/ /
+		\     \___|   Y  \  ___/|  | \/|  | \/\___  | |    |   |  \  \___|    <
+		\______  /___|  /\___  >__|   |__|   / ____| |____|   |__|\___  >__|_ \
+			\/     \/     \/              \/                       \/     \/
+		Thank you for using CherryPick!
 		If you are reading this message... how about joining the development?
 		https://code.rosekey.dev/miriel/rosekey
 
@@ -23,17 +21,17 @@ html
 
 	head
 		meta(charset='utf-8')
-		meta(name='application-name' content='Rosekey')
+		meta(name='application-name' content='CherryPick')
 		meta(name='referrer' content='origin')
 		meta(name='theme-color' content= themeColor || '#ffbcdc')
 		meta(name='theme-color-orig' content= themeColor || '#ffbcdc')
-		meta(property='og:site_name' content= instanceName || 'Rosekey')
+		meta(property='og:site_name' content= instanceName || 'CherryPick')
 		meta(property='instance_url' content= instanceUrl)
 		meta(name='viewport' content='width=device-width, initial-scale=1')
 		link(rel='icon' href= icon || '/favicon.ico')
 		link(rel='apple-touch-icon' href= appleTouchIcon || '/apple-touch-icon.png')
 		link(rel='manifest' href='/manifest.json')
-		link(rel='search' type='application/opensearchdescription+xml' title=(title || "Rosekey") href=`${url}/opensearch.xml`)
+		link(rel='search' type='application/opensearchdescription+xml' title=(title || "CherryPick") href=`${url}/opensearch.xml`)
 		link(rel='prefetch' href=serverErrorImageUrl)
 		link(rel='prefetch' href=infoImageUrl)
 		link(rel='prefetch' href=notFoundImageUrl)
@@ -50,7 +48,7 @@ html
 
 		title
 			block title
-				= title || 'Rosekey'
+				= title || 'CherryPick'
 
 		if noindex
 			meta(name='robots' content='noindex')
@@ -61,7 +59,7 @@ html
 		block meta
 
 		block og
-			meta(property='og:title'       content= title || 'Rosekey')
+			meta(property='og:title'       content= title || 'CherryPick')
 			meta(property='og:description' content= desc || '✨🌎✨ A interplanetary communication platform ✨🚀✨')
 			meta(property='og:image'       content= img)
 			meta(property='twitter:card'   content='summary')
