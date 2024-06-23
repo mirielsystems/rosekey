@@ -21,6 +21,21 @@
 - Cherry-Picked: Cherry-Picked from some project.
 - LTS: Official stable version - future releases may not be available for a long time.
 
+## R6.0729.LTS (unreleased)
+
+### Note (Important Information)
+- 今回のリリースはLTS版です。
+
+### General
+-
+
+### Client(Frontend)
+- PugをRosekey仕様にした。
+
+### Server(Backend)
+- Emailのstyleを変更
+
+
 ## R6.0609.LTS
 
 ### Note (Important Information)
