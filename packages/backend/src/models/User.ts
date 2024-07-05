@@ -176,7 +176,7 @@ export class MiUser {
 		default: true,
 		comment: 'Whether the User\'s notes get indexed.',
 	})
-	public isIndexable: boolean;
+	public noindex: boolean;
 
 	@Column('boolean', {
 		default: false,

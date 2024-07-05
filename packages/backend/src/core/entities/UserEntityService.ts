@@ -541,7 +541,7 @@ export class UserEntityService implements OnModuleInit {
 			}))) : [],
 			isBot: user.isBot ?? false,
 			isCat: user.isCat ?? false,
-			isIndexable: user.isIndexable,
+			noindex: user.noindex,
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
 			createdAt: this.idService.parse(user.id).date.toISOString(),

@@ -3970,7 +3970,7 @@ export type components = {
       isBot?: boolean;
       isCat?: boolean;
       speakAsCat?: boolean;
-      isIndexable?: boolean;
+      noindex?: boolean;
       instance?: {
         name: string | null;
         softwareName: string | null;
@@ -4007,7 +4007,7 @@ export type components = {
       /** Format: url */
       bannerUrl: string | null;
       bannerBlurhash: string | null;
-      isIndexable: boolean;
+      noindex: boolean;
       isLocked: boolean;
       isSilenced: boolean;
       /** @example false */

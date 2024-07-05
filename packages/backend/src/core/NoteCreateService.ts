@@ -204,7 +204,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		host: MiUser['host'];
 		isBot: MiUser['isBot'];
 		isCat: MiUser['isCat'];
-		isIndexable: MiUser['isIndexable'];
+		noindex: MiUser['noindex'];
 	}, data: Option, silent = false): Promise<MiNote> {
 		// チャンネル外にリプライしたら対象のスコープに合わせる
 		// (クライアントサイドでやっても良い処理だと思うけどとりあえずサーバーサイドで)
@@ -409,7 +409,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		username: MiUser['username'];
 		host: MiUser['host'];
 		isBot: MiUser['isBot'];
-		isIndexable: MiUser['isIndexable'];
+		noindex: MiUser['noindex'];
 	}, data: Option, silent = false): Promise<MiNote> {
 		// チャンネル外にリプライしたら対象のスコープに合わせる
 		// (クライアントサイドでやっても良い処理だと思うけどとりあえずサーバーサイドで)
@@ -686,7 +686,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		username: MiUser['username'];
 		host: MiUser['host'];
 		isBot: MiUser['isBot'];
-		isIndexable: MiUser['isIndexable'];
+		noindex: MiUser['noindex'];
 	}, data: Option, silent: boolean, tags: string[], mentionedUsers: MinimumUser[]) {
 		const meta = await this.metaService.fetch();
 
@@ -906,7 +906,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// Register to search database
-		if (user.isIndexable) this.index(note);
+		if (user.noindex) this.index(note);
 	}
 
 	@bindThis
@@ -925,7 +925,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		username: MiUser['username'];
 		host: MiUser['host'];
 		isBot: MiUser['isBot'];
-		isIndexable: MiUser['isIndexable'];
+		noindex: MiUser['noindex'];
 	}, data: Option, silent: boolean, tags: string[], mentionedUsers: MinimumUser[]) {
 		const meta = await this.metaService.fetch();
 
@@ -1023,7 +1023,7 @@ export class NoteCreateService implements OnApplicationShutdown {
 		}
 
 		// Register to search database
-		if (user.isIndexable) this.index(note);
+		if (user.noindex) this.index(note);
 	}
 
 	@bindThis
