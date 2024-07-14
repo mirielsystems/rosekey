@@ -259,13 +259,12 @@ function onMessage(message) {
 }
 	
 function onIndicatorClick() {
-    // インジケーターを非表示にする
-    showIndicator.value = false;
-
-    // スクロール位置を下に移動
-    nextTick(() => {
-        thisScrollToBottom();
-    });
+	showIndicator.value = false;
+	
+	// ボトムにスクロールする
+	nextTick(() => {
+		thisScrollToBottom();
+	});
 }
 	
 function thisScrollToBottom() {
