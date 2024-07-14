@@ -10,6 +10,15 @@ import type {
 	AdminAbuseReportResolverUpdateRequest,
 	AdminAbuseUserReportsRequest,
 	AdminAbuseUserReportsResponse,
+	AdminAbuseReportNotificationRecipientListRequest,
+	AdminAbuseReportNotificationRecipientListResponse,
+	AdminAbuseReportNotificationRecipientShowRequest,
+	AdminAbuseReportNotificationRecipientShowResponse,
+	AdminAbuseReportNotificationRecipientCreateRequest,
+	AdminAbuseReportNotificationRecipientCreateResponse,
+	AdminAbuseReportNotificationRecipientUpdateRequest,
+	AdminAbuseReportNotificationRecipientUpdateResponse,
+	AdminAbuseReportNotificationRecipientDeleteRequest,
 	AdminAccountsCreateRequest,
 	AdminAccountsCreateResponse,
 	AdminAccountsDeleteRequest,
@@ -114,6 +123,15 @@ import type {
 	AdminSubscriptionPlansCreateResponse,
 	AdminSubscriptionPlansUpdateRequest,
 	AdminSubscriptionPlansArchiveRequest,
+	AdminSystemWebhookCreateRequest,
+	AdminSystemWebhookCreateResponse,
+	AdminSystemWebhookDeleteRequest,
+	AdminSystemWebhookListRequest,
+	AdminSystemWebhookListResponse,
+	AdminSystemWebhookShowRequest,
+	AdminSystemWebhookShowResponse,
+	AdminSystemWebhookUpdateRequest,
+	AdminSystemWebhookUpdateResponse,
 	AnnouncementsRequest,
 	AnnouncementsResponse,
 	AnnouncementsShowRequest,
@@ -619,6 +637,11 @@ export type Endpoints = {
 	'admin/abuse-report-resolver/delete': { req: AdminAbuseReportResolverDeleteRequest; res: EmptyResponse };
 	'admin/abuse-report-resolver/update': { req: AdminAbuseReportResolverUpdateRequest; res: EmptyResponse };
 	'admin/abuse-user-reports': { req: AdminAbuseUserReportsRequest; res: AdminAbuseUserReportsResponse };
+	'admin/abuse-report/notification-recipient/list': { req: AdminAbuseReportNotificationRecipientListRequest; res: AdminAbuseReportNotificationRecipientListResponse };
+	'admin/abuse-report/notification-recipient/show': { req: AdminAbuseReportNotificationRecipientShowRequest; res: AdminAbuseReportNotificationRecipientShowResponse };
+	'admin/abuse-report/notification-recipient/create': { req: AdminAbuseReportNotificationRecipientCreateRequest; res: AdminAbuseReportNotificationRecipientCreateResponse };
+	'admin/abuse-report/notification-recipient/update': { req: AdminAbuseReportNotificationRecipientUpdateRequest; res: AdminAbuseReportNotificationRecipientUpdateResponse };
+	'admin/abuse-report/notification-recipient/delete': { req: AdminAbuseReportNotificationRecipientDeleteRequest; res: EmptyResponse };
 	'admin/accounts/create': { req: AdminAccountsCreateRequest; res: AdminAccountsCreateResponse };
 	'admin/accounts/delete': { req: AdminAccountsDeleteRequest; res: EmptyResponse };
 	'admin/accounts/find-by-email': { req: AdminAccountsFindByEmailRequest; res: AdminAccountsFindByEmailResponse };
@@ -699,6 +722,11 @@ export type Endpoints = {
 	'admin/subscription-plans/create': { req: AdminSubscriptionPlansCreateRequest; res: AdminSubscriptionPlansCreateResponse };
 	'admin/subscription-plans/update': { req: AdminSubscriptionPlansUpdateRequest; res: EmptyResponse };
 	'admin/subscription-plans/archive': { req: AdminSubscriptionPlansArchiveRequest; res: EmptyResponse };
+	'admin/system-webhook/create': { req: AdminSystemWebhookCreateRequest; res: AdminSystemWebhookCreateResponse };
+	'admin/system-webhook/delete': { req: AdminSystemWebhookDeleteRequest; res: EmptyResponse };
+	'admin/system-webhook/list': { req: AdminSystemWebhookListRequest; res: AdminSystemWebhookListResponse };
+	'admin/system-webhook/show': { req: AdminSystemWebhookShowRequest; res: AdminSystemWebhookShowResponse };
+	'admin/system-webhook/update': { req: AdminSystemWebhookUpdateRequest; res: AdminSystemWebhookUpdateResponse };
 	'announcements': { req: AnnouncementsRequest; res: AnnouncementsResponse };
 	'announcements/show': { req: AnnouncementsShowRequest; res: AnnouncementsShowResponse };
 	'antennas/create': { req: AntennasCreateRequest; res: AntennasCreateResponse };

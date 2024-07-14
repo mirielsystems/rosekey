@@ -72,7 +72,7 @@ export class ServerService implements OnApplicationShutdown {
 		private oauth2ProviderService: OAuth2ProviderService,
 		private stripeWebhookServerService: StripeWebhookServerService,
 	) {
-		this.logger = this.loggerService.getLogger('server', 'gray', false);
+		this.logger = this.loggerService.getLogger('server', 'gray');
 	}
 
 	@bindThis

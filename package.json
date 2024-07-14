@@ -1,8 +1,8 @@
 {
 	"name": "rosekey",
-	"version": "R6.0729.Al1",
+	"version": "R6.0729.Al2",
 	"basedMisskeyVersion": "2024.5.0",
-	"basedCherryPickVersion": "4.9.0-beta.1",
+	"basedCherryPickVersion": "4.9.0-beta.2",
 	"codename": "y/m",
 	"repository": {
 		"type": "git",

@@ -143,6 +143,24 @@ export type ModerationLog = {
 } | {
 	type: 'deleteGalleryPost';
 	info: ModerationLogPayloads['deleteGalleryPost'];
+} | {
+	type: 'createSystemWebhook';
+	info: ModerationLogPayloads['createSystemWebhook'];
+} | {
+	type: 'updateSystemWebhook';
+	info: ModerationLogPayloads['updateSystemWebhook'];
+} | {
+	type: 'deleteSystemWebhook';
+	info: ModerationLogPayloads['deleteSystemWebhook'];
+} | {
+	type: 'createAbuseReportNotificationRecipient';
+	info: ModerationLogPayloads['createAbuseReportNotificationRecipient'];
+} | {
+	type: 'updateAbuseReportNotificationRecipient';
+	info: ModerationLogPayloads['updateAbuseReportNotificationRecipient'];
+} | {
+	type: 'deleteAbuseReportNotificationRecipient';
+	info: ModerationLogPayloads['deleteAbuseReportNotificationRecipient'];
 });
 
 export type ServerStats = {
