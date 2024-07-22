@@ -76,17 +76,30 @@ export class MastodonApiServerService {
 
 		fastify.register(multer.contentParser);
 
+		interface Poll {
+			choices: string[]; // Pollの選択肢
+			multiple?: boolean; // 複数選択の可否
+			expiresAt?: number; // 有効期限 (秒数)
+			expiredAfter?: number; // 経過後の無効期限 (秒数)
+			expires_in?: number;
+		}
+		
 		interface EditRequestBody {
 			status: string;
 			media_ids?: string[];
-			poll?: {
-				options: string[];
-				multiple?: boolean;
-				expires_in?: number;
-			};
+			poll?: Poll;
 			sensitive?: boolean;
 			spoiler_text?: string;
 			visibility?: string;
+		}
+		
+		interface RequestBody {
+			noteId: string;
+			text: string;
+			cw?: string;
+			disableRightClick: boolean;
+			fileIds?: string[];
+			poll?: Poll;
 		}
 
 		fastify.get('/v1/custom_emojis', async (_request, reply) => {
@@ -115,9 +128,14 @@ export class MastodonApiServerService {
 		});
 		
 		fastify.post<{ Body: EditRequestBody; Params: { id: string } }>('/v1/statuses/:id', async (_request, reply) => {
-			const { id } = _request.params;
+			const { id } = _request.params; // URLパラメータからIDを取得
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
+	
+			if (!id) {
+				// IDが存在しない場合、400 Bad Requestを返します
+				return reply.code(400).send({ error: 'Note ID is required' });
+			}
 	
 			const {
 				status,
@@ -128,20 +146,26 @@ export class MastodonApiServerService {
 				visibility,
 			} = _request.body;
 	
-			const requestBody = {
-				noteId: id,
+			// MisskeyのAPI仕様に合わせてリクエストボディを構成します
+			const requestBody: RequestBody = {
+				noteId: id, // 必須のnoteIdを設定
 				text: status,
-				fileIds: media_ids,
-				mediaIds: media_ids,
-				poll: poll ? {
-					choices: poll.options,
-					multiple: poll.multiple,
-					expiresAt: poll.expires_in,
-					expiredAfter: poll.expires_in,
-				} : undefined,
 				cw: spoiler_text,
 				disableRightClick: false,
 			};
+	
+			if (media_ids && media_ids.length > 0) {
+				requestBody.fileIds = media_ids; // メディアIDがある場合のみ追加
+			}
+	
+			if (poll) {
+				requestBody.poll = {
+					choices: poll.choices, // poll.optionsをpoll.choicesに修正
+					multiple: poll.multiple,
+					expiresAt: poll.expires_in, // poll.expires_inをpoll.expiresAtに修正
+					expiredAfter: poll.expires_in,
+				};
+			}
 	
 			try {
 				const response = await axios.post(`${BASE_URL}/api/notes/update`, requestBody, {
