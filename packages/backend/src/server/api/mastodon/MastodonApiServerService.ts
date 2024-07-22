@@ -462,20 +462,6 @@ export class MastodonApiServerService {
 			}
 		});
 
-		fastify.get<{ Params: { id: string } }>('/v1/accounts/:id/statuses', async (_request, reply) => {
-			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
-			const accessTokens = _request.headers.authorization;
-			const client = getClient(BASE_URL, accessTokens);
-			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
-				reply.send(await account.getStatuses());
-			} catch (e: any) {
-				/* console.error(e);
-				console.error(e.response.data); */
-				reply.code(401).send(e.response.data);
-			}
-		});
-
 		fastify.get<{ Params: { id: string } }>('/v1/accounts/:id/featured_tags', async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
