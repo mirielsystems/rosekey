@@ -1,19 +1,20 @@
+import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
-import querystring from 'querystring';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
+import axios from 'axios';
 import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveService } from '@/core/DriveService.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -75,6 +76,19 @@ export class MastodonApiServerService {
 
 		fastify.register(multer.contentParser);
 
+		interface EditRequestBody {
+			status: string;
+			media_ids?: string[];
+			poll?: {
+				options: string[];
+				multiple?: boolean;
+				expires_in?: number;
+			};
+			sensitive?: boolean;
+			spoiler_text?: string;
+			visibility?: string;
+		}
+
 		fastify.get('/v1/custom_emojis', async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
@@ -85,6 +99,66 @@ export class MastodonApiServerService {
 			} catch (e: any) {
 				console.error(e);
 				reply.code(401).send(e.response.data);
+			}
+		});
+
+		fastify.get<{ Params: { id: string } }>('/v1/accounts/:id/statuses', async (_request, reply) => {
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+			const client = getClient(BASE_URL, accessTokens);
+			try {
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
+				reply.send(await account.getStatuses());
+			} catch (e: any) {
+				reply.code(401).send(e.response.data);
+			}
+		});
+		
+		fastify.post<{ Body: EditRequestBody; Params: { id: string } }>('/v1/statuses/:id', async (_request, reply) => {
+			const { id } = _request.params;
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+	
+			const {
+				status,
+				media_ids,
+				poll,
+				sensitive,
+				spoiler_text,
+				visibility,
+			} = _request.body;
+	
+			const requestBody = {
+				noteId: id,
+				text: status,
+				fileIds: media_ids,
+				mediaIds: media_ids,
+				poll: poll ? {
+					choices: poll.options,
+					multiple: poll.multiple,
+					expiresAt: poll.expires_in,
+					expiredAfter: poll.expires_in,
+				} : undefined,
+				cw: spoiler_text,
+				disableRightClick: false,
+			};
+	
+			try {
+				const response = await axios.post(`${BASE_URL}/api/notes/update`, requestBody, {
+					headers: {
+						'Authorization': accessTokens,
+						'Content-Type': 'application/json',
+					},
+				});
+	
+				reply.send(response.data);
+			} catch (e: any) {
+				console.error(e);
+				if (e.response && e.response.data) {
+					reply.code(401).send(e.response.data);
+				} else {
+					reply.code(500).send({ error: 'An unexpected error occurred' });
+				}
 			}
 		});
     
