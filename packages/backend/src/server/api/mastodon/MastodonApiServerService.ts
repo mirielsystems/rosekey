@@ -77,11 +77,10 @@ export class MastodonApiServerService {
 		fastify.register(multer.contentParser);
 
 		interface Poll {
-			choices: string[]; // Pollの選択肢
-			multiple?: boolean; // 複数選択の可否
-			expiresAt?: number; // 有効期限 (秒数)
-			expiredAfter?: number; // 経過後の無効期限 (秒数)
-			expires_in?: number;
+			choices: string[];
+			multiple?: boolean;
+			expiresAt?: number;
+			expiredAfter?: number;
 		}
 		
 		interface EditRequestBody {
@@ -89,14 +88,14 @@ export class MastodonApiServerService {
 			media_ids?: string[];
 			poll?: Poll;
 			sensitive?: boolean;
-			spoiler_text?: string;
+			spoiler_text?: string; // 必須でなくなる
 			visibility?: string;
 		}
 		
 		interface RequestBody {
 			noteId: string;
 			text: string;
-			cw?: string;
+			cw: string | null; // CW は必須だが、null も許容
 			disableRightClick: boolean;
 			fileIds?: string[];
 			poll?: Poll;
@@ -146,10 +145,11 @@ export class MastodonApiServerService {
 				visibility,
 			} = _request.body;
 	
+			// EditRequestBody から RequestBody への変換
 			const requestBody: RequestBody = {
 				noteId: id, // 必須のnoteIdを設定
 				text: status,
-				cw: spoiler_text,
+				cw: spoiler_text ?? null, // spoiler_text が存在しない場合は null を設定
 				disableRightClick: false, // デフォルト値を設定
 			};
 	
@@ -187,7 +187,7 @@ export class MastodonApiServerService {
 			}
 		});
 	
-		// PUT メソッドのハンドラーも追加
+		// PUT メソッドのハンドラー
 		fastify.put<{ Body: EditRequestBody; Params: { id: string } }>('/v1/statuses/:id', async (_request, reply) => {
 			const { id } = _request.params; // URLパラメータからIDを取得
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
@@ -211,7 +211,7 @@ export class MastodonApiServerService {
 			const requestBody: RequestBody = {
 				noteId: id, // 必須のnoteIdを設定
 				text: status,
-				cw: spoiler_text,
+				cw: spoiler_text ?? null, // spoiler_text が存在しない場合は null を設定
 				disableRightClick: false, // デフォルト値を設定
 			};
 	
@@ -229,7 +229,7 @@ export class MastodonApiServerService {
 			}
 	
 			try {
-				// Mastodon API に PUT リクエストを送信
+				// Misskey API に POST リクエストを送信
 				const response = await axios.post(`${BASE_URL}/api/notes/update`, requestBody, {
 					headers: {
 						'Authorization': accessTokens,
