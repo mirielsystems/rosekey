@@ -27,13 +27,15 @@
 - 今回のリリースはLTS版です。
 
 ### General
--
+- CherryPick 4.9.0-beta.2 に追従(Misskey 2024.5.0)
+- Mastodon API上で、ノートの編集ができるようになりました。
 
 ### Client(Frontend)
 - PugをRosekey仕様にした。
 
 ### Server(Backend)
 - Emailのstyleを変更
+- IsIndexableを廃止し、noindexに変更
 
 
 ## R6.0609.LTS
