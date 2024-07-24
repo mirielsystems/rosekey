@@ -190,6 +190,16 @@ export class MiUser {
 	})
 	public isCat: boolean;
 
+	@Column('varchar', {
+		length: 16, nullable: true,
+	})
+	public outerEarColor: string | null;
+
+	@Column('varchar', {
+		length: 16, nullable: false,
+	})
+	public innerEarColor: string | 'df548f';
+
 	@Column('boolean', {
 		default: true,
 		comment: 'Whether the User speaks in nya.',

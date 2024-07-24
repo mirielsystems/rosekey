@@ -518,7 +518,7 @@ export class UserEntityService implements OnModuleInit {
 				createdAt: this.idService.parse(announcement.id).date.toISOString(),
 				...announcement,
 			})) : null;
-        
+
 		const policies = isDetailed ? await this.roleService.getUserPolicies(user.id) : null;
 		const notificationsInfo = isMe && isDetailed ? await this.getNotificationsInfo(user.id) : null;
 
@@ -541,6 +541,8 @@ export class UserEntityService implements OnModuleInit {
 			}))) : [],
 			isBot: user.isBot ?? false,
 			isCat: user.isCat ?? false,
+			outerEarColor: user.outerEarColor ?? '',
+			innerEarColor: user.innerEarColor ?? 'df548f',
 			noindex: user.noindex,
 			isSilenced: this.roleService.getUserPolicies(user.id).then(r => !r.canPublicNote),
 			speakAsCat: user.speakAsCat ?? false,
