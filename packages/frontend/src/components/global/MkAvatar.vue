@@ -302,7 +302,9 @@ onUnmounted(() => {
 			display: inline-block;
 			height: 50%;
 			width: 50%;
-			background: currentColor;
+			background: v-bind(
+				'(user.outerEarColor === "" || user.outerEarColor === null) ? "currentColor" : "#" + user.outerEarColor'
+			);
 
 			&::after {
 				contain: strict;
@@ -311,7 +313,9 @@ onUnmounted(() => {
 				width: 60%;
 				height: 60%;
 				margin: 20%;
-				background: #df548f;
+				background: v-bind(
+					'(user.innerEarColor === "" || user.innerEarColor === null) ? "#df548f" : "#" + user.innerEarColor'
+				);
 			}
 
 			> .layer {

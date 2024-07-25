@@ -112,6 +112,16 @@ SPDX-License-Identifier: AGPL-3.0-only
 		<div class="_gaps_m">
 			<MkSwitch v-model="profile.isCat">{{ i18n.ts.flagAsCat }}<template #caption>{{ i18n.ts.flagAsCatDescription }}</template></MkSwitch>
 			<MkSwitch v-if="profile.isCat" v-model="profile.speakAsCat">{{ i18n.ts.flagSpeakAsCat }}<template #caption>{{ i18n.ts.flagSpeakAsCatDescription }}</template></MkSwitch>
+			<MkInput v-model="profile.innerEarColor" :max="16" manualSave>
+				<template #label>{{ i18n.ts.innerEarColor }}</template>
+				<template #prefix>#</template>
+				<template #caption>{{ i18n.ts.innerEarColorDescription }}</template>
+			</MkInput>
+			<MkInput v-model="profile.outerEarColor" :max="16" manualSave>
+				<template #label>{{ i18n.ts.outerEarColor }}</template>
+				<template #prefix>#</template>
+				<template #caption>{{ i18n.ts.outerEarColorDescription }}</template>
+			</MkInput>
 			<MkSwitch v-model="profile.isBot">{{ i18n.ts.flagAsBot }}<template #caption>{{ i18n.ts.flagAsBotDescription }}</template></MkSwitch>
 		</div>
 	</MkFolder>
@@ -166,6 +176,8 @@ const profile = reactive({
 	lang: $i.lang,
 	isBot: $i.isBot ?? false,
 	isCat: $i.isCat ?? false,
+	innerEarColor: $i.innerEarColor,
+	outerEarColor: $i.outerEarColor ?? 'df548f',
 	speakAsCat: $i.speakAsCat ?? false,
 });
 
