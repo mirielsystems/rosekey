@@ -4069,6 +4069,8 @@ export type components = {
         }[];
       isBot?: boolean;
       isCat?: boolean;
+			outerEarColor?: string;
+			innerEarColor: string;
       speakAsCat?: boolean;
       noindex?: boolean;
       instance?: {
@@ -20750,6 +20752,8 @@ export type operations = {
           preventAiLearning?: boolean;
           isBot?: boolean;
           isCat?: boolean;
+					outerEarColor?: string;
+					innerEarColor: string;
           injectFeaturedNote?: boolean;
           receiveAnnouncementEmail?: boolean;
           alwaysMarkNsfw?: boolean;
