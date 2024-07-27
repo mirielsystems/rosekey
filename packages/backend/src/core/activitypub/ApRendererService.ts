@@ -526,6 +526,8 @@ export class ApRendererService {
 			discoverable: user.isExplorable,
 			publicKey: this.renderKey(user, keypair, '#main-key'),
 			isCat: user.isCat,
+			outerEarColor: user.outerEarColor,
+			innerEarColor: user.innerEarColor,
 			noindex: user.noindex,
 			speakAsCat: user.speakAsCat,
 			attachment: attachment.length ? attachment : undefined,

@@ -32,6 +32,8 @@
 
 ### Client(Frontend)
 - PugをRosekey仕様にした。
+- 猫耳の色を変更/連合できるようになりました
+  - 連合するには Rosekey互換サーバーである必要があります。
 
 ### Server(Backend)
 - Emailのstyleを変更
