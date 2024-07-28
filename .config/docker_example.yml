@@ -6,6 +6,7 @@
 #───┘ URL └─────────────────────────────────────────────────────
 
 # Final accessible URL seen by a user.
+# You can set url from an environment variable instead.
 url: https://example.tld/
 
 # ONCE YOU HAVE STARTED THE INSTANCE, DO NOT CHANGE THE
@@ -38,11 +39,13 @@ db:
   port: 5432
 
   # Database name
-  db: Rosekey
+  # You can set db from an environment variable instead.
+  db: rosekey
 
   # Auth
-  user: example-Rosekey-user
-  pass: example-Rosekey-pass
+  # You can set user and pass from environment variables instead.
+  user: example-rosekey-user
+  pass: example-rosekey-pass
 
   # Whether disable Caching queries
   #disableCache: true

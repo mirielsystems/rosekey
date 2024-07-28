@@ -127,7 +127,7 @@ import { $i } from '@/account.js';
 import { isSupportShare } from '@/scripts/navigator.js';
 import { instance } from '@/instance.js';
 import { getStaticImageUrl } from '@/scripts/media-proxy.js';
-import copyToClipboard from '@/scripts/copy-to-clipboard.js';
+import { copyToClipboard } from '@/scripts/copy-to-clipboard.js';
 import { useRouter } from '@/router/supplier.js';
 import { MenuItem } from '@/types/menu';
 
@@ -259,10 +259,14 @@ function reportAbuse() {
 
 	const pageUrl = `${url}/@${props.username}/pages/${props.pageName}`;
 
-	os.popup(defineAsyncComponent(() => import('@/components/MkAbuseReportWindow.vue')), {
-		user: page.value.user,
-		initialComment: `Page: ${pageUrl}\n-----\n`,
-	}, {}, 'closed');
+	os.popup(
+		defineAsyncComponent(() => import('@/components/MkAbuseReportWindow.vue')), 
+		{
+			user: page.value.user,
+			initialComment: `Page: ${pageUrl}\n-----\n`,
+		},
+		{}
+	);
 }
 
 function showMenu(ev: MouseEvent) {
@@ -359,6 +363,7 @@ definePageMetadata(() => ({
 		background-color: var(--accentedBg);
 		color: var(--accent);
 		text-decoration: none;
+		outline: none;
 	}
 }
 

@@ -154,5 +154,5 @@ stream.on('_disconnected_', () => {
 ---
 
 <div align="center">
-	<a href="https://code.rosekey.dev/miriel/rosekey/blob/develop/CONTRIBUTING.md"><img src="https://raw.githubusercontent.com/misskey-dev/assets/main/i-want-you.png" width="300"></a>
+	<a href="https://github.com/mirielsystems/rosekey/blob/develop/CONTRIBUTING.md"><img src="https://raw.githubusercontent.com/misskey-dev/assets/main/i-want-you.png" width="300"></a>
 </div>

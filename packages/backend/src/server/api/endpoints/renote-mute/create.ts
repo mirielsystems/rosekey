@@ -13,6 +13,8 @@ import { RoleService } from '@/core/RoleService.js';
 import { DI } from '@/di-symbols.js';
 import { GetterService } from '@/server/api/GetterService.js';
 import { ApiError } from '../../error.js';
+import { UserRenoteMutingService } from "@/core/UserRenoteMutingService.js";
+import type { RenoteMutingsRepository } from '@/models/_.js';
 
 export const meta = {
 	tags: ['account'],
@@ -70,7 +72,7 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 
 		private roleService: RoleService,
 		private getterService: GetterService,
-		private idService: IdService,
+		private userRenoteMutingService: UserRenoteMutingService,
 	) {
 		super(meta, paramDef, async (ps, me) => {
 			const muter = me;
@@ -87,25 +89,23 @@ export default class extends Endpoint<typeof meta, typeof paramDef> { // eslint-
 			});
 
 			// Check if already muting
-			const exist = await this.renoteMutingsRepository.findOneBy({
-				muterId: muter.id,
-				muteeId: mutee.id,
+			const exist = await this.renoteMutingsRepository.exists({
+				where: {
+					muterId: muter.id,
+					muteeId: mutee.id,
+				},
 			});
 
 			if ((!await this.roleService.isModerator(me) && me.id) && (await this.roleService.getUserPolicies(me.id)).cannotBlockModerator) {
 				throw new ApiError(meta.errors.cannotRenoteMuteModerator);
 			}
 
-			if (exist != null) {
+			if (exist === true) {
 				throw new ApiError(meta.errors.alreadyMuting);
 			}
 
 			// Create mute
-			await this.renoteMutingsRepository.insert({
-				id: this.idService.gen(),
-				muterId: muter.id,
-				muteeId: mutee.id,
-			} as MiRenoteMuting);
+			await this.userRenoteMutingService.mute(muter, mutee);
 		});
 	}
 }
