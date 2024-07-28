@@ -146,7 +146,7 @@ import { vibrate } from '@/scripts/vibrate.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import detectLanguage from '@/scripts/detect-language.js';
 import number from '@/filters/number.js';
-import { host } from "@/config.js";
+import { host } from '@/config.js';
 
 const props = withDefaults(defineProps<{
   note: Misskey.entities.Note;
@@ -162,6 +162,13 @@ const emit = defineEmits<{
   (ev: 'reaction', emoji: string): void;
   (ev: 'removeReaction', emoji: string): void;
 }>();
+
+const isRenote = (
+	props.note.renote != null &&
+	props.note.text == null &&
+	(Array.isArray(props.note.fileIds) && props.note.fileIds.length === 0) &&
+	props.note.poll == null
+);
 
 const note = ref(deepClone(props.note));
 
@@ -189,6 +196,11 @@ const isLong = shouldCollapsed(props.note, []);
 const isMFM = shouldMfmCollapsed(props.note);
 
 const collapsed = ref(isLong || (isMFM && defaultStore.state.collapseDefault) || (props.note.files && props.note.files.length > 0) || props.note.poll);
+const appearNote = isRenote ? props.note.renote as Misskey.entities.Note : props.note;
+const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
+	type: 'lookup',
+	url: `https://${host}/notes/${appearNote.id}`,
+}));
 
 const collapseLabel = computed(() => {
 	return concat([
