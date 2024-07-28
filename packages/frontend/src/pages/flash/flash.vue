@@ -256,6 +256,7 @@ definePageMetadata(() => ({
 		},
 	} : {},
 }));
+}
 </script>
 
 <style lang="scss" module>
