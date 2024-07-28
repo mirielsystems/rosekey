@@ -33,9 +33,6 @@
 - 猫耳の色を変更/連合できるようになりました
   - 連合するには Rosekey互換サーバーである必要があります。
 
-### Client(Frontend)
-- PugをRosekey仕様にした。
-
 ### Server(Backend)
 - Emailのstyleを変更
 - IsIndexableを廃止し、noindexに変更
