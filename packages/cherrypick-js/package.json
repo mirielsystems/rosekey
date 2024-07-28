@@ -52,7 +52,7 @@
 		"tsd": "0.31.1",
 		"typescript": "5.5.3",
 		"esbuild": "0.22.0",
-		"glob": "10.4.2"
+		"glob": "11.0.0"
 	},
 	"files": [
 		"built"
