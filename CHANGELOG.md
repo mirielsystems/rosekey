@@ -21,19 +21,20 @@
 - Cherry-Picked: Cherry-Picked from some project.
 - LTS: Official stable version - future releases may not be available for a long time.
 
-## R6.0729.LTS (unreleased)
+## R6.0729 (unreleased)
 
-### Note (Important Information)
-- 今回のリリースはLTS版です。
+### Security Fix
+- Module由来の脆弱性を修正
+- この変更は必ず、アップデートしてください。
 
 ### General
-- CherryPick 4.9.0-beta.2 に追従(Misskey 2024.5.0)
+- CherryPick 4.10.0-beta.1 に追従(Misskey 2024.7.0-beta.2)
 - Mastodon API上で、ノートの編集ができるようになりました。
+- 猫耳の色を変更/連合できるようになりました
+  - 連合するには Rosekey互換サーバーである必要があります。
 
 ### Client(Frontend)
 - PugをRosekey仕様にした。
-- 猫耳の色を変更/連合できるようになりました
-  - 連合するには Rosekey互換サーバーである必要があります。
 
 ### Server(Backend)
 - Emailのstyleを変更
