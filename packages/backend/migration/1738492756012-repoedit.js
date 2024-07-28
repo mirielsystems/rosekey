@@ -3,8 +3,8 @@
  * SPDX-License-Identifier: AGPL-3.0-only
  */
 
-export class RepositoryUrlFromSyuiloToMisskeyDev1708266695091 {
-    name = 'RepositoryUrlFromSyuiloToMisskeyDev1708266695091'
+export class repoedit1738492756012 {
+    name = 'repoedit1738492756012'
 
     async up(queryRunner) {
         await queryRunner.query(`UPDATE "meta" SET "repositoryUrl" = 'https://github.com/mirielsystems/rosekey' WHERE "repositoryUrl" = 'https://code.rosekey.dev/miriel/rosekey'`);
