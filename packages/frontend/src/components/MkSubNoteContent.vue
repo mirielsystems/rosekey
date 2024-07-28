@@ -190,12 +190,6 @@ const isMFM = shouldMfmCollapsed(props.note);
 
 const collapsed = ref(isLong || (isMFM && defaultStore.state.collapseDefault) || (props.note.files && props.note.files.length > 0) || props.note.poll);
 
-const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
-	type: 'lookup',
-	url: `https://${host}/notes/${appearNote.value.id}`,
-}));
-
-
 const collapseLabel = computed(() => {
 	return concat([
 		props.note.files && props.note.files.length !== 0 ? [i18n.tsx._cw.files({ count: props.note.files.length })] : [],
