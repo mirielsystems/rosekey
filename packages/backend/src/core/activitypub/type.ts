@@ -187,7 +187,7 @@ export interface IActor extends IObject {
 	};
 	'vcard:bday'?: string;
 	'vcard:Address'?: string;
-	isIndexable?: boolean;
+	noindex?: boolean;
 	listenbrainz?: string;
 	oshi?: string;
 	oshistartdate?: string;

@@ -134,7 +134,7 @@ import { miLocalStorage } from '@/local-storage.js';
 import { instance } from '@/instance.js';
 import { notePage } from '@/filters/note.js';
 import { useTooltip } from '@/scripts/use-tooltip.js';
-import { pleaseLogin } from '@/scripts/please-login.js';
+import { type OpenOnRemoteOptions, pleaseLogin } from '@/scripts/please-login.js';
 import { showMovedDialog } from '@/scripts/show-moved-dialog.js';
 import { getNoteClipMenu, getNoteMenu, getRenoteMenu, getRenoteOnly, getQuoteMenu } from '@/scripts/get-note-menu.js';
 import { deepClone } from '@/scripts/clone.js';
@@ -146,6 +146,7 @@ import { vibrate } from '@/scripts/vibrate.js';
 import { misskeyApi } from '@/scripts/misskey-api.js';
 import detectLanguage from '@/scripts/detect-language.js';
 import number from '@/filters/number.js';
+import { host } from '@/config.js';
 
 const props = withDefaults(defineProps<{
   note: Misskey.entities.Note;
@@ -161,6 +162,13 @@ const emit = defineEmits<{
   (ev: 'reaction', emoji: string): void;
   (ev: 'removeReaction', emoji: string): void;
 }>();
+
+const isRenote = (
+	props.note.renote != null &&
+	props.note.text == null &&
+	(Array.isArray(props.note.fileIds) && props.note.fileIds.length === 0) &&
+	props.note.poll == null
+);
 
 const note = ref(deepClone(props.note));
 
@@ -188,6 +196,11 @@ const isLong = shouldCollapsed(props.note, []);
 const isMFM = shouldMfmCollapsed(props.note);
 
 const collapsed = ref(isLong || (isMFM && defaultStore.state.collapseDefault) || (props.note.files && props.note.files.length > 0) || props.note.poll);
+const appearNote = isRenote ? props.note.renote as Misskey.entities.Note : props.note;
+const pleaseLoginContext = computed<OpenOnRemoteOptions>(() => ({
+	type: 'lookup',
+	url: `https://${host}/notes/${appearNote.id}`,
+}));
 
 const collapseLabel = computed(() => {
 	return concat([
@@ -219,48 +232,45 @@ if (!props.mock) {
 
 		if (users.length < 1) return;
 
-		os.popup(MkUsersTooltip, {
+		const { dispose } = os.popup(MkUsersTooltip, {
 			showing,
 			users,
 			count: props.note.renoteCount,
 			targetElement: renoteButton.value,
-		}, {}, 'closed');
+		}, {
+			closed: () => dispose(),
+		});
 	});
 }
 
-function renote(viaKeyboard = false) {
-	pleaseLogin();
+function renote() {
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	showMovedDialog();
 
 	const { menu } = getRenoteMenu({ note: note.value, renoteButton, mock: props.mock });
-	os.popupMenu(menu, renoteButton.value, {
-		viaKeyboard,
-	});
+	os.popupMenu(menu, renoteButton.value);
 }
 
 async function renoteOnly() {
-	pleaseLogin();
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	showMovedDialog();
 
 	await getRenoteOnly({ note: note.value, renoteButton, mock: props.mock });
 }
 
-function quote(viaKeyboard = false): void {
-	pleaseLogin();
+function quote(): void {
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	if (props.mock) {
 		return;
 	}
 	if (props.note.channel) {
 		if (props.note.channel.allowRenoteToExternal) {
 			const { menu } = getQuoteMenu({ note: note.value, mock: props.mock });
-			os.popupMenu(menu, quoteButton.value, {
-				viaKeyboard,
-			});
+			os.popupMenu(menu, quoteButton.value);
 		} else {
 			os.post({
 				renote: props.note,
 				channel: props.note.channel,
-				animation: !viaKeyboard,
 			}, () => {
 				focus();
 			});
@@ -274,22 +284,21 @@ function quote(viaKeyboard = false): void {
 	}
 }
 
-function reply(viaKeyboard = false): void {
-	pleaseLogin();
+function reply(): void {
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	if (props.mock) {
 		return;
 	}
 	os.post({
 		reply: props.note,
 		channel: props.note.channel,
-		animation: !viaKeyboard,
 	}).then(() => {
 		focus();
 	});
 }
 
-function react(viaKeyboard = false): void {
-	pleaseLogin();
+function react(): void {
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	showMovedDialog();
 	if (props.note.reactionAcceptance === 'likeOnly') {
 		sound.playMisskeySfx('reaction');
@@ -306,7 +315,9 @@ function react(viaKeyboard = false): void {
 			const rect = el.getBoundingClientRect();
 			const x = rect.left + (el.offsetWidth / 2);
 			const y = rect.top + (el.offsetHeight / 2);
-			os.popup(MkRippleEffect, { x, y }, {}, 'end');
+			const { dispose } = os.popup(MkRippleEffect, { x, y }, {
+				end: () => dispose(),
+			});
 		}
 	} else {
 		blur();
@@ -357,7 +368,7 @@ async function toggleReaction(reaction) {
 }
 
 function heartReact(): void {
-	pleaseLogin();
+	pleaseLogin(undefined, pleaseLoginContext.value);
 	showMovedDialog();
 
 	sound.playMisskeySfx('reaction');
@@ -404,18 +415,16 @@ function toggleReact() {
 	}
 }
 
-function showMenu(viaKeyboard = false): void {
+function showMenu(): void {
 	if (props.mock) {
 		return;
 	}
 
 	const { menu, cleanup } = getNoteMenu({ note: note.value, translating, translation, viewTextSource, noNyaize, isDeleted, currentClip: currentClip?.value });
-	os.popupMenu(menu, menuButton.value, {
-		viaKeyboard,
-	}).then(focus).finally(cleanup);
+	os.popupMenu(menu, menuButton.value).then(focus).finally(cleanup);
 }
 
-async function clip() {
+async function clip(): Promise<void> {
 	if (props.mock) {
 		return;
 	}

@@ -5,9 +5,89 @@
 
 import { Module } from '@nestjs/common';
 import { DI } from '@/di-symbols.js';
-import { MiRepository, MiAbuseReportResolver, MiAbuseUserReport, MiAccessToken, MiAd, MiAnnouncement, MiAnnouncementRead, MiAntenna, MiApp, MiAuthSession, MiAvatarDecoration, MiBlocking, MiChannel, MiChannelFavorite, MiChannelFollowing, MiClip, MiClipFavorite, MiClipNote, MiDriveFile, MiDriveFolder, MiEmoji, MiEvent, MiFlash, MiFlashLike, MiFollowRequest, MiFollowing, MiGalleryLike, MiGalleryPost, MiHashtag, MiInstance, MiMessagingMessage, MiMeta, MiModerationLog, MiMuting, MiNote, MiNoteFavorite, MiNoteReaction, MiNoteThreadMuting, MiNoteUnread, MiPage, MiPageLike, MiPasswordResetRequest, MiPoll, MiPollVote, MiPromoNote, MiPromoRead, MiRegistrationTicket, MiRegistryItem, MiRelay, MiRenoteMuting, MiRetentionAggregation, MiRole, MiRoleAssignment, MiSignin, MiSwSubscription, MiUsedUsername, MiUser, MiUserGroup, MiUserGroupJoining, MiUserGroupInvitation, MiUserIp, MiUserKeypair, MiUserList, MiUserListFavorite, MiUserListMembership, MiUserMemo, MiUserNotePining, MiUserPending, MiUserProfile, MiUserPublickey, MiUserSecurityKey, MiWebhook, MiBubbleGameRecord, MiReversiGame, MiSubscriptionPlan, MiScheduledNote, miRepository } from './_.js';
-import type { DataSource } from 'typeorm';
+import {
+	MiAbuseReportNotificationRecipient,
+	MiAbuseReportResolver,
+	MiAbuseUserReport,
+	MiAccessToken,
+	MiAd,
+	MiAnnouncement,
+	MiAnnouncementRead,
+	MiAntenna,
+	MiApp,
+	MiAuthSession,
+	MiAvatarDecoration,
+	MiBlocking,
+	MiChannel,
+	MiChannelFavorite,
+	MiChannelFollowing,
+	MiClip,
+	MiClipFavorite,
+	MiClipNote,
+	MiDriveFile,
+	MiDriveFolder,
+	MiEmoji,
+	MiEvent,
+	MiFlash,
+	MiFlashLike,
+	MiFollowing,
+	MiFollowRequest,
+	MiGalleryLike,
+	MiGalleryPost,
+	MiHashtag,
+	MiInstance,
+	MiMessagingMessage,
+	MiMeta,
+	MiModerationLog,
+	MiMuting,
+	MiNote,
+	MiNoteFavorite,
+	MiNoteReaction,
+	MiNoteThreadMuting,
+	MiNoteUnread,
+	MiPage,
+	MiPageLike,
+	MiPasswordResetRequest,
+	MiPoll,
+	MiPollVote,
+	MiPromoNote,
+	MiPromoRead,
+	MiRegistrationTicket,
+	MiRegistryItem,
+	MiRelay,
+	MiRenoteMuting,
+	MiRepository,
+	MiRole,
+	MiRoleAssignment,
+	MiRetentionAggregation,
+	MiSignin,
+	MiSwSubscription,
+	MiSystemWebhook,
+	MiUsedUsername,
+	MiUser,
+	MiUserGroup,
+	MiUserGroupJoining,
+	MiUserGroupInvitation,
+	MiUserIp,
+	MiUserKeypair,
+	MiUserList,
+	MiUserListFavorite,
+	MiUserListMembership,
+	MiUserMemo,
+	MiUserNotePining,
+	MiUserPending,
+	MiUserProfile,
+	MiUserPublickey,
+	MiUserSecurityKey,
+	MiWebhook,
+	MiBubbleGameRecord, 
+	MiReversiGame, 
+	MiSubscriptionPlan, 
+	MiScheduledNote, 
+	miRepository
+} from './_.js';
 import type { Provider } from '@nestjs/common';
+import type { DataSource } from 'typeorm';
 
 const $usersRepository: Provider = {
 	provide: DI.usersRepository,
@@ -255,6 +335,12 @@ const $abuseUserReportsRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $abuseReportNotificationRecipientRepository: Provider = {
+	provide: DI.abuseReportNotificationRecipientRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiAbuseReportNotificationRecipient),
+	inject: [DI.db],
+};
+
 const $registrationTicketsRepository: Provider = {
 	provide: DI.registrationTicketsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiRegistrationTicket).extend(miRepository as MiRepository<MiRegistrationTicket>),
@@ -387,6 +473,12 @@ const $webhooksRepository: Provider = {
 	inject: [DI.db],
 };
 
+const $systemWebhooksRepository: Provider = {
+	provide: DI.systemWebhooksRepository,
+	useFactory: (db: DataSource) => db.getRepository(MiSystemWebhook),
+	inject: [DI.db],
+};
+
 const $adsRepository: Provider = {
 	provide: DI.adsRepository,
 	useFactory: (db: DataSource) => db.getRepository(MiAd).extend(miRepository as MiRepository<MiAd>),
@@ -460,8 +552,7 @@ const $abuseReportResolversRepository: Provider = {
 };
 
 @Module({
-	imports: [
-	],
+	imports: [],
 	providers: [
 		$usersRepository,
 		$notesRepository,
@@ -504,6 +595,7 @@ const $abuseReportResolversRepository: Provider = {
 		$swSubscriptionsRepository,
 		$hashtagsRepository,
 		$abuseUserReportsRepository,
+		$abuseReportNotificationRecipientRepository,
 		$registrationTicketsRepository,
 		$authSessionsRepository,
 		$accessTokensRepository,
@@ -526,6 +618,7 @@ const $abuseReportResolversRepository: Provider = {
 		$channelFavoritesRepository,
 		$registryItemsRepository,
 		$webhooksRepository,
+		$systemWebhooksRepository,
 		$adsRepository,
 		$passwordResetRequestsRepository,
 		$retentionAggregationsRepository,
@@ -581,6 +674,7 @@ const $abuseReportResolversRepository: Provider = {
 		$swSubscriptionsRepository,
 		$hashtagsRepository,
 		$abuseUserReportsRepository,
+		$abuseReportNotificationRecipientRepository,
 		$registrationTicketsRepository,
 		$authSessionsRepository,
 		$accessTokensRepository,
@@ -603,6 +697,7 @@ const $abuseReportResolversRepository: Provider = {
 		$channelFavoritesRepository,
 		$registryItemsRepository,
 		$webhooksRepository,
+		$systemWebhooksRepository,
 		$adsRepository,
 		$passwordResetRequestsRepository,
 		$retentionAggregationsRepository,
@@ -617,4 +712,5 @@ const $abuseReportResolversRepository: Provider = {
 		$reversiGamesRepository,
 	],
 })
-export class RepositoryModule {}
+export class RepositoryModule {
+}

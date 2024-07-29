@@ -130,18 +130,17 @@ export type EndedPollNotificationJobData = {
 	noteId: MiNote['id'];
 };
 
-export type ScheduleNotePostJobData = {
-  scheduledNoteId: MiNote['id'];
-}
-
-type MinimumUser = {
-	id: MiUser['id'];
-	host: MiUser['host'];
-	username: MiUser['username'];
-	uri: MiUser['uri'];
+export type SystemWebhookDeliverJobData = {
+	type: string;
+	content: unknown;
+	webhookId: MiWebhook['id'];
+	to: string;
+	secret: string;
+	createdAt: number;
+	eventId: string;
 };
 
-export type WebhookDeliverJobData = {
+export type UserWebhookDeliverJobData = {
 	type: string;
 	content: unknown;
 	webhookId: MiWebhook['id'];
@@ -151,6 +150,10 @@ export type WebhookDeliverJobData = {
 	createdAt: number;
 	eventId: string;
 };
+
+export type ScheduleNotePostJobData = {
+	scheduledNoteId: MiNote['id'];
+  }
 
 export type ThinUser = {
 	id: MiUser['id'];

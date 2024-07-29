@@ -1,6 +1,15 @@
 import { Endpoints as Gen } from './autogen/endpoint.js';
 import { UserDetailed } from './autogen/models.js';
-import { UsersShowRequest } from './autogen/entities.js';
+import { AdminRolesCreateRequest, AdminRolesCreateResponse, UsersShowRequest } from './autogen/entities.js';
+import {
+	PartialRolePolicyOverride,
+	SigninRequest,
+	SigninResponse,
+	SignupPendingRequest,
+	SignupPendingResponse,
+	SignupRequest,
+	SignupResponse,
+} from './entities.js';
 
 type Overwrite<T, U extends { [Key in keyof T]?: unknown }> = Omit<
 	T,
@@ -19,11 +28,13 @@ type StrictExtract<Union, Cond> = Cond extends Union ? Union : never;
 
 type IsCaseMatched<E extends keyof Endpoints, P extends Endpoints[E]['req'], C extends number> =
 	Endpoints[E]['res'] extends SwitchCase
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		? IsNeverType<StrictExtract<Endpoints[E]['res']['$switch']['$cases'][C], [P, any]>> extends false ? true : false
 		: false
 
 type GetCaseResult<E extends keyof Endpoints, P extends Endpoints[E]['req'], C extends number> =
 	Endpoints[E]['res'] extends SwitchCase
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		? StrictExtract<Endpoints[E]['res']['$switch']['$cases'][C], [P, any]>[1]
 		: never
 
@@ -56,5 +67,24 @@ export type Endpoints = Overwrite<
 				};
 			};
 		},
+		// api.jsonには載せないものなのでここで定義
+		'signup': {
+			req: SignupRequest;
+			res: SignupResponse;
+		},
+		// api.jsonには載せないものなのでここで定義
+		'signup-pending': {
+			req: SignupPendingRequest;
+			res: SignupPendingResponse;
+		},
+		// api.jsonには載せないものなのでここで定義
+		'signin': {
+			req: SigninRequest;
+			res: SigninResponse;
+		},
+		'admin/roles/create': {
+			req: Overwrite<AdminRolesCreateRequest, { policies: PartialRolePolicyOverride }>;
+			res: AdminRolesCreateResponse;
+		}
 	}
 >

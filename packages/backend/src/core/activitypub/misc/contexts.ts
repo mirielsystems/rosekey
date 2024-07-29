@@ -565,6 +565,8 @@ const extension_context_definition = {
 	listenbrainz: 'sharkey:listenbrainz',
 	oshi: 'rosekey:oshi',
 	oshistartdate: 'rosekey:oshistartdate',
+	outerEarColor: 'rosekey:outerEarColor',
+	innerEarColor: 'rosekey:innerEarColor',
 } satisfies Context;
 
 export const CONTEXT: (string | Context)[] = [...context_iris, extension_context_definition];

@@ -1,19 +1,20 @@
+import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { Entity, MegalodonInterface } from 'megalodon';
-import querystring from 'querystring';
 import { IsNull } from 'typeorm';
 import multer from 'fastify-multer';
+import axios from 'axios';
 import type { AccessTokensRepository, NotesRepository, UserProfilesRepository, UsersRepository } from '@/models/_.js';
 import { DI } from '@/di-symbols.js';
 import { bindThis } from '@/decorators.js';
 import type { Config } from '@/config.js';
 import { MetaService } from '@/core/MetaService.js';
+import { UserEntityService } from '@/core/entities/UserEntityService.js';
+import { DriveService } from '@/core/DriveService.js';
 import { convertAnnouncement, convertFilter, convertAttachment, convertFeaturedTag, convertList, MastoConverters } from './converters.js';
 import { getInstance } from './endpoints/meta.js';
 import { ApiAuthMastodon, ApiAccountMastodon, ApiFilterMastodon, ApiNotifyMastodon, ApiSearchMastodon, ApiTimelineMastodon, ApiStatusMastodon } from './endpoints.js';
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify';
-import { UserEntityService } from '@/core/entities/UserEntityService.js';
-import { DriveService } from '@/core/DriveService.js';
 
 export function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -75,6 +76,31 @@ export class MastodonApiServerService {
 
 		fastify.register(multer.contentParser);
 
+		interface Poll {
+			choices: string[];
+			multiple?: boolean;
+			expiresAt?: number;
+			expiredAfter?: number;
+		}
+		
+		interface EditRequestBody {
+			status: string;
+			media_ids?: string[];
+			poll?: Poll;
+			sensitive?: boolean;
+			spoiler_text?: string; // 必須でなくなる
+			visibility?: string;
+		}
+		
+		interface RequestBody {
+			noteId: string;
+			text: string;
+			cw: string | null; // CW は必須だが、null も許容
+			disableRightClick: boolean;
+			fileIds?: string[];
+			poll?: Poll;
+		}
+
 		fastify.get('/v1/custom_emojis', async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
@@ -85,6 +111,141 @@ export class MastodonApiServerService {
 			} catch (e: any) {
 				console.error(e);
 				reply.code(401).send(e.response.data);
+			}
+		});
+
+		fastify.get<{ Params: { id: string } }>('/v1/accounts/:id/statuses', async (_request, reply) => {
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+			const client = getClient(BASE_URL, accessTokens);
+			try {
+				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
+				reply.send(await account.getStatuses());
+			} catch (e: any) {
+				reply.code(401).send(e.response.data);
+			}
+		});
+		
+		fastify.post<{ Body: EditRequestBody; Params: { id: string } }>('/v1/statuses/:id', async (_request, reply) => {
+			const { id } = _request.params; // URLパラメータからIDを取得
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+	
+			if (!id) {
+				// IDが存在しない場合、400 Bad Requestを返します
+				return reply.code(400).send({ error: 'Note ID is required' });
+			}
+	
+			const {
+				status,
+				media_ids,
+				poll,
+				sensitive,
+				spoiler_text,
+				visibility,
+			} = _request.body;
+	
+			// EditRequestBody から RequestBody への変換
+			const requestBody: RequestBody = {
+				noteId: id, // 必須のnoteIdを設定
+				text: status,
+				cw: spoiler_text ?? null, // spoiler_text が存在しない場合は null を設定
+				disableRightClick: false, // デフォルト値を設定
+			};
+	
+			if (media_ids && media_ids.length > 0) {
+				requestBody.fileIds = media_ids; // メディアIDがある場合のみ追加
+			}
+	
+			if (poll) {
+				requestBody.poll = {
+					choices: poll.choices, // poll.choicesを使用
+					multiple: poll.multiple,
+					expiresAt: poll.expiresAt, // poll.expiresAtを使用
+					expiredAfter: poll.expiresAt, // 同じ値を使用
+				};
+			}
+	
+			try {
+				// Misskey API に POST リクエストを送信
+				const response = await axios.post(`${BASE_URL}/api/notes/update`, requestBody, {
+					headers: {
+						'Authorization': accessTokens,
+						'Content-Type': 'application/json',
+					},
+				});
+	
+				// 成功した場合のレスポンスを返す
+				reply.send(response.data);
+			} catch (e: any) {
+				console.error(e);
+				if (e.response && e.response.data) {
+					reply.code(401).send(e.response.data);
+				} else {
+					reply.code(500).send({ error: 'An unexpected error occurred' });
+				}
+			}
+		});
+	
+		// PUT メソッドのハンドラー
+		fastify.put<{ Body: EditRequestBody; Params: { id: string } }>('/v1/statuses/:id', async (_request, reply) => {
+			const { id } = _request.params; // URLパラメータからIDを取得
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+	
+			if (!id) {
+				// IDが存在しない場合、400 Bad Requestを返します
+				return reply.code(400).send({ error: 'Note ID is required' });
+			}
+	
+			const {
+				status,
+				media_ids,
+				poll,
+				sensitive,
+				spoiler_text,
+				visibility,
+			} = _request.body;
+	
+			// EditRequestBody から RequestBody への変換
+			const requestBody: RequestBody = {
+				noteId: id, // 必須のnoteIdを設定
+				text: status,
+				cw: spoiler_text ?? null, // spoiler_text が存在しない場合は null を設定
+				disableRightClick: false, // デフォルト値を設定
+			};
+	
+			if (media_ids && media_ids.length > 0) {
+				requestBody.fileIds = media_ids; // メディアIDがある場合のみ追加
+			}
+	
+			if (poll) {
+				requestBody.poll = {
+					choices: poll.choices, // poll.choicesを使用
+					multiple: poll.multiple,
+					expiresAt: poll.expiresAt, // poll.expiresAtを使用
+					expiredAfter: poll.expiresAt, // 同じ値を使用
+				};
+			}
+	
+			try {
+				// Misskey API に POST リクエストを送信
+				const response = await axios.post(`${BASE_URL}/api/notes/update`, requestBody, {
+					headers: {
+						'Authorization': accessTokens,
+						'Content-Type': 'application/json',
+					},
+				});
+	
+				// 成功した場合のレスポンスを返す
+				reply.send(response.data);
+			} catch (e: any) {
+				console.error(e);
+				if (e.response && e.response.data) {
+					reply.code(401).send(e.response.data);
+				} else {
+					reply.code(500).send({ error: 'An unexpected error occurred' });
+				}
 			}
 		});
     
@@ -381,20 +542,6 @@ export class MastodonApiServerService {
 				const data = await client.getAccount(sharkId);
 				const account = await this.mastoConverter.convertAccount(data.data);
 				reply.send(account);
-			} catch (e: any) {
-				/* console.error(e);
-				console.error(e.response.data); */
-				reply.code(401).send(e.response.data);
-			}
-		});
-
-		fastify.get<{ Params: { id: string } }>('/v1/accounts/:id/statuses', async (_request, reply) => {
-			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
-			const accessTokens = _request.headers.authorization;
-			const client = getClient(BASE_URL, accessTokens);
-			try {
-				const account = new ApiAccountMastodon(_request, client, BASE_URL, this.mastoConverter);
-				reply.send(await account.getStatuses());
 			} catch (e: any) {
 				/* console.error(e);
 				console.error(e.response.data); */

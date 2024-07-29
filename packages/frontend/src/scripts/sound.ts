@@ -80,10 +80,9 @@ export const operationTypes = [
 	'noteEdited',
 	'chat',
 	'chatBg',
-	'antenna',
-	'channel',
 	'notification',
 	'reaction',
+	'antenna',
 ] as const;
 
 /** サウンドの種類 */

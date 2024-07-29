@@ -73,7 +73,7 @@
     "socks-proxy-agent": "^8.0.2",
     "typescript": "5.1.6",
     "uuid": "^9.0.1",
-    "ws": "8.14.2"
+    "ws": "8.17.1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^6.12.0",

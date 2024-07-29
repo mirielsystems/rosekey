@@ -176,7 +176,7 @@ export class MiUser {
 		default: true,
 		comment: 'Whether the User\'s notes get indexed.',
 	})
-	public isIndexable: boolean;
+	public noindex: boolean;
 
 	@Column('boolean', {
 		default: false,
@@ -189,6 +189,16 @@ export class MiUser {
 		comment: 'Whether the User is a cat.',
 	})
 	public isCat: boolean;
+
+	@Column('varchar', {
+		length: 16, nullable: true,
+	})
+	public outerEarColor: string | null;
+
+	@Column('varchar', {
+		length: 16, nullable: false,
+	})
+	public innerEarColor: string | 'df548f';
 
 	@Column('boolean', {
 		default: true,
