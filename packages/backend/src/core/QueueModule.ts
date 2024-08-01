@@ -47,7 +47,7 @@ const $endedPollNotification: Provider = {
 const $scheduleNotePost: Provider = {
 	provide: 'queue:scheduleNotePost',
 	useFactory: (config: Config, redisForJobQueue: Redis.Redis) => new Bull.Queue(QUEUE.SCHEDULE_NOTE_POST, baseQueueOptions(config, QUEUE.SCHEDULE_NOTE_POST, redisForJobQueue)),
-	inject: [DI.config],
+	inject: [DI.config, DI.redisForJobQueue],
 };
 
 const $deliver: Provider = {
