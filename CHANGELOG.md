@@ -21,7 +21,12 @@
 - Cherry-Picked: Cherry-Picked from some project.
 - LTS: Official stable version - future releases may not be available for a long time.
 
-## R6.0729 (unreleased)
+## R6.0729h
+
+### General
+- 外部のRedisが使えないバグを修正
+
+## R6.0729
 
 ### Security Fix
 - Module由来の脆弱性を修正
