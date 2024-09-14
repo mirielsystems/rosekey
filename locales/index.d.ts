@@ -1051,6 +1051,22 @@ export interface Locale extends ILocale {
      */
     "flagSpeakAsCatDescription": string;
     /**
+     * 耳の外側の色
+     */
+    "outerEarColor": string;
+    /**
+     * 耳の外側の色を変更します。空欄でアイコンから色を取得します。
+     */
+    "outerEarColorDescription": string;
+    /**
+     * 耳の内側の色
+     */
+    "innerEarColor": string;
+    /**
+     * 耳の内側の色を変更します。
+     */
+    "innerEarColorDescription": string;
+    /**
      * タイムラインにノートへの返信を表示する
      */
     "flagShowTimelineReplies": string;
@@ -1283,7 +1299,7 @@ export interface Locale extends ILocale {
      */
     "silencedInstances": string;
     /**
-     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになります。ブロックしたインスタンスには影響しません。
+     * サイレンスしたいサーバーのホストを改行で区切って設定します。サイレンスされたサーバーに所属するアカウントはすべて「サイレンス」として扱われ、フォローがすべてリクエストになり、フォロワーでないローカルアカウントにはメンションできなくなります。ブロックしたインスタンスには影響しません。
      */
     "silencedInstancesDescription": string;
     /**

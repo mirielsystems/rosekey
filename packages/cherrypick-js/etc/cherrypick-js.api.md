@@ -2667,55 +2667,7 @@ type ModerationLog = {
 });
 
 // @public (undocumented)
-export const moderationLogTypes: readonly [
-	"updateServerSettings",
-	"suspend",
-	"unsuspend",
-	"updateUserNote",
-	"addCustomEmoji",
-	"updateCustomEmoji",
-	"deleteCustomEmoji",
-	"assignRole",
-	"unassignRole",
-	"createRole",
-	"updateRole",
-	"deleteRole",
-	"clearQueue",
-	"promoteQueue",
-	"deleteDriveFile",
-	"deleteNote",
-	"createGlobalAnnouncement",
-	"createUserAnnouncement",
-	"updateGlobalAnnouncement",
-	"updateUserAnnouncement",
-	"deleteGlobalAnnouncement",
-	"deleteUserAnnouncement",
-	"resetPassword",
-	"suspendRemoteInstance",
-	"unsuspendRemoteInstance",
-	"updateRemoteInstanceNote",
-	"markSensitiveDriveFile",
-	"unmarkSensitiveDriveFile",
-	"resolveAbuseReport",
-	"createInvitation",
-	"createAd",
-	"updateAd",
-	"deleteAd",
-	"createAvatarDecoration",
-	"updateAvatarDecoration",
-	"deleteAvatarDecoration",
-	"unsetUserAvatar",
-	"unsetUserBanner",
-	"deletePage",
-	"deleteFlash",
-	"deleteGalleryPost",
-	"createSystemWebhook", // 新規追加
-	"updateSystemWebhook", // 新規追加
-	"deleteSystemWebhook", // 新規追加
-	"createAbuseReportNotificationRecipient", // 新規追加
-	"updateAbuseReportNotificationRecipient", // 新規追加
-	"deleteAbuseReportNotificationRecipient" // 新規追加
-];
+export const moderationLogTypes: readonly ["updateServerSettings", "suspend", "unsuspend", "updateUserNote", "addCustomEmoji", "updateCustomEmoji", "deleteCustomEmoji", "assignRole", "unassignRole", "createRole", "updateRole", "deleteRole", "clearQueue", "promoteQueue", "deleteDriveFile", "deleteNote", "createGlobalAnnouncement", "createUserAnnouncement", "updateGlobalAnnouncement", "updateUserAnnouncement", "deleteGlobalAnnouncement", "deleteUserAnnouncement", "resetPassword", "suspendRemoteInstance", "unsuspendRemoteInstance", "updateRemoteInstanceNote", "markSensitiveDriveFile", "unmarkSensitiveDriveFile", "resolveAbuseReport", "createInvitation", "createAd", "updateAd", "deleteAd", "createAvatarDecoration", "updateAvatarDecoration", "deleteAvatarDecoration", "unsetUserAvatar", "unsetUserBanner", "deletePage", "deleteFlash", "deleteGalleryPost", "createSystemWebhook", "updateSystemWebhook", "deleteSystemWebhook", "createAbuseReportNotificationRecipient", "updateAbuseReportNotificationRecipient", "deleteAbuseReportNotificationRecipient"];
 
 // @public (undocumented)
 type MuteCreateRequest = operations['mute___create']['requestBody']['content']['application/json'];
