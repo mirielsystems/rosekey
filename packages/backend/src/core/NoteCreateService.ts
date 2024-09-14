@@ -347,26 +347,8 @@ export class NoteCreateService implements OnApplicationShutdown {
 			mentionedUsers = data.apMentions ?? await this.extractMentionedUsers(user, combinedTokens);
 		}
 
-		const willCauseNotification = mentionedUsers.filter(u => u.host === null).length > 0 || data.reply?.userHost === null || data.renote?.userHost === null;
-
-		if (process.env.MISSKEY_BLOCK_MENTIONS_FROM_UNFAMILIAR_REMOTE_USERS === 'true' && user.host !== null && willCauseNotification) {
-			const userEntity = await this.usersRepository.findOneBy({ id: user.id });
-			if ((userEntity?.followersCount ?? 0) === 0) {
-				throw new IdentifiableError('e11b3a16-f543-4885-8eb1-66cad131dbfd', 'Notes including mentions, replies, or renotes from remote users are not allowed until user has at least one local follower.');
-			}
-		}
-
-		if (policies.canInitiateConversation === false) {
-			if (
-				mentionedUsers.some(u => u.id !== user.id)
-				|| (data.reply && data.reply.replyUserId !== user.id)
-				|| (data.visibility === 'specified' && data.visibleUsers?.some(u => u.id !== user.id))
-				|| (this.isQuote(data) && data.renote.userId !== user.id)
-			) {
-				this.logger.error('Request rejected because user has no permission to initiate conversation', { user: user.id, note: data });
-				throw new IdentifiableError('332dd91b-6a00-430a-ac39-620cf60ad34b', 'Notes including mentions, replies, or renotes are not allowed.');
-			}
-		}
+		// if the host is media-silenced, custom emojis are not allowed
+		if (this.utilityService.isMediaSilencedHost(meta.mediaSilencedHosts, user.host)) emojis = [];
 
 		tags = tags.filter(tag => Array.from(tag).length <= 128).splice(0, 32);
 

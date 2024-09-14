@@ -571,6 +571,10 @@ export interface Locale extends ILocale {
      */
     "searchUser": string;
     /**
+     * ユーザーのノートを検索
+     */
+    "searchThisUsersNotes": string;
+    /**
      * 返信
      */
     "reply": string;
@@ -959,6 +963,10 @@ export interface Locale extends ILocale {
      */
     "editAntenna": string;
     /**
+     * アンテナを作成
+     */
+    "createAntenna": string;
+    /**
      * ウィジェットを選択
      */
     "selectWidget": string;
@@ -1127,6 +1135,10 @@ export interface Locale extends ILocale {
      */
     "host": string;
     /**
+     * 自分を選択
+     */
+    "selectSelf": string;
+    /**
      * ユーザーを選択
      */
     "selectUser": string;
@@ -1186,6 +1198,10 @@ export interface Locale extends ILocale {
      * サーバーをサイレンス
      */
     "silenceThisInstance": string;
+    /**
+     * サーバーをメディアサイレンス
+     */
+    "mediaSilenceThisInstance": string;
     /**
      * 操作
      */
@@ -1286,6 +1302,14 @@ export interface Locale extends ILocale {
      * ホワイトリスト
      */
     "whiteList": string;
+    /**
+     * メディアサイレンスしたサーバー
+     */
+    "mediaSilencedInstances": string;
+    /**
+     * メディアサイレンスしたいサーバーのホストを改行で区切って設定します。メディアサイレンスされたサーバーに所属するアカウントによるファイルはすべてセンシティブとして扱われ、カスタム絵文字が使用できないようになります。ブロックしたインスタンスには影響しません。
+     */
+    "mediaSilencedInstancesDescription": string;
     /**
      * ミュートとブロック
      */
@@ -4936,6 +4960,14 @@ export interface Locale extends ILocale {
      */
     "archive": string;
     /**
+     * アーカイブ済み
+     */
+    "archived": string;
+    /**
+     * アーカイブ解除
+     */
+    "unarchive": string;
+    /**
      * {name}をアーカイブしますか？
      */
     "channelArchiveConfirmTitle": ParameterizedString<"name">;
@@ -4975,6 +5007,18 @@ export interface Locale extends ILocale {
      * ユーザー指定
      */
     "specifyUser": string;
+    /**
+     * 照会しますか？
+     */
+    "lookupConfirm": string;
+    /**
+     * ハッシュタグのページを開きますか？
+     */
+    "openTagPageConfirm": string;
+    /**
+     * ホスト指定
+     */
+    "specifyHost": string;
     /**
      * プレビューできません
      */
@@ -5531,6 +5575,14 @@ export interface Locale extends ILocale {
      * センシティブなメディアです。表示しますか？
      */
     "sensitiveMediaRevealConfirm": string;
+    /**
+     * 作成したリスト
+     */
+    "createdLists": string;
+    /**
+     * 作成したアンテナ
+     */
+    "createdAntennas": string;
     /**
      * 未読の通知の数を表示する
      */
@@ -6678,7 +6730,7 @@ export interface Locale extends ILocale {
                  */
                 "description": string;
                 /**
-                 * 今日からね僕は ミスキストってことで
+                 * 今日からね僕は チェリーピキストってことで
                  */
                 "flavor": string;
             };
@@ -8977,6 +9029,10 @@ export interface Locale extends ILocale {
          * 長い音声を使用するとRosekeyの使用に支障をきたす可能性があります。それでも続行しますか？
          */
         "driveFileDurationWarnDescription": string;
+        /**
+         * 音声が読み込めませんでした。設定を変更してください
+         */
+        "driveFileError": string;
     };
     "_ago": {
         /**
@@ -10820,6 +10876,10 @@ export interface Locale extends ILocale {
              * ユーザーからの通報を処理したとき
              */
             "abuseReportResolved": string;
+            /**
+             * ユーザーが作成されたとき
+             */
+            "userCreated": string;
         };
         /**
          * Webhookを削除しますか？
@@ -11591,6 +11651,24 @@ export interface Locale extends ILocale {
          * ループ再生
          */
         "loop": string;
+    };
+    "_contextMenu": {
+        /**
+         * コンテキストメニュー
+         */
+        "title": string;
+        /**
+         * アプリケーション
+         */
+        "app": string;
+        /**
+         * Shiftキーでアプリケーション
+         */
+        "appWithShift": string;
+        /**
+         * ブラウザのUI
+         */
+        "native": string;
     };
     "_abuse": {
         "_resolver": {

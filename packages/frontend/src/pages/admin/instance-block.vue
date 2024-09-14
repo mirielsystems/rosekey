@@ -8,23 +8,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 	<template #header><XHeader v-model:tab="tab" :actions="headerActions" :tabs="headerTabs"/></template>
 	<MkSpacer :contentMax="700" :marginMin="16" :marginMax="32">
 		<FormSuspense :p="init">
-			<MkTextarea v-if="tab === 'block'" v-model="blockedHosts">
-				<span>{{ i18n.ts.blockedInstances }}</span>
-				<template #caption>{{ i18n.ts.blockedInstancesDescription }}</template>
-			</MkTextarea>
-			<MkTextarea v-else-if="tab === 'silence'" v-model="silencedHosts" class="_formBlock">
-				<span>{{ i18n.ts.silencedInstances }}</span>
-				<template #caption>{{ i18n.ts.silencedInstancesDescription }}</template>
-			</MkTextarea>
-			<div v-else-if="tab === 'whitelist'">
-				<MkSwitch v-model="enableAllowedHostsInWhiteList">
-					<template #label>{{ i18n.ts.enableAllowedHostsInWhiteList }}</template>
-				</MkSwitch>
+			<template v-if="tab === 'block'">
+				<MkTextarea v-model="blockedHosts">
+					<span>{{ i18n.ts.blockedInstances }}</span>
+					<template #caption>{{ i18n.ts.blockedInstancesDescription }}</template>
+				</MkTextarea>
+			</template>
+			<template v-else-if="tab === 'silence'">
+				<MkTextarea v-model="silencedHosts" class="_formBlock">
+					<span>{{ i18n.ts.silencedInstances }}</span>
+					<template #caption>{{ i18n.ts.silencedInstancesDescription }}</template>
+				</MkTextarea>
+				<MkTextarea v-model="mediaSilencedHosts" class="_formBlock">
+					<span>{{ i18n.ts.mediaSilencedInstances }}</span>
+					<template #caption>{{ i18n.ts.mediaSilencedInstancesDescription }}</template>
+				</MkTextarea>
 				<MkTextarea v-model="allowedHosts">
 					<span>{{ i18n.ts.allowedInstances }}</span>
 					<template #caption>{{ i18n.ts.allowedInstancesDescription }}</template>
 				</MkTextarea>
-			</div>
+			</template>
 			<MkButton primary @click="save"><i class="ti ti-device-floppy"></i> {{ i18n.ts.save }}</MkButton>
 		</FormSuspense>
 	</MkSpacer>
@@ -48,6 +51,7 @@ const blockedHosts = ref<string>('');
 const silencedHosts = ref<string>('');
 const enableAllowedHostsInWhiteList = ref<boolean>(false);
 const allowedHosts = ref<string>('');
+const mediaSilencedHosts = ref<string>('');
 const tab = ref('block');
 
 async function init() {
@@ -56,6 +60,7 @@ async function init() {
 	silencedHosts.value = meta.silencedHosts.join('\n');
 	enableAllowedHostsInWhiteList.value = meta.enableAllowedHostsInWhiteList;
 	allowedHosts.value = meta.allowedHosts.join('\n');
+	mediaSilencedHosts.value = meta.mediaSilencedHosts.join('\n');
 }
 
 function save() {
@@ -64,6 +69,8 @@ function save() {
 		silencedHosts: silencedHosts.value.split('\n') || [],
 		enableAllowedHostsInWhiteList: enableAllowedHostsInWhiteList.value,
 		allowedHosts: allowedHosts.value.split('\n') || [],
+		mediaSilencedHosts: mediaSilencedHosts.value.split('\n') || [],
+
 	}).then(() => {
 		fetchInstance(true);
 	});
