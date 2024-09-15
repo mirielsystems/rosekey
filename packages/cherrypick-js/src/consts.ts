@@ -161,9 +161,6 @@ export const moderationLogTypes = [
 	'updateAbuseReportNotificationRecipient',
 	'deleteAbuseReportNotificationRecipient',
 	'deleteAccount',
-	'deletePage',
-	'deleteFlash',
-	'deleteGalleryPost',
 ] as const;
 
 // See: packages/backend/src/core/ReversiService.ts@L410
@@ -375,24 +372,6 @@ export type ModerationLogPayloads = {
 		userUsername: string;
 		userHost: string | null;
 		fileId: string;
-	};
-	deletePage: {
-		pageId: string;
-		pageUserId: string;
-		pageUserUsername: string;
-		page: any;
-	};
-	deleteFlash: {
-		flashId: string;
-		flashUserId: string;
-		flashUserUsername: string;
-		flash: any;
-	};
-	deleteGalleryPost: {
-		postId: string;
-		postUserId: string;
-		postUserUsername: string;
-		post: any;
 	};
 	createSystemWebhook: {
 		systemWebhookId: string;
