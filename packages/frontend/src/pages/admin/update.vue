@@ -98,22 +98,26 @@ SPDX-License-Identifier: AGPL-3.0-only
 	skipCherryPickVersion.value = meta.skipCherryPickVersion;
   
 	try {
-	  // CherryPick Releases Fetch
-	  const cherryPickResponse = await fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases');
-	  const cherryPickData = await cherryPickResponse.json();
-	  releasesCherryPick.value = meta.enableReceivePrerelease ? cherryPickData : cherryPickData.filter(x => !x.prerelease);
-  
-	  if (compareVersions(skipCherryPickVersion.value || "", releasesCherryPick.value[0]?.tag_name || "") < 0) {
-		skipVersion.value = false;
-		await misskeyApi('admin/update-meta', { skipVersion: skipVersion.value });
-	  }
-  
-	  // Misskey Releases Fetch
-	  const misskeyResponse = await fetch('https://api.github.com/repos/misskey-dev/misskey/releases');
-	  const misskeyData = await misskeyResponse.json();
-	  releasesMisskey.value = meta.enableReceivePrerelease ? misskeyData : misskeyData.filter(x => !x.prerelease);
+		// CherryPick Releases Fetch
+		const cherryPickResponse = await fetch('https://api.github.com/repos/kokonect-link/cherrypick/releases');
+		const cherryPickData = await cherryPickResponse.json();
+		releasesCherryPick.value = meta.enableReceivePrerelease ? cherryPickData : cherryPickData.filter(x => !x.prerelease);
+
+		if (compareVersions(skipCherryPickVersion.value, releasesCherryPick.value[0].tag_name) < 0) {
+			skipVersion.value = false;
+			await misskeyApi('admin/update-meta', { skipVersion: skipVersion.value });
+		}
 	} catch (error) {
-	  console.error('Failed to fetch releases:', error);
+		console.error('Failed to fetch CherryPick releases:', error);
+	}
+
+	try {
+		// Misskey Releases Fetch
+		const misskeyResponse = await fetch('https://api.github.com/repos/misskey-dev/misskey/releases');
+		const misskeyData = await misskeyResponse.json();
+		releasesMisskey.value = meta.enableReceivePrerelease ? misskeyData : misskeyData.filter(x => !x.prerelease);
+	} catch (error) {
+		console.error('Failed to fetch Misskey releases:', error);
 	}
   }
   

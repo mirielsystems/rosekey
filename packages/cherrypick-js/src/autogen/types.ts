@@ -5123,6 +5123,8 @@ export type components = {
       title: string;
       summary: string;
       script: string;
+      /** @enum {string} */
+      visibility: 'private' | 'public';
       likedCount: number | null;
       isLiked?: boolean;
     };

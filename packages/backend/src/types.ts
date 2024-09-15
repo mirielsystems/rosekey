@@ -127,6 +127,10 @@ export const moderationLogTypes = [
 	'createAbuseReportNotificationRecipient',
 	'updateAbuseReportNotificationRecipient',
 	'deleteAbuseReportNotificationRecipient',
+	'deleteAccount',
+	'deletePage',
+	'deleteFlash',
+	'deleteGalleryPost',
 ] as const;
 
 export type ModerationLogPayloads = {
@@ -319,24 +323,6 @@ export type ModerationLogPayloads = {
 		userHost: string | null;
 		fileId: string;
 	};
-	deletePage: {
-		pageId: string;
-		pageUserId: string;
-		pageUserUsername: string;
-		page: any;
-	};
-	deleteFlash: {
-		flashId: string;
-		flashUserId: string;
-		flashUserUsername: string;
-		flash: any;
-	};
-	deleteGalleryPost: {
-		postId: string;
-		postUserId: string;
-		postUserUsername: string;
-		post: any;
-	};
 	createSystemWebhook: {
 		systemWebhookId: string;
 		webhook: any;
@@ -362,6 +348,29 @@ export type ModerationLogPayloads = {
 	deleteAbuseReportNotificationRecipient: {
 		recipientId: string;
 		recipient: any;
+	};
+	deleteAccount: {
+		userId: string;
+		userUsername: string;
+		userHost: string | null;
+	};
+	deletePage: {
+		pageId: string;
+		pageUserId: string;
+		pageUserUsername: string;
+		page: any;
+	};
+	deleteFlash: {
+		flashId: string;
+		flashUserId: string;
+		flashUserUsername: string;
+		flash: any;
+	};
+	deleteGalleryPost: {
+		postId: string;
+		postUserId: string;
+		postUserUsername: string;
+		post: any;
 	};
 	createSubscriptionPlan: {
 		subscriptionPlanId: string;

@@ -64,14 +64,6 @@ SPDX-License-Identifier: AGPL-3.0-only
 								</span>
 							</span>
 						</a>
-						<a href="https://github.com/tamaina" target="_blank" :class="$style.contributor">
-							<img src="https://avatars.githubusercontent.com/u/7973572?v=4" :class="$style.contributorAvatar">
-							<span :class="$style.contributorUsername">@tamaina
-								<span :class="$style.contributorClient">
-									<span :class="$style.misskey">Misskey</span>
-								</span>
-							</span>
-						</a>
 						<a href="https://github.com/acid-chicken" target="_blank" :class="$style.contributor">
 							<img src="https://avatars.githubusercontent.com/u/20679825?v=4" :class="$style.contributorAvatar">
 							<span :class="$style.contributorUsername">@acid-chicken
