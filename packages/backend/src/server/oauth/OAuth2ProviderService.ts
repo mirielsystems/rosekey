@@ -12,6 +12,7 @@ import type { Config } from '@/config.js';
 import { DI } from '@/di-symbols.js'; */
 import { bindThis } from '@/decorators.js';
 import type { FastifyInstance } from 'fastify';
+import { Buffer } from 'buffer';
 
 function getClient(BASE_URL: string, authorization: string | undefined): MegalodonInterface {
 	const accessTokenArr = authorization?.split(' ') ?? [null];
@@ -91,6 +92,23 @@ export class OAuth2ProviderService {
 
 		fastify.post('/token', async (request, reply) => {
 			const body: any = request.body || request.query;
+			let client_id: string | null = body.client_id;
+			let client_secret: string | null = body.client_secret;
+		
+			// client_secret_basic 認証を処理
+			const authorizationHeader = request.headers['authorization'];
+			if (authorizationHeader && authorizationHeader.startsWith('Basic ')) {
+				const base64Credentials = authorizationHeader.slice('Basic '.length).trim();
+				const credentials = Buffer.from(base64Credentials, 'base64').toString('utf8');
+				const [providedClientId, providedClientSecret] = credentials.split(':');
+		
+				client_id = providedClientId;
+				client_secret = providedClientSecret;
+			}
+		
+			const BASE_URL = `${request.protocol}://${request.hostname}`;
+			const client = getClient(BASE_URL, '');
+		
 			if (body.grant_type === 'client_credentials') {
 				const ret = {
 					access_token: uuid(),
@@ -99,32 +117,21 @@ export class OAuth2ProviderService {
 					created_at: Math.floor(new Date().getTime() / 1000),
 				};
 				reply.send(ret);
+				return;
 			}
-			let client_id: any = body.client_id;
-			const BASE_URL = `${request.protocol}://${request.hostname}`;
-			const client = getClient(BASE_URL, '');
-			let token = null;
-			if (body.code) {
-				//m = body.code.match(/^([a-zA-Z0-9]{8})([a-zA-Z0-9]{4})([a-zA-Z0-9]{4})([a-zA-Z0-9]{4})([a-zA-Z0-9]{12})/);
-				//if (!m.length) {
-				//	ctx.body = { error: "Invalid code" };
-				//	return;
-				//}
-				//token = `${m[1]}-${m[2]}-${m[3]}-${m[4]}-${m[5]}`
-				//console.log(body.code, token);
-				token = body.code;
+		
+			let token = body.code || null;
+			if (!client_id) {
+				reply.code(400).send({ error: 'client_id が無効です' });
+				return;
 			}
-			if (client_id instanceof Array) {
-				client_id = client_id.toString();
-			} else if (!client_id) {
-				client_id = null;
-			}
+		
 			try {
-				const atData = await client.fetchAccessToken(
-					client_id,
-					body.client_secret,
-					token ? token : '',
-				);
+				if (client_secret === null) {
+					throw new Error('client_secret が無効です');
+				}
+				
+				const atData = await client.fetchAccessToken(client_id, client_secret, token ? token : '');
 				const ret = {
 					access_token: atData.accessToken,
 					token_type: 'Bearer',
@@ -133,9 +140,8 @@ export class OAuth2ProviderService {
 				};
 				reply.send(ret);
 			} catch (err: any) {
-				/* console.error(err); */
-				reply.code(401).send(err.response.data);
-			}
+				reply.code(401).send(err.response?.data || { error: '無効なリクエストです' });
+			}			
 		});
 	}
 }
