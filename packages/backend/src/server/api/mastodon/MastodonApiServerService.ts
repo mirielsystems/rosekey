@@ -272,6 +272,30 @@ export class MastodonApiServerService {
 				reply.code(401).send(e.response.data);
 			}
 		});
+
+		fastify.get('/v2/instance', async (_request, reply) => {
+			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			const accessTokens = _request.headers.authorization;
+			const client = getClient(BASE_URL, accessTokens); // we are using this here, because in private mode some info isnt
+			// displayed without being logged in
+			try {
+				const data = await client.getInstance();
+				const admin = await this.usersRepository.findOne({
+					where: {
+						host: IsNull(),
+						isRoot: true,
+						isDeleted: false,
+						isSuspended: false,
+					},
+					order: { id: 'ASC' },
+				});
+				const contact = admin == null ? null : await this.mastoConverter.convertAccount((await client.getAccount(admin.id)).data);
+				reply.send(await getInstance(data.data, contact as Entity.Account, this.config, await this.metaService.fetch()));
+			} catch (e: any) {
+				/* console.error(e); */
+				reply.code(401).send(e.response.data);
+			}
+		});
     
 		fastify.get('/v1/announcements', async (_request, reply) => {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
