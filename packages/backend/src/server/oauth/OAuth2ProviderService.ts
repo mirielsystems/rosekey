@@ -61,25 +61,79 @@ export class OAuth2ProviderService {
 
 		fastify.get('/authorize', async (request, reply) => {
 			const query: any = request.query;
+		
+			// 必須パラメータのチェック
+			if (!query.response_type || query.response_type !== 'code') {
+				reply.code(400).send({ error: 'invalid_response_type', error_description: 'response_type must be "code"' });
+				return;
+			}
+		
+			if (!query.client_id) {
+				reply.code(400).send({ error: 'invalid_client_id', error_description: 'client_id is required' });
+				return;
+			}
+		
+			if (!query.redirect_uri) {
+				reply.code(400).send({ error: 'invalid_redirect_uri', error_description: 'redirect_uri is required' });
+				return;
+			}
+		
+			// デフォルトパラメータ mastodon=true を追加
 			let param = 'mastodon=true';
+		
+			// 必須パラメータを追加
+			param += `&response_type=code&client_id=${query.client_id}&redirect_uri=${encodeURIComponent(query.redirect_uri)}`;
+			
+			// オプションパラメータを追加
+			if (query.scope) param += `&scope=${encodeURIComponent(query.scope)}`;
+			if (query.force_login) param += `&force_login=${query.force_login}`;
+			if (query.lang) param += `&lang=${query.lang}`;
 			if (query.state) param += `&state=${query.state}`;
-			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
+		
+			// クライアントIDをBase64デコードしてリダイレクト
 			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${Buffer.from(client.toString(), 'base64').toString()}?${param}`,
 			);
-		});
+		});		
 
 		fastify.get('/authorize/', async (request, reply) => {
 			const query: any = request.query;
+		
+			// 必須パラメータのチェック
+			if (!query.response_type || query.response_type !== 'code') {
+				reply.code(400).send({ error: 'invalid_response_type', error_description: 'response_type must be "code"' });
+				return;
+			}
+		
+			if (!query.client_id) {
+				reply.code(400).send({ error: 'invalid_client_id', error_description: 'client_id is required' });
+				return;
+			}
+		
+			if (!query.redirect_uri) {
+				reply.code(400).send({ error: 'invalid_redirect_uri', error_description: 'redirect_uri is required' });
+				return;
+			}
+		
+			// デフォルトパラメータ mastodon=true を追加
 			let param = 'mastodon=true';
+		
+			// 必須パラメータを追加
+			param += `&response_type=code&client_id=${query.client_id}&redirect_uri=${encodeURIComponent(query.redirect_uri)}`;
+			
+			// オプションパラメータを追加
+			if (query.scope) param += `&scope=${encodeURIComponent(query.scope)}`;
+			if (query.force_login) param += `&force_login=${query.force_login}`;
+			if (query.lang) param += `&lang=${query.lang}`;
 			if (query.state) param += `&state=${query.state}`;
-			if (query.redirect_uri) param += `&redirect_uri=${query.redirect_uri}`;
+		
+			// クライアントIDをBase64デコードしてリダイレクト
 			const client = query.client_id ? query.client_id : '';
 			reply.redirect(
 				`${Buffer.from(client.toString(), 'base64').toString()}?${param}`,
 			);
-		});
+		});		
 
 		fastify.post('/token', async (request, reply) => {
 			const body: any = request.body || request.query;
@@ -100,7 +154,13 @@ export class OAuth2ProviderService {
 			const BASE_URL = `${request.protocol}://${request.hostname}`;
 			const client = getClient(BASE_URL, '');
 		
+			if (!client_id) {
+				reply.code(400).send({ error: 'client_id が無効です' });
+				return;
+			}
+		
 			if (body.grant_type === 'client_credentials') {
+				// クライアント認証のみでのトークン発行
 				const ret = {
 					access_token: uuid(),
 					token_type: 'Bearer',
@@ -111,28 +171,34 @@ export class OAuth2ProviderService {
 				return;
 			}
 		
-			let token = body.code || null;
-			if (!client_id) {
-				reply.code(400).send({ error: 'client_id が無効です' });
+			if (body.grant_type === 'authorization_code') {
+				// 認可コードフロー
+				let token = body.code || null;
+				if (!token) {
+					reply.code(400).send({ error: 'code が無効です' });
+					return;
+				}
+		
+				try {
+					if (client_secret === null) {
+						throw new Error('client_secret が無効です');
+					}
+					
+					const atData = await client.fetchAccessToken(client_id, client_secret, token);
+					const ret = {
+						access_token: atData.accessToken,
+						token_type: 'Bearer',
+						scope: body.scope || 'read write follow push',
+						created_at: Math.floor(new Date().getTime() / 1000),
+					};
+					reply.send(ret);
+				} catch (err: any) {
+					reply.code(401).send(err.response?.data || { error: '無効なリクエストです' });
+				}
 				return;
 			}
 		
-			try {
-				if (client_secret === null) {
-					throw new Error('client_secret が無効です');
-				}
-				
-				const atData = await client.fetchAccessToken(client_id, client_secret, token ? token : '');
-				const ret = {
-					access_token: atData.accessToken,
-					token_type: 'Bearer',
-					scope: body.scope || 'read write follow push',
-					created_at: Math.floor(new Date().getTime() / 1000),
-				};
-				reply.send(ret);
-			} catch (err: any) {
-				reply.code(401).send(err.response?.data || { error: '無効なリクエストです' });
-			}			
-		});
+			reply.code(400).send({ error: '無効な grant_type です' });
+		});		
 	}
 }
