@@ -60,20 +60,46 @@ export class ApiTimelineMastodon {
 
 	public async getHomeTl() {
 		this.fastify.get('/v1/timelines/home', async (_request, reply) => {
-			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
+			// プロキシやクライアントの状況に応じて適切にBASE_URLを設定
+			const BASE_URL = `${_request.headers['x-forwarded-proto'] || _request.protocol}://${_request.headers['x-forwarded-host'] || _request.hostname}`;
+			
+			// アクセストークンを取得
 			const accessTokens = _request.headers.authorization;
+	
+			// アクセストークンがない場合はエラーメッセージを返す
+			if (!accessTokens) {
+				reply.code(400).send({ error: 'Authorization token is missing' });
+				return;
+			}
+	
 			const client = getClient(BASE_URL, accessTokens);
 			try {
 				const query: any = _request.query;
+				
+				// ホームタイムラインを取得
 				const data = await client.getHomeTimeline(limitToInt(query));
-				reply.send(await Promise.all(data.data.map(async (status: Entity.Status) => await this.mastoconverter.convertStatus(status))));
+	
+				// data.dataが配列かどうか確認し、配列でない場合はエラーを返す
+				if (!Array.isArray(data.data)) {
+					reply.code(500).send({ error: 'Unexpected response format' });
+					return;
+				}
+	
+				// タイムラインデータを変換し、レスポンスとして返す
+				const convertedStatuses = await Promise.all(
+					data.data.map(async (status: Entity.Status) => await this.mastoconverter.convertStatus(status))
+				);
+	
+				reply.send(convertedStatuses);
 			} catch (e: any) {
 				console.error(e);
-				console.error(e.response.data);
-				reply.code(401).send(e.response.data);
+				
+				// e.response.dataが存在しない場合に対応
+				const errorResponse = e.response?.data || { error: 'Unknown error occurred' };
+				reply.code(401).send(errorResponse);
 			}
 		});
-	}
+	}	
 
 	public async getTagTl() {
 		this.fastify.get<{ Params: { hashtag: string } }>('/v1/timelines/tag/:hashtag', async (_request, reply) => {
