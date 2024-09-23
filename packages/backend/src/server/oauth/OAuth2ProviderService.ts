@@ -1,15 +1,7 @@
-/*
- * SPDX-FileCopyrightText: syuilo and other misskey contributors
- * SPDX-License-Identifier: AGPL-3.0-only
- */
-
 import querystring from 'querystring';
 import { Inject, Injectable } from '@nestjs/common';
 import megalodon, { MegalodonInterface } from 'megalodon';
 import { v4 as uuid } from 'uuid';
-/* import { kinds } from '@/misc/api-permissions.js';
-import type { Config } from '@/config.js';
-import { DI } from '@/di-symbols.js'; */
 import { bindThis } from '@/decorators.js';
 import type { FastifyInstance } from 'fastify';
 import { Buffer } from 'buffer';
@@ -24,32 +16,26 @@ function getClient(BASE_URL: string, authorization: string | undefined): Megalod
 
 @Injectable()
 export class OAuth2ProviderService {
-	constructor(
-		/* @Inject(DI.config)
-		private config: Config, */
-	) { }
+	constructor() {}
 
 	@bindThis
 	public async createServer(fastify: FastifyInstance): Promise<void> {
-		// https://datatracker.ietf.org/doc/html/rfc8414.html
-		// https://indieauth.spec.indieweb.org/#indieauth-server-metadata
-		/* fastify.get('/.well-known/oauth-authorization-server', async (_request, reply) => {
-			reply.send({
-				issuer: this.config.url,
-				authorization_endpoint: new URL('/oauth/authorize', this.config.url),
-				token_endpoint: new URL('/oauth/token', this.config.url),
-				scopes_supported: kinds,
-				response_types_supported: ['code'],
-				grant_types_supported: ['authorization_code'],
-				service_documentation: 'https://misskey-hub.net',
-				code_challenge_methods_supported: ['S256'],
-				authorization_response_iss_parameter_supported: true,
-			});
-		}); */
-
+		// CORS 設定
 		fastify.addHook('onRequest', (request, reply, done) => {
 			reply.header('Access-Control-Allow-Origin', '*');
+			reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+			reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+			reply.header('Access-Control-Allow-Credentials', 'true');
 			done();
+		});
+
+		// OPTIONS メソッドに対応することで、CORS プリフライトリクエストに対応
+		fastify.options('*', async (request, reply) => {
+			reply.header('Access-Control-Allow-Origin', '*');
+			reply.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+			reply.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+			reply.header('Access-Control-Allow-Credentials', 'true');
+			reply.code(204).send();
 		});
 
 		fastify.addContentTypeParser('application/x-www-form-urlencoded', (request, payload, done) => {
