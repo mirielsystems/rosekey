@@ -32,17 +32,6 @@ export function argsToBools(q: ParsedUrlQuery) {
 	return q;
 }
 
-// 文字列を簡単な数値に変換
-function generateNumericID(input: string): number {
-    let hash = 0;
-    for (let i = 0; i < input.length; i++) {
-        const char = input.charCodeAt(i);
-        hash = (hash << 5) - hash + char;
-        hash |= 0; // 32bit整数に変換
-    }
-    return Math.abs(hash);
-}
-
 export class ApiTimelineMastodon {
 	private fastify: FastifyInstance;
 
@@ -55,47 +44,19 @@ export class ApiTimelineMastodon {
 			const BASE_URL = `${_request.protocol}://${_request.hostname}`;
 			const accessTokens = _request.headers.authorization;
 			const client = getClient(BASE_URL, accessTokens);
-	
 			try {
 				const query: any = _request.query;
-	
-				// localタイムラインとpublicタイムラインの選択
 				const data = query.local === 'true'
 					? await client.getLocalTimeline(argsToBools(limitToInt(query)))
 					: await client.getPublicTimeline(argsToBools(limitToInt(query)));
-	
-				// データの処理と変換
-				const convertedData = await Promise.all(
-					data.data.map(async (status: Entity.Status) => {
-						// `content_type` を Mastodon対応に変換
-						if (status.content_type === "text/x.misskeymarkdown") {
-							status.content_type = "text/plain";  // 例として text/plain に変換
-						}
-	
-						// null フィールドの削除
-						if (status.in_reply_to_id === null) delete status.in_reply_to_id;
-						if (status.in_reply_to_account_id === null) delete status.in_reply_to_account_id;
-						if (status.poll === null) delete status.poll;
-	
-						// IDが文字列なら、必要に応じて数値に変換
-						if (isNaN(Number(status.id))) {
-							status.id = generateNumericID(status.id);
-						}
-	
-						return await this.mastoconverter.convertStatus(status);
-					})
-				);
-	
-				// 変換したデータを返信
-				reply.send(convertedData);
-	
+				reply.send(await Promise.all(data.data.map(async (status: Entity.Status) => await this.mastoconverter.convertStatus(status))));
 			} catch (e: any) {
 				console.error(e);
 				console.error(e.response.data);
 				reply.code(401).send(e.response.data);
 			}
 		});
-	}	
+	}
 
 	public async getHomeTl() {
 		this.fastify.get('/v1/timelines/home', async (_request, reply) => {
